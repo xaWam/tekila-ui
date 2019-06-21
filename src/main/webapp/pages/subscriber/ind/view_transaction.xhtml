@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+    <!-- 
+            Replace path to template, title, header and body
+            with actual data.
+    -->
+    <f:metadata>
+        <f:viewParam name="transaction" value="#{subscriber.singleTransactionID}"/>
+        <f:viewParam name="subscriber" value="#{subscriber.subscriberID}"/>
+    </f:metadata>
+
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View transaction</ui:define>
+        <ui:define name="content">                             
+            <h:form>
+
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+
+                    <f:facet name="header">Transaction</f:facet>
+                    <h:outputLabel value="Id"/>
+                    <h:outputText value="#{subscriber.singleTransactionID}"/>
+
+                    <h:outputLabel value="Subscriber"/>
+                    <h:outputText value="#{subscriber.singleTransaction.subscription.subscriber.details.firstName} #{subscriber.singleTransaction.subscription.subscriber.details.middleName} #{subscriber.singleTransaction.subscription.subscriber.details.surname}"/>
+
+                    <h:outputLabel value="Creation date"/>
+                    <h:outputText value="#{subscriber.singleTransaction.lastUpdateDate}" converter="dateTimeConverter">
+                    </h:outputText>
+
+                    <h:outputLabel value="Amount"/>
+                    <h:outputText value="#{subscriber.singleTransaction.amountAsDouble}"/>
+
+                    <h:outputLabel value="Start Balance"/>
+                    <h:outputText value="#{subscriber.singleTransaction.startBalanceAsDouble}"/>
+
+                    <h:outputLabel value="End Balance"/>
+                    <h:outputText value="#{subscriber.singleTransaction.endBalanceAsDouble}"/>
+
+                    <h:outputLabel value="Type"/>
+                    <h:outputText value="#{subscriber.singleTransaction.type}"/>
+
+                    <h:outputLabel value="Description"/>
+                    <h:outputText value="#{subscriber.singleTransaction.dsc}"/>
+
+                </h:panelGrid>	
+
+
+                <p:commandButton value="Back" action="#{subscriber.viewTransactionBack()}" process="@form"/>
+                <p:commandButton value="Revert"/>
+
+
+            </h:form>
+        </ui:define>
+        <ui:define name="east">
+            <h:form>
+                <p:menu>
+                    <p:submenu label="Navigation">
+                        <p:menuitem value="Subscriber Details"
+                                    action="#{subscriber.returnToSubscriber}"
+                                    rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"
+                                    />
+                    </p:submenu>
+                </p:menu>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

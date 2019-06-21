@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Service</ui:define>
+    <ui:define name="content">
+        <p:messages/>
+        <h:form>
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Service information"/>
+                </f:facet>
+
+                <h:outputLabel for="providers" value="Provider"/>
+                <h:selectOneMenu id="providers" value="#{serviceManager.providerIdForView}" required="true"
+                                 requiredMessage="Provider is required">
+                    <f:selectItem itemLabel="Select provider" noSelectionOption="true"/>
+                    <f:selectItems value="#{serviceManager.providerList}"/>
+                    <f:ajax event="change" listener="#{serviceManager.onSelectProviderChange}"
+                            render="serviceInstallFee groups defaultVasList subgroups" execute="providers groups"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Type" for="serviceType" styleClass="required"/>
+                <h:outputText id="serviceType" value="#{serviceManager.srv.serviceType}"/>
+
+                <h:outputLabel for="groups" value="Service groups"/>
+                <h:selectOneMenu id="groups" value="#{serviceManager.groupId}">
+                    <f:selectItem noSelectionOption="true" itemLabel="Select group"/>
+                    <f:selectItems value="#{serviceManager.groupSelectList}"/>
+                    <f:ajax event="change" listener="#{serviceManager.onSelectGroupChange}" render="@form"
+                            execute="providers groups serviceType"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel id="subgroupLabel" value="Subgroup" for="subgroups" />
+                <h:selectOneMenu id="subgroups" value="#{serviceManager.subgroupId}">
+                    <f:selectItem itemLabel="Select subgroup" noSelectionOption="true"/>
+                    <f:selectItems value="#{serviceManager.subgroupListByProvider}" var="sub" itemValue="#{sub.id}" itemLabel="#{sub.name}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Name" for="serviceName" styleClass="required"></h:outputLabel>
+                <h:inputText id="serviceName" value="#{serviceManager.srv.name}" required="true" label="Name"
+                             requiredMessage="Name need to be filled"/>
+
+                <h:outputLabel value="Installation fee" styleClass="required"></h:outputLabel>
+                <h:inputText  id="serviceInstallFee" required="true" value="#{serviceManager.installationFee}"
+                              requiredMessage="Installationn fee must be provided" />
+
+                <h:outputLabel value="Bill by lifecycle?" for="serviceBill"/>
+                <h:selectBooleanCheckbox value="#{serviceManager.srv.isBillByLifeCycle}" id="serviceBill"/>
+
+                <h:outputLabel value="Active"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.srv.active}"/>
+
+                <h:outputLabel value="Equipment allowed"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.srv.allowEquipment}"/>
+
+                <h:outputLabel value="Stock item allowed"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.srv.allowStock}"/>
+
+                <h:outputLabel value="Is available on ecare"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.srv.availableOnEcare}"/>
+
+                <h:outputLabel for="serviceProfile" value="Service Price" styleClass="required"/>
+                <h:inputText value="#{serviceManager.serviceFee}" id="serviceProfile"
+                             required="true"
+                             requiredMessage="Profile must be selected" />
+            </h:panelGrid>
+
+            <p:panelGrid columns="2" id="defaultVasPanel"
+                         rendered="#{serviceManager.providerIdForView ne serviceManager.dataplusProviderId}">
+                <f:facet name="header">Search for Default VAS</f:facet>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Type"/>
+                        <h:selectOneMenu value="#{serviceManager.selectedDefaultVasType}">
+                            <f:ajax event="change" listener="#{serviceManager.onDefaultVasSearch}"
+                                    render="defaultVasList"/>
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a VAS"/>
+                            <f:selectItems value="#{serviceManager.vasTypeList}"/>
+                        </h:selectOneMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Name"/>
+                        <h:inputText value="#{serviceManager.defaultVasName}" style="width: 415px;">
+                            <f:ajax listener="#{serviceManager.onDefaultVasSearch}" render="defaultVasList"/>
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:commandButton value="Reset" actionListener="#{serviceManager.onResetVas}"
+                                 update="defaultVasPanel defaultVasList"/>
+            </p:panelGrid>
+
+            <p:dataTable value="#{serviceManager.defaultVASList}" selection="#{serviceManager.selectedDefaultVASList}"
+                         var="srv" rowKey="#{srv.id}" rows="100" rowSelectMode="add" paginator="true" lazy="true"
+                         id="defaultVasList"
+                         rendered="#{serviceManager.providerIdForView ne serviceManager.dataplusProviderId}">
+                <f:facet name="header">Default VAS List</f:facet>
+                <p:column selectionMode="multiple" style="width: 16px; text-align: center;"/>
+                <p:column headerText="Id" styleClass="id">#{srv.id}</p:column>
+                <p:column headerText="Name">#{srv.name}</p:column>
+                <p:column headerText="Type">#{srv.code.type}</p:column>
+            </p:dataTable>
+
+            <h:panelGrid columns="1">
+                <f:facet name="header">Notification settings</f:facet>
+
+                <p:dataTable value="#{serviceManager.notificationSettings}" var="row" rows="100" rowKey="#{row.id}">
+                    <p:column headerText="Event">
+                        <h:outputText value="#{row.event}"/>
+                    </p:column>
+                    <p:column headerText="Notifications">
+                        <p:selectManyCheckbox value="#{row.selectedChannelList}">
+                            <f:selectItems value="#{row.channelList}" var="ch" itemValue="#{ch.code}"
+                                           itemLabel="#{ch}"/>
+                        </p:selectManyCheckbox>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:separator/>
+
+            <p:outputPanel styleClass="small-input" id="settingsPanelBroadband"
+                           rendered="#{serviceManager.serviceType eq 'BROADBAND'}">
+
+                <h:panelGrid id="settingsGrid" columns="1">
+                    <p:dataTable value="#{serviceManager.serviceSettingList}" var="set" rowKey="#{set.id}">
+                        <f:facet name="header">
+                            Settings
+                        </f:facet>
+                        <p:column headerText="Name">
+                            <h:outputText value="#{set.title}"/>
+                        </p:column>
+                        <p:column headerText="Description">
+                            <h:outputText value="#{set.dsc}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <p:separator/>
+
+                <p:panelGrid id="resourceGrid" columns="2" columnClasses="lbl-column,data-column"
+                             rowClasses="odd-row,even-row" styleClass="small-input"
+                             rendered="#{serviceManager.providerIdForView ne serviceManager.dataplusProviderId}">
+                    <f:facet name="header">
+                        <h:outputText value="Resources"/>
+                    </f:facet>
+
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                     rowClasses="odd-row,even-row" columns="2">
+
+                            <p:outputLabel value="Internet upload bandwith"/>
+                            <p:inputText value="#{serviceManager.upload}"/>
+                            <p:outputLabel value="Internet download bandwith"/>
+                            <p:inputText value="#{serviceManager.download}"/>
+                            <p:outputLabel value="Burst upload bandwith"/>
+                            <p:inputText value="#{serviceManager.burstUpload}"/>
+                            <p:outputLabel value="Burst download bandwith"/>
+                            <p:inputText value="#{serviceManager.burstDownload}"/>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                </p:panelGrid>
+                <p:separator/>
+
+                <p:panelGrid id="profileGrid" columns="2" columnClasses="lbl-column,data-column"
+                             rowClasses="odd-row,even-row" styleClass="small-input"
+                             rendered="#{serviceManager.providerIdForView eq serviceManager.citynetProviderId}">
+                    <f:facet name="header">
+                        <h:outputText value="Service Profile"/>
+                    </f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                     rowClasses="odd-row,even-row" columns="2">
+
+                            <p:outputLabel value="Upload ratio"/>
+                            <p:inputText value="#{serviceManager.ratioUp}"/>
+
+                            <p:outputLabel value="Download ratio"/>
+                            <p:inputText value="#{serviceManager.ratioDown}"/>
+
+                            <p:outputLabel value="From date"/>
+                            <p:calendar id="fromDay" value="#{serviceManager.from}" pattern="HH:mm" timeOnly="true"/>
+
+                            <p:outputLabel value="To date"/>
+                            <p:calendar id="toDay" value="#{serviceManager.to}" pattern="HH:mm" timeOnly="true"/>
+
+                            <f:facet name="footer">
+
+                                <p:commandButton value="Add" icon="ui-icon-disk"
+                                                 action="#{serviceManager.addServiceProfile}"
+                                                 update="settingsPanelBroadband"/>
+                                <p:commandButton value="Delete" icon="ui-icon-trash"
+                                                 action="#{serviceManager.removeServiceProfile}"
+                                                 update="settingsPanelBroadband"/>
+                                <p:commandButton action="#{serviceManager.resetServiceProfile}" value="Reset"
+                                                 icon="ui-icon-refresh"
+                                                 update="settingsPanelBroadband"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                </p:panelGrid>
+
+                <p:dataTable value="#{serviceManager.serviceProfileList}" var="sp"
+                             selection="#{serviceManager.selectedServiceProfile}" selectionMode="single"
+                             id="dtserviceProfile"
+                             rowKey="#{sp.up}" rows="50"
+                             rendered="#{serviceManager.providerIdForView ne serviceManager.dataplusProviderId}">
+                    <f:facet name="header">Service Profiles</f:facet>
+                    <p:column headerText="Upload ratio">#{sp.up}</p:column>
+                    <p:column headerText="Download ratio">#{sp.down}</p:column>
+                    <p:column headerText="From time">#{sp.from}</p:column>
+                    <p:column headerText="To time">#{sp.to}</p:column>
+
+                </p:dataTable>
+
+                <p:dataTable id="propTable" selection="#{serviceManager.serviceProperty}" selectionMode="single"
+                             value="#{serviceManager.serviceProperties}" var="prop" rowKey="#{prop.zone.id}"
+                             rendered="#{serviceManager.providerIdForView eq serviceManager.dataplusProviderId}">
+                    <f:facet name="header">Service Properties</f:facet>
+                    <p:column headerText="Zone">
+                        <h:outputText value="#{prop.zone.name}"/>
+                    </p:column>
+                    <p:column headerText="Price">
+                        <h:outputText value="#{prop.servicePriceInDouble}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2" columnClasses="lbl-column,data-column"
+                             rowClasses="odd-row,even-row" style="margin-bottom: 10px;"
+                             rendered="#{serviceManager.providerIdForView eq serviceManager.dataplusProviderId}">
+                    <f:facet name="header">
+                        <h:outputText value="Enter New Service Property: "/>
+                    </f:facet>
+
+                    <h:outputLabel value="Select Zone: " for="propZone"/>
+                    <p:selectOneMenu id="propZone" value="#{serviceManager.zoneId}">
+                        <f:selectItem itemLabel="Select zone" noSelectionOption="true"/>
+                        <f:selectItems value="#{serviceManager.zoneSelectList}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Enter Price: " for="propPrice"/>
+                    <h:inputText id="propPrice" value="#{serviceManager.propertyPrice}" style="width: 400px;"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Save" icon="ui-icon-disk" actionListener="#{serviceManager.addProperty}" process="@this propZone propPrice" update="propTable messages"/>
+                        <p:commandButton value="Delete" icon="ui-icon-trash" actionListener="#{serviceManager.removeProperty}"  process="@this propTable" update="propTable messages"/>
+                    </f:facet>
+                </h:panelGrid>
+
+            </p:outputPanel>
+            <p:separator/>
+            <p:outputPanel id="settingsPanelTV" rendered="#{serviceManager.serviceType eq 'TV'}">
+
+                <h:panelGrid id="settingsGridTV" columns="1">
+                    <p:dataTable value="#{serviceManager.serviceSettingList}" var="set" rowKey="#{set.id}">
+                        <f:facet name="header">
+                            Settings
+                        </f:facet>
+                        <p:column headerText="Name">
+                            <h:outputText value="#{set.title}"/>
+                        </p:column>
+                        <p:column headerText="Description">
+                            <h:outputText value="#{set.dsc}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <p:separator/>
+            </p:outputPanel>
+
+            <h:panelGrid columns="2">
+                <h:commandButton action="#" value="Reset" type="reset"/>
+                <h:commandButton action="#{serviceManager.create()}" value="Save"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

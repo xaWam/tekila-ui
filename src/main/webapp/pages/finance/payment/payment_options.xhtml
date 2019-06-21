@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Available payment options</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:growl id="errMsg" showDetail="true"></p:growl>
+            <h:panelGrid rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column" columns="2">
+                <f:facet name="header">Create payment method</f:facet>
+                <h:outputLabel>Payment Method Name(for ex. back, cash, etc)</h:outputLabel>
+                <h:inputText value="#{paymentOptionsManager.paymentOption.name}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:commandButton value="Save" action="#{paymentOptionsManager.save}">
+                </p:commandButton>
+            </h:panelGrid>
+
+            <p:dataTable value="#{paymentOptionsManager.paymentOptionsList}" var="po">
+                <f:facet name="header">List of available payment options</f:facet>
+                <p:column>#{po.id}</p:column>
+                <p:column>#{po.name}</p:column>
+            </p:dataTable>
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>
+</html>

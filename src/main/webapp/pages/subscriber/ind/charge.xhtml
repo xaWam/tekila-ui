@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+    <f:viewParam name="chargeID" value="#{subscriber.singleChargeId}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Charge</ui:define>
+    <ui:define name="content">
+        <h:form id="chargeForm">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">Charge</f:facet>
+                <h:outputLabel value="Id">
+                </h:outputLabel>
+                <h:outputText value="${subscriber.singleCharge.id}"/>
+
+                <h:outputLabel value="Last Update Date"/>
+                <h:outputText value="#{subscriber.singleCharge.lastUpdateDate.toDate()}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="Service"/>
+                <h:outputText value="#{subscriber.singleCharge.service.name}"/>
+
+                <h:outputLabel value="Amount"/>
+                <h:outputText value="#{subscriber.singleCharge.amountForView}"/>
+
+                <h:outputLabel value="VAS"/>
+                <h:outputText value="#{subscriber.singleCharge.vas.name}"/>
+
+                <h:outputLabel value="Description"/>
+                <h:outputText value="#{subscriber.singleCharge.dsc}"/>
+
+                <h:outputLabel value="Creation Date"/>
+                <h:outputText value="#{subscriber.singleCharge.dateTimeAsDate}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="Status"/>
+                <h:graphicImage title="Void" rendered="#{subscriber.singleCharge.statusId eq -1}" value="/resources/img/icons/cancel24.png"/>
+                <h:graphicImage title="Regular" rendered="#{subscriber.singleCharge.statusId eq 0}" value="/resources/img/icons/check24.png"/>
+            </h:panelGrid>
+            <h:panelGrid columns="2">
+                <p:commandButton value="Revert" action="#{subscriber.cancelCharge}" update="@form" rendered="#{uISecurityManager.hasPermission('Charge', 'UPDATE')}">
+                    <p:confirm header="Confirm operation" message="Do you really want to perform this operation?" icon="ui-icon-alert"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" closeOnEscape="true">
+                    <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                    <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                </p:confirmDialog>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"/>
+                    <p:menuitem value="Charges" outcome="/pages/subscriber/ind/charges?subscriber=#{subscriber.subscriberId}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Charge', 'READ')}"
+                    />
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

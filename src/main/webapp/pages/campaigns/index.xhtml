@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Campaigns</ui:define>
+    <ui:define name="content">
+
+        <h:form>
+            <p:growl id="growlId" showDetail="true"/>
+
+            <p:dataTable id="campaingsTableId" var="campaign" value="#{campaignManager.campaigns}" widgetVar="campaignsTable"
+                         emptyMessage="No campaigns found with given criteria" filteredValue="#{campaignManager.filteredCampaigns}"
+                         rows="10" rowKey="#{campaign.id}" paginator="true"
+                         selectionMode="single" selection="#{campaignManager.selected}">
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all fields:" />
+                        <p:inputText id="globalFilter" onkeyup="PF('campaignsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="Id" filterBy="#{campaign.id}" footerText="contains" filterMatchMode="contains">
+                    <h:outputText value="#{campaign.id}"/>
+                </p:column>
+
+                <p:column headerText="Name" filterBy="#{campaign.name}" footerText="contains" filterMatchMode="contains">
+                    <h:outputText value="#{campaign.name}"/>
+                </p:column>
+
+                <p:column headerText="Description" filterBy="#{campaign.desc}" footerText="contains" filterMatchMode="contains">
+                    <h:outputText value="#{campaign.desc}"/>
+                </p:column>
+
+                <p:column headerText="Target" filterBy="#{campaign.target}" footerText="exact" filterMatchMode="exact">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('campaignsTable').filter()">
+                            <f:selectItem itemLabel="Select One" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{campaignManager.targetList}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{campaign.target}"/>
+                </p:column>
+
+                <p:column headerText="Provider" filterBy="#{campaign.provider.name}" footerText="contains" filterMatchMode="contains">
+                    <h:outputText value="#{campaign.provider.name}"/>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Clear" onclick="PF('campaignsTable').clearFilters();" update="@form"/>
+                    <p:commandButton update="@form" process="campaingsTableId" value="View" action="#{campaignManager.goToCampaignViewEditPage}"
+                                        rendered="#{uISecurityManager.securityManager.checkUIPermissions('Campaigns', 'UPDATE')}"/>
+                    <p:button value="Add" outcome="/pages/campaigns/create.xhtml"
+                              rendered="#{uISecurityManager.securityManager.checkUIPermissions('Campaigns', 'INSERT')}"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+</html>

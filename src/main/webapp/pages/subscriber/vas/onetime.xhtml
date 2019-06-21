@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <f:metadata>
+        <f:viewParam name="subscription" value="#{vasManager.subscriptionID}"/>
+        <f:viewParam name="subscriber" value="#{vasManager.subscriberID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">One time services</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl/>
+                <p:dataTable id="vasTable" value="#{vasManager.vasListStatic}"  var="vas" selection="#{vasManager.selectedVas}" filteredValue="#{vasManager.filteredVasList}" selectionMode="single" rows="15" lazy="true" paginator="true" rowKey="#{vas.id}" widgetVar="vasTable">
+                    <f:facet name="header">Value Added Services</f:facet>
+                    <p:column headerText="Id">#{vas.id}</p:column>
+                    <p:column headerText="Code">#{vas.code.code}</p:column>
+                    <p:column headerText="Name">#{vas.name}</p:column>
+                    <p:column headerText="Provider">#{vas.provider.name}</p:column>
+                    <p:column headerText="Profile">#{vas.profile.name}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Add" action="#{vasManager.addVasToSubscription()}" update="@form" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+        <ui:define name="east">
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscriber details" outcome="/pages/subscriber/view.xhtml?subscriber=#{vasManager.subscriberID}&amp;faces-redirect=true&amp;includeViewParams=true"/>
+                </p:submenu>
+            </p:menu>
+        </ui:define>
+    </ui:composition>
+</html>
+

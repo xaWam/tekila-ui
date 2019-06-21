@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Midipop</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search for Midipop</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Ats"/>
+                        <p:selectOneMenu value="#{midipopManager.ats}" converter="#{atsConverter}">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select ats"/>
+                            <f:selectItems value="#{midipopManager.atsSelectList}" var="ats" itemValue="#{ats}" itemLabel="#{ats.name}" />
+                        </p:selectOneMenu>
+
+
+                        <h:outputLabel value="Status"/>
+                        <p:selectOneMenu value="#{midipopManager.status}">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select status"/>
+                            <f:selectItems value="#{midipopManager.statusList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Switch Ip</h:outputLabel>
+                        <h:inputText value="#{midipopManager.switchIp}">
+                        </h:inputText>
+
+                        <h:outputLabel>Vlan</h:outputLabel>
+                        <h:inputText value="#{midipopManager.vlan}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="searchMidipop" action="#{midipopManager.search}" value="Search" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Midipop', 'READ')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="searchMidipop" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Searching, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+            <p:dataTable id="midipopTable" value="#{midipopManager.midipopList}"
+                         var="midi" paginator="true" rows="15"
+
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+
+                         editable="true"
+                         selection="#{midipopManager.selectedMidipop}" selectionMode="single" rowkey="#{midi.id}"
+                         lazy="true">
+
+                <f:facet name="header">Midipop</f:facet>
+
+                <p:ajax event="rowEdit" listener="#{midipopManager.onRowEdit}"/>
+
+                <p:column headerText="Id">#{midi.id}</p:column>
+
+                <p:column headerText="Name">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.name}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Ats">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.ats.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{midi.ats}" converter="#{atsConverter}" >
+                                <f:selectItems value="#{midipopManager.atsSelectList}" var="ats" itemValue="#{ats}" itemLabel="#{ats.name}" />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Vlan">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.vlan}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.vlan}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Switch Ip">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.switchIp}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.switchIp}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Switch port">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.switchPort}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.switchPort}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Cable">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.cable}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.cable}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Nodes">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{midi.nodes}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{midi.nodes}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Status">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText
+                                value="#{midi.status eq 1 ? 'Available' : 'Not available'}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{midi.status}" style="width:100%">
+                                <f:selectItems value="#{midipopManager.statusList}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:32px">
+                    <p:rowEditor/>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:button value="Add" outcome="/pages/store/midipop/create.xhtml"
+                              rendered="#{uISecurityManager.securityManager.checkUIPermissions('Midipop', 'INSERT')}"/>
+                    <p:spacer width="10"/>
+                    <h:outputText value="Total: #{midipopManager.midipopList.rowCount}"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

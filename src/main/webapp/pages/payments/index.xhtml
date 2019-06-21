@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Payments</ui:define>
+			<ui:define name="content">
+				<h:form id="profileForm">
+                                    <p:dataTable id="subDataTable" value="#{paymentManager.paymentList}" var="pmt" paginator="true" rows="15" 
+                                                 filteredValue="#{paymentManager.filteredPaymentList}"
+                                                 selection="#{paymentManager.selected}" selectionMode="single" rowKey="#{pmt.id}" lazy="true" widgetVar="paymentsTable">
+						<f:facet name="header">Payments</f:facet>
+                                                <p:column headerText="Amount" filterBy="#{pmt.amount}">							
+							#{pmt.amount}							
+						</p:column>                                                
+                                                <p:column headerText="Agreement" filterBy="#{pmt.contract}">
+                                                    <h:outputText value="#{pmt.contract}"/>
+                                                </p:column>						
+                                                <p:column headerText="Service" filterBy="#{pmt.service.name}">
+                                                    <h:outputText value="#{pmt.service.name}"/>
+                                                </p:column>
+                                                <p:column headerText="User" filterBy="#{pmt.user.userName}">
+                                                    <h:outputText value="#{pmt.user.userName}"/>
+                                                </p:column> 
+                                                <p:column headerText="Payment system" filterBy="#{pmt.extUser.username}">
+                                                    <h:outputText value="#{pmt.extUser.username}"/>
+                                                </p:column>
+						<f:facet name="footer">
+                                                    <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                                                    <p:commandButton process="subDataTable" value="View" action="#{subscriptionManager.show()}"></p:commandButton>						
+                                                    </f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+
+	</ui:composition>
+
+</html>

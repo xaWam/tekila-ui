@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Attribute</ui:define>
+    <ui:define name="content">
+        <h:form id="attForm">
+            <p:growl id="msg"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="3" styleClass="small-input">
+                <f:facet name="header">Search for Attribute</f:facet>
+                <p:outputPanel id="atPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Name</h:outputLabel>
+                        <h:inputText value="#{attributeManager.name}">
+                        </h:inputText>
+
+                        <h:outputLabel>Value</h:outputLabel>
+                        <h:inputText value="#{attributeManager.value}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Tag</h:outputLabel>
+                        <h:inputText value="#{attributeManager.tag}">
+                        </h:inputText>
+
+                        <h:outputLabel>Description</h:outputLabel>
+                        <h:inputText value="#{attributeManager.description}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Status"/>
+                        <p:selectOneMenu value="#{attributeManager.status}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select status"/>
+                            <f:selectItems value="#{attributeManager.statusList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="searchAtt" action="#{attributeManager.search}" value="Search" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Attribute', 'READ')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="searchAtt" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Searching, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+            <p:dataTable id="attTable" value="#{attributeManager.attributeList}"
+                         var="att" paginator="true" rows="15"
+
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+
+                         editable="true"
+                         selection="#{attributeManager.selectedAtt}" rowkey="#{att.id}"
+                         lazy="true">
+
+                <f:facet name="header">Attribute</f:facet>
+                <p:ajax event="rowEdit" listener="#{attributeManager.onRowEdit}" />
+<!--
+                <p:ajax event="rowSelectRadio" listener="#{attributeManager.onRowSelect}" />
+                <p:column selectionMode="single" style="width:16px;text-align:center"/>
+            -->
+
+                <p:column headerText="Id" style="width: 80px">#{att.id}</p:column>
+
+                <p:column headerText="Name">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{att.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{att.name}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Tag">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{att.tag}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{att.tag}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Value">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{att.value}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{att.value}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Description">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{att.description}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{att.description}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Status">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{att.status eq 1 ? 'Available' : 'Unavailable'}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{attributeManager.newStatus}" style="width: 200px">
+                                <f:selectItems value="#{attributeManager.statusList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:32px">
+                    <p:rowEditor>
+                    </p:rowEditor>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:button value="Add" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Attribute', 'INSERT')}" outcome="/pages/store/radius/attribute/create.xhtml"/>
+                    <p:spacer width="10"/>
+                    <h:outputText value="Total: #{attributeManager.attributeList.rowCount}"/>
+                </f:facet>
+            </p:dataTable>
+
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

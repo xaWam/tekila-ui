@@ -1,0 +1,168 @@
+@CHARSET "UTF-8";
+
+html * {
+    font-family: Lucida Grande, Lucida Sans, Arial, sans-serif !important;
+    font-size: 10px !important;
+}
+
+.header {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+.bottom {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	text-align: center;
+	vertical-align: middle;
+	color: #8E969D;
+}
+
+.user-welcome {
+    font-size: 1.2em !important;
+    font-weight: bold;
+    width: 100%;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.user-actions { text-align: right; }
+
+.ui-panelmenu-panel {
+    overflow: hidden !important;
+}
+
+.main-menu a {
+    text-decoration: none !important;
+}
+
+.main-menu li {
+    padding-left: 10px !important;
+}
+
+.menu-btn {
+    width: 100%; text-align: left; padding-left: 5px;
+}
+
+#west div {
+    overflow-x: hidden !important;
+}
+
+#east div {
+    overflow-x: hidden !important;
+}
+
+.left-aligned {
+    width: 50%;
+    text-align: left;
+}
+.right-aligned {
+    width: 50%;
+    text-align: right;
+}
+
+label.login {	
+	padding-right: 10px;
+}
+input.login-input {
+	width: 100px;
+}
+
+
+/* */
+div.clear { clear: both;}
+table.login td { font-size: 14px;}
+.lbl-column { width: 250px; font-weight: bold;}
+.large-lbl .lbl-column { width: 650px; }
+.large-lbl .data-column { width: 2490px; }
+.data-column { width: 2890px; border: solid 1px #C5C5C5;}
+
+.search-lbl-column { width: 200px; }
+.search-data-column { width: 300px; }
+
+/* .odd-row { background-color: #E8F2FF; } */
+/*#dfeffc/#D8CEF6;*//*#f9f9f9*/
+/* .even-row { background-color: #E8F2FF; } */
+label.required { font-weight: bolder;}
+label.required::after { content: "*"; color: red; font-weight: bold; }
+.error-msg { color: red; width: 200px; height: 100px;}
+.info-msg { color: blue; font-weight: bold; background-color: yellow; }
+
+.ui-datatable .ui-datatable-footer { text-align: left;}
+.coloredTable tr.ui-widget-content { border: 1px solid #a6c9e2; background: none;}
+.coloredTable tr:nth-child(even) {background-color: white;}
+.coloredTable tr:nth-child(odd) {background-color: #dfeffc;}
+
+.notif-table td, .notif-inner td { vertical-align: top !important;}
+.notif-btn { margin-right: 10px;}
+
+.tab li a, .tab li {/*color: #3498DB !important; font-weight: bold !important; font-size: 1.1em !important;*/}
+.ui-datatable { margin-bottom: 10px; }
+
+form input[type=text] { width: 250px; }
+form.two-panel-form input[type=text] { width: 415px; }
+form.main-search-form input[type=text] { width: 150px; }
+.large-lbl input[type=text] { width: 315px;}
+.small-input input[type=text] { width: 315px; }
+
+.id { width:50px;text-align:left}
+
+.payment-report-filters td {
+    vertical-align: baseline;
+}
+/*
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#b6c6c6));
+}*/
+
+.export-xlsx {
+    background-image: url('/resources/img/icons/excel.png');
+    background-repeat: no-repeat;
+    padding-left: 27px !important;
+}
+
+.export-pdf {
+    background-image: url('/resources/img/icons/pdf.png');
+    background-repeat: no-repeat;
+    padding-left: 27px !important;
+}
+
+.status-cancel {
+    background-image: url('/resources/img/icons/cancel.png');
+    background-repeat: no-repeat;
+    width:16px;
+    heigh: 16px;
+}
+.status-regular {
+    background-image: url('/resources/img/icons/check.png');
+    background-repeat: no-repeat;
+    padding-left: 27px !important;
+}
+
+.small-calendar .hasDatepicker {
+    width: 200px;
+}
+
+.ui-autocomplete-input.ui-inputfield
+{
+    width : 140px !important;
+
+}
+
+.zeroSize {
+    visibility: hidden;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    width: 0px;
+    height: 0px;
+}
+.blocked-user{
+    background: palevioletred !important;
+    color:white;
+}
+
+.w100{
+    width: 100% !important;
+}

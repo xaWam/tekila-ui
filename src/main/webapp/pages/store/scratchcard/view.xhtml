@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="selectedCardId" value="#{scratchCardManager.selectedCardId}"/>
+    <f:event type="preRenderView" listener="#{scratchCardManager.preView}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Scratch Card Payment</ui:define>
+    <ui:define name="content">
+        <h:form id="rateForm">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">Payment</f:facet>
+                <h:outputLabel value="Payment Id"/>
+                <h:outputText value="${scratchCardManager.session.payment.id}"/>
+
+                <h:outputLabel value="Agreement"/>
+                <h:outputText value="${scratchCardManager.session.subscription.agreement}"/>
+
+                <h:outputLabel value="Date"/>
+                <h:outputText value="#{scratchCardManager.session.payment.timestamp ne null ? scratchCardManager.session.payment.timestamp.time : scratchCardManager.session.payment.fd}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="Service"/>
+                <h:outputText value="#{scratchCardManager.session.subscription.service.name}"/>
+
+                <h:outputLabel value="Start balance"/>
+                <h:outputText value="#{scratchCardManager.session.payment.transaction ne null ? scratchCardManager.session.payment.transaction.getStartBalanceAsDouble() : ''}"/>
+                <h:outputLabel value="Amount"/>
+                <h:outputText value="#{scratchCardManager.session.payment.amount}"/>
+
+                <h:outputLabel value="End balance"/>
+                <h:outputText value="#{scratchCardManager.session.payment.transaction ne null ? scratchCardManager.session.payment.transaction.getEndBalanceAsDouble() : ''}"/>
+
+                <h:outputLabel value="Status"/>
+                <h:graphicImage title="Void" rendered="#{scratchCardManager.session.payment.status eq -1}" value="/resources/img/icons/cancel24.png"/>
+                <h:graphicImage title="Regular" rendered="#{scratchCardManager.session.payment.status eq 0}" value="/resources/img/icons/check24.png"/>
+
+                <h:outputLabel value="Method"/>
+                <h:outputText value="#{scratchCardManager.session.payment.methodForUI ne null ? scratchCardManager.session.payment.methodForUI : ''}"/>
+
+                <h:outputLabel value="Purpose"/>
+                <h:outputText value="#{scratchCardManager.session.payment.purpose}"/>
+
+                <h:outputLabel value="Currency"/>
+                <h:outputText value="#{scratchCardManager.session.payment.currency}"/>
+
+                <h:outputLabel value="Description"/>
+                <h:outputText value="#{scratchCardManager.session.payment.dsc}"/>
+
+                <h:outputLabel value="Source"/>
+                <h:outputText value="#{scratchCardManager.session.payment.extUser ne null ? scratchCardManager.session.payment.extUser.username : ''}"/>
+
+                <h:outputLabel value="User"/>
+                <h:outputText value="#{scratchCardManager.session.payment.user ne null ? scratchCardManager.session.payment.user.userName : ''}"/>
+
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

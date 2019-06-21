@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Payments</ui:define>
+    <ui:define name="content">
+        <h:form id="rateForm">
+            <p:messages id="messages"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="1" styleClass="small-input" id="paymentSearchGrid">
+                <f:facet name="header">Search for payments</f:facet>
+                <p:outputPanel id="payment_search">
+                    <p:panelGrid columnClasses="width: 150px, width: 150px" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Agreement"/>
+                        <p:selectOneMenu value="#{subscriber.agreement}">
+                            <f:selectItem itemLabel="Select agreement" noSelectionOption="true"/>
+                            <f:selectItems value="#{subscriber.agreementList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton actionListener="#{subscriber.resetForms}" value="Clear" update="@form"
+                                 process="@this"/>
+                <p:commandButton action="#{subscriber.searchPayments()}" value="Search" update="subDataTable"
+                                 process="@form"/>
+            </h:panelGrid>
+
+            <p:dataTable value="#{subscriber.paymentLazyModel}" var="pmt" rowKey="#{pmt.id}" rows="15"
+                         selection="#{subscriber.singlePayment}" lazy="true"
+                         selectionMode="single" paginator="true"
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15" id="subDataTable">
+                <f:facet name="header">
+                    <h:outputText
+                            value="Payments for #{subscriber.chargedSubscriber.details.firstName} #{subscriber.chargedSubscriber.details.middleName} #{subscriber.chargedSubscriber.details.surname}"
+                            rendered="#{subscriber.chargedSubscriber.details.type eq 'INDV'}"/>
+                    <h:outputText
+                            value="Payments for #{subscriber.chargedSubscriber.details.companyName}"
+                            rendered="#{subscriber.chargedSubscriber.details.type eq 'CORP'}"/>
+                </f:facet>
+                <p:column headerText="Id">
+                    <h:outputText value="#{pmt.id}"/>
+                </p:column>
+                <p:column headerText="Date">
+                    <h:outputText value="#{pmt.fd ne null ? pmt.fd : pmt.timestamp.time}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Agreement">#{pmt.contract}</p:column>
+                <p:column headerText="Start balance">
+                    <h:outputText value="#{pmt.transaction ne null ? pmt.transaction.getStartBalanceAsDouble() : ''}"/>
+                </p:column>
+                <p:column headerText="Amount">#{pmt.amount}</p:column>
+                <p:column headerText="End balance">
+                    <h:outputText value="#{pmt.transaction ne null ? pmt.transaction.getEndBalanceAsDouble() : ''}"/>
+                </p:column>
+                <p:column headerText="Status">
+                    <h:graphicImage title="Void" rendered="#{pmt.status eq -1}"
+                                    value="/resources/img/icons/cancel.png"/>
+                    <h:graphicImage title="Regular" rendered="#{pmt.status eq 0}"
+                                    value="/resources/img/icons/check.png"/>
+                </p:column>
+                <p:column headerText="Description">
+                    <h:outputText value="#{pmt.dsc}"/>
+                </p:column>
+                <p:column headerText="Remark">
+                    <h:outputText value="#{pmt.internalDsc}"/>
+                </p:column>
+                <p:column headerText="Service">
+                    <h:outputText value="#{pmt.account ne null ? pmt.service.name : ''}"/>
+                </p:column>
+                <p:column headerText="Method" style="width: 70px">
+                    <h:outputText value="#{pmt.method ne null ? pmt.method.name : ''}"/>
+                </p:column>
+                <p:column headerText="Purpose">
+                    <h:outputText value="#{pmt.purpose}"/>
+                </p:column>
+                <p:column headerText="Source">
+                    <h:outputText value="#{pmt.extUser ne null ? pmt.extUser.username : ''}"/>
+                </p:column>
+                <p:column headerText="User">
+                    <h:outputText value="#{pmt.user ne null ? pmt.user.userName : ''}"/>
+                </p:column>
+
+                <p:column headerText="Cheque">
+                    <h:outputLink
+                            value="https://ttt.azerfon.az/citynet/cheque.php?id=#{pmt.id}"
+                            target="_blank"
+                            rendered="#{pmt.account.service.provider.id eq '454105' or pmt.account.service.provider.id eq '454107'}"> download</h:outputLink>
+                </p:column>
+
+                <p:column headerText="Test Payment">
+                    <h:outputText value="#{pmt.testPayment ? 'Yes' : 'No'}"/>
+                </p:column>
+
+                <p:column headerText="Campaign Activation">
+                    <h:outputText value="#{(pmt.campaignId ne null and pmt.campaignId != 0) ? 'Activated' : 'N/A'}"/>
+                </p:column>
+                <f:facet name="footer"></f:facet>
+            </p:dataTable>
+            <p:commandButton value="View" action="#{subscriber.viewPayment()}"/>
+            <p:commandButton value="Transfer" action="#{subscriber.transfer}" onclick="PF('transferDialog').show()"
+                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'UPDATE')}"/>
+
+            <p:dialog widgetVar="transferDialog" closable="true" closeOnEscape="true" showEffect="explode"
+                      maximizable="false" width="840">
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="balanceSearch">
+                    <f:facet name="header">Search for subscription</f:facet>
+                    <p:outputPanel id="balanceSearch_1">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                     columns="2">
+                            <h:outputLabel value="Id"/>
+                            <h:inputText id="sbnId" value="#{subscriber.sbID}"/>
+
+                            <h:outputLabel value="Contract"/>
+                            <h:inputText id="sbnContract" value="#{subscriber.sbnContract}"/>
+
+                            <h:outputLabel value="Service"/>
+                            <h:inputText id="sbnService" value="#{subscriber.sbnService}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel id="balanceSearch_2">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                     columns="2">
+                            <h:outputLabel>Subscriber name</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberName}">
+                            </h:inputText>
+
+                            <h:outputLabel>Subscriber middlename</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberMiddleName}">
+                            </h:inputText>
+
+                            <h:outputLabel>Subscriber surname</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberSurname}">
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton actionListener="#{subscriber.resetForms}" value="Clear"
+                                     update=":rateForm:balanceTableComp :rateForm:balanceSearch"/>
+                    <p:commandButton action="#{subscriber.searchSbn}" value="Search" update=":rateForm:balanceTableComp"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'UPDATE')}"/>
+                </h:panelGrid>
+
+                <p:dataTable id="balanceTableComp" value="#{subscriber.subscriptionList}"
+                             selection="#{subscriber.targetSubscription}" selectionMode="single"
+                             var="sbn" paginator="true" rows="10" rowKey="#{sbn.id}" lazy="true">
+                    <f:facet name="header">Select subscription to transfer payment to</f:facet>
+                    <p:column headerText="Id">#{sbn.id}</p:column>
+                    <p:column headerText="Contract">#{sbn.agreement}</p:column>
+                    <p:column headerText="Service">#{sbn.service.name}</p:column>
+                    <p:column headerText="Subscriber name">#{sbn.subscriber.details.firstName}</p:column>
+                    <p:column headerText="Subscriber surname">#{sbn.subscriber.details.surname}</p:column>
+                    <p:column headerText="Subscriber moddilename">#{sbn.subscriber.details.middleName}</p:column>
+                    <p:column headerText="Real balance">#{sbn.balance.realBalanceForView}</p:column>
+                    <p:column headerText="Status">#{sbn.status}</p:column>
+                </p:dataTable>
+                <p:commandButton value="Transfer" action="#{subscriber.transfer}" update=":rateForm:messages">
+                    <p:confirm header="Confirm operation" message="Do you really want to perform this operation?"
+                               icon="ui-icon-alert"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" closeOnEscape="true">
+                    <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                    <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                </p:confirmDialog>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+         <f:metadata>
+             <f:viewParam name="invoice" value="#{subscriber.invoiceID}"/>
+             <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+         </f:metadata>
+         
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">View invoices</ui:define>
+			<ui:define name="content">                             
+				<h:form>
+                                    
+                                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    
+                                        <f:facet name="header">Invoice</f:facet>
+                                                <h:outputLabel value="Id"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.id}"/>
+                                                
+                                                <h:outputLabel value="Subscriber"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.subscriber.details.firstName} #{subscriber.selectedInvoice.subscriber.details.middleName} #{subscriber.selectedInvoice.subscriber.details.surname}"/>
+                                                <h:outputLabel value="Creation date"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.creationDate}">
+                                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                </h:outputText>
+                                                
+                                                <h:outputLabel value="Close date"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.closeDateAsDate}"/>
+                                                
+                                                <h:outputLabel value="Closing Balance"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.balanceForView}"/>
+                                                
+                                                <h:outputLabel value="Total"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.sumChargedForView}"/>
+
+                                                <h:outputLabel value="Sum Paid"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.sumPaidForView}"/>
+                                                
+                                                <h:outputLabel value="State"/>
+                                                <h:outputText value="#{subscriber.selectedInvoice.state}"/>                                               
+                                    </h:panelGrid>			
+                                    <p:separator/>
+                                    
+                                    <p:panelGrid columns="1">
+                                        <p:dataTable value="#{subscriber.selectedInvoice.charges}" var="ch"
+                                                     paginator="true" rows="15" rowKey="#{ch.id}">
+                                        <f:facet name="header">Charges</f:facet>
+
+                                        <p:column headerText="Id">
+                                            <h:outputText value="#{ch.id}"/>
+                                        </p:column>
+                                        
+                                        <p:column headerText="Date">
+                                            <h:outputText value="#{ch.dateTimeAsDate}">
+                                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        
+                                        <p:column headerText="Amount">
+                                            <h:outputText value="#{ch.amountForView}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Service">
+                                            <h:outputText value="#{ch.service.name}"/>
+                                        </p:column>
+                                        
+                                        <p:column headerText="Description">#{ch.dsc}</p:column>
+                                        </p:dataTable>                           
+                                    </p:panelGrid>
+                                    <p:spacer height="10"/>
+                                    
+                                    <p:panelGrid columns="1">
+                                        <p:dataTable value="#{subscriber.selectedInvoice.payments}" var="pmt"
+                                                     paginator="true" rows="15" rowKey="#{pmt.id}">
+                                            <f:facet name="header">Payments</f:facet>
+                                            <p:column headerText="Id">
+                                                <h:outputText value="#{pmt.id}"/>
+                                            </p:column>
+                                            <p:column headerText="Date">                                           
+                                                <h:outputText value="#{pmt.fd ne null ? pmt.fd : pmt.timestamp.time}">
+                                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>                                                
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Amount">#{pmt.amount}</p:column>
+                                            <p:column headerText="Status">
+                                                <h:graphicImage title="Void" rendered="#{pmt.status eq -1}" value="/resources/img/icons/cancel.png"/>
+                                                <h:graphicImage title="Regular" rendered="#{pmt.status eq 0}" value="/resources/img/icons/check.png"/>
+                                            </p:column>
+                                            <p:column headerText="Service">
+                                                <h:outputText value="#{pmt.account ne null ? pmt.account.service.name : ''}"/>
+                                            </p:column>
+                                            <p:column headerText="Method">
+                                                <h:outputText value="#{pmt.methodForUI ne null ? pmt.methodForUI : ''}"/>
+                                            </p:column>
+                                            <p:column headerText="Source">
+                                                <h:outputText value="#{pmt.extUser ne null ? pmt.extUser.username : ''}"/>
+                                            </p:column>
+                                            <p:column headerText="User">
+                                                <h:outputText value="#{pmt.user ne null ? pmt.user.userName : ''}"/>
+                                            </p:column>
+                                            <p:column headerText="Desc">
+                                                <h:outputText value="#{pmt.dsc}"/>
+                                            </p:column>
+                                            <f:facet name="footer"></f:facet>
+                                        </p:dataTable>                                       
+                                    </p:panelGrid>
+				</h:form>
+			</ui:define>
+                        <ui:define name="east">
+                            <h:form>
+                                <p:menu>
+                                    <p:submenu label="Navigation">
+                                        <p:menuitem value="Subscriber Details"
+                                                    action="#{subscriber.returnToSubscriber}"
+                                                    rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"
+                                                />
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
+                        </ui:define>
+	</ui:composition>
+
+</html>

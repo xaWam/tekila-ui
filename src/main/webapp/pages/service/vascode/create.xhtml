@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Value Added Service Code</ui:define>
+        <ui:define name="content">
+            <p:messages/>
+                <h:form>                   
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                        <f:facet name="header">
+                                <h:outputText value="Value Added Service Code information" />
+                        </f:facet>
+                        <h:outputLabel for ="providers" value="Provider" styleClass="required"/>
+                        <h:selectOneMenu id="providers" value="#{vasCodeManager.providerID}" required="true" requiredMessage="Provider is required">
+                            <f:selectItem itemLabel="Select provider" noSelectionOption="true"/>
+                            <f:selectItems value="#{vasCodeManager.providerList}"/>                            
+                        </h:selectOneMenu>
+                           
+                        <h:outputLabel value="Type"/>
+                        <h:selectOneMenu value="#{vasCodeManager.vasCode.type}">
+                            <f:selectItem itemLabel="Select type" noSelectionOption="true"/>
+                            <f:selectItems value="#{vasCodeManager.serviceTypeSelectList}"/>
+                        </h:selectOneMenu>
+                        
+                        <h:outputLabel value="Name" for="serviceName" styleClass="required"></h:outputLabel>
+                        <h:inputText id="serviceName" value="#{vasCodeManager.vasCode.name}"  required="true" label="Name" requiredMessage="Name need to be filled"/>
+
+                        <h:outputLabel value="Description" for="dsc" styleClass="required"></h:outputLabel>
+                        <h:inputText id="dsc" value="#{vasCodeManager.vasCode.dsc}"  required="true" label="Name" requiredMessage="Description need to be filled"/>
+                    </h:panelGrid>                   
+
+                    <h:panelGrid columns="2">
+                            <p:commandButton action="#" value="Reset" type="reset"/>
+                            <p:commandButton action="#{vasCodeManager.create()}" value="Save" />
+                    </h:panelGrid>					
+                </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

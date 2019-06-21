@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Resource</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Resource bucket information" />
+						</f:facet>
+                                            <h:outputLabel value="Name" for="bucketCapacity"></h:outputLabel>
+                                            <h:inputText value="#{resourceManager.resource.name}" id="bucketCapacity"/>
+                                            <h:outputLabel value="Add Bucket" for="bucketType"/>
+                                            <h:selectManyMenu value="#{resourceManager.resourceBucketIdsList}" id="bucketType">
+                                                <f:selectItems value="#{resourceManager.bucketSelectList}"/>
+                                            </h:selectManyMenu>
+                                            
+                                            <h:outputLabel for="resourceExpireDate" value="Expires on"/>
+                                            <p:calendar id="resourceExpireDate" navigator="true" pattern="dd/MM/yyyy HH:mm:ss" value="#{resourceManager.resource.expireAsDate}"/>
+                                            
+                                            <h:outputLabel for="resourceActiveFrom" value="Active from"/>
+                                            <p:calendar id="resourceActiveFrom" pattern="HH:mm:ss" timeOnly="true" value="#{resourceManager.resource.activeFromAsDate}"/>
+                                            
+                                            <h:outputLabel for="resourceActiveTill" value="Active till"/>
+                                            <p:calendar id="resourceActiveTill" pattern="HH:mm:ss" timeOnly="true" value="#{resourceManager.resource.activeTillAsDate}"/>
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:commandButton action="#" value="Reset" type="reset"/>
+                                                <h:commandButton action="#{resourceManager.create()}" value="Save" />
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

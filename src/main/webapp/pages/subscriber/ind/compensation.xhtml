@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+    <f:metadata>
+        <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+    </f:metadata>
+
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View and Add Compensation</ui:define>
+        <ui:define name="content">
+            <h:form id="compensationForm">
+                <p:messages id="errMsgs"/>
+
+                <p:panelGrid columns="2" cellpadding="5" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Compensation', 'INSERT')}">
+                    <f:facet name="header">Please enter compensation details</f:facet>
+                    <p:outputLabel for="fromDate" value="Compensation start date: " />
+                    <p:calendar id="fromDate" disabled="true" value="#{subscriber.compensationDetails.fromDate}">
+                    </p:calendar>
+
+                    <p:outputLabel for="dayCount" value="Enter day count: "/>
+                    <p:inputText id="dayCount" onkeypress="if( (event.which &lt; 48 || event.which &gt; 57) ) return false;"
+                                 value="#{subscriber.compensationDetails.dayCount}"/>
+
+                    <p:outputLabel for="ticketId" value="Enter ticketId: "/>
+                    <p:inputText id="ticketId" value="#{subscriber.compensationDetails.ticketId}"/>
+
+                    <p:outputLabel for="comments" value="Enter comments: "/>
+                    <p:inputText id="comments" value="#{subscriber.compensationDetails.comments}"/>
+                </p:panelGrid>
+
+                <p:dataTable value="#{subscriber.selected.subscriber.subscriptions}" var="sn" rows="10" rowKey="#{sn.id}"
+                             selection="#{subscriber.selectedSubscription}" selectionMode="single" lazy="true"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             paginator="true" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Compensation', 'INSERT')}">
+                    <f:facet name="header">Subscriptions</f:facet>
+                    <p:ajax event="rowSelect" listener="#{subscriber.selectSubscription}" update=":compensationForm:fromDate"/>
+                    <p:column headerText="ID">#{sn.id}</p:column>
+                    <p:column headerText="Agreement">#{sn.agreement}</p:column>
+                    <p:column headerText="Tariff Plan">#{sn.service.name}</p:column>
+                    <p:column headerText="Status">#{sn.status}</p:column>
+                    <p:column headerText="Balance">#{sn.balance.realBalanceForView}</p:column>
+                    <p:column headerText="Created on">
+                        <h:outputText value="#{sn.creationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Activated on">
+                        <h:outputText value="#{sn.activationDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Expires on">
+                        <h:outputText value="#{sn.expiresAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Expires (w G.P.)">
+                        <h:outputText value="#{sn.expirationDateWithGracePeriodAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Billed UpTo">
+                        <h:outputText value="#{sn.billedUpToDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Last payment on">
+                        <h:outputText value="#{sn.lastPaymentDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Last status change on">
+                        <h:outputText value="#{sn.lastStatusChangeAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                </p:dataTable>
+
+
+                <p:panelGrid columns="1" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Compensation', 'INSERT')}">
+                    <p:commandButton action="#{subscriber.compensate}" value="Compensate" update="errMsgs"/>
+                </p:panelGrid>
+
+
+                <p:dataTable id="compensationList" value="#{subscriber.compensationList}" var="comp">
+                    <f:facet name="header">
+                        List of compensations
+                    </f:facet>
+                    <p:column headerText="fromDate">
+                        <h:outputText value="#{comp.fromDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="dayCount">
+                        #{comp.dayCount}
+                    </p:column>
+                    <p:column headerText="agreement id">
+                        #{comp.subscription.agreement}
+                    </p:column>
+                    <p:column headerText="ticketId">
+                        #{comp.ticketId}
+                    </p:column>
+                    <p:column headerText="comments">
+                        #{comp.comments}
+                    </p:column>
+                </p:dataTable>
+
+            </h:form>
+        </ui:define>
+        <ui:define name="east">
+            <h:form>
+                <p:menu>
+                    <p:submenu label="Navigation" styleClass="disable-scroll">
+                        <p:menuitem value="Subscriber details" action="#{subscriber.redirectToSubscriber}"/>
+                    </p:submenu>
+                </p:menu>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

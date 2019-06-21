@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View Value Added Services</ui:define>
+        <ui:define name="content">            
+                <h:form id="vasForm">
+                    <p:growl/>
+                    <h:panelGrid columns="1">
+                        <p:dataTable id="subDataTable" value="#{vasManager.allVasList}" var="vas" paginator="true" rows="15"
+                                     filteredValue="#{vasManager.filteredVasList}" selection="#{vasManager.selectedVas}" selectionMode="single"
+                                     rowKey="#{vas.id}"  widgetVar="vasTable">
+                                   <f:facet name="header">Value Added Services</f:facet>
+                                                                      
+                                   <p:column headerText="Id" filterBy="#{vas.id}" footerText="contains" filterMatchMode="contains">
+                                       <h:outputText value="#{vas.id}"/>
+                                   </p:column>
+                                   <p:column headerText="Provider" filterBy="#{vas.provider.name}" footerText="contains" filterMatchMode="contains">
+                                       <h:outputText value="#{vas.provider.name}"/>
+                                   </p:column>
+                                   <p:column headerText="Name" filterBy="#{vas.name}" footerText="contains" filterMatchMode="contains">
+                                       <h:outputText value="#{vas.name}"/>
+                                   </p:column>
+                                   <p:column headerText="Type" filterBy="#{vas.code.type}" footerText="contains" filterMatchMode="contains">
+                                       <h:outputText value="#{vas.code.type}"/>
+                                   </p:column>
+                                   <p:column headerText="Price" filterBy="#{vas.priceInDouble}" footerText="contains" filterMatchMode="contains">
+                                       <h:outputText value="#{vas.priceInDouble}"/>
+                                   </p:column>
+                                   <f:facet name="footer">
+                                       <p:commandButton value="Clear" onclick="PF('vasTable').clearFilters();" update="@form"/>
+                                       <p:button value="Add" outcome="/pages/service/vas/create.xhtml"/>
+                                       <p:commandButton value="View" action="#{vasManager.view}"/>
+                                       Total: #{vasManager.allVasList.size()}
+                                   </f:facet>
+                           </p:dataTable>	
+                    </h:panelGrid>            
+                    
+                    
+                </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

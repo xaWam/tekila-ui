@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="store" value="#{dealerStoreManager.storeID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Dealer store #{dealerStoreManager.selectedSalesPartnerStore.name}</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Dealer store information" />
+                </f:facet>
+                <h:outputLabel value="Dealer name" for="name" styleClass="required"/>
+                <h:outputText value="#{dealerStoreManager.selectedSalesPartnerStore.owner.name}"/>
+
+                <h:outputLabel value="Store name" for="name" styleClass="required"/>
+
+                <p:inplace>
+                    <h:inputText id="name" value="#{dealerStoreManager.selectedSalesPartnerStore.name}" required="true" label="Name" requiredMessage="Name need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Distributor name" for="name" styleClass="required"/>
+                <h:outputText value="#{dealerStoreManager.selectedSalesPartnerStore.owner.principal.name}"/>
+
+                <h:outputLabel value="Username" for="name" styleClass="required"/>
+                <h:outputText value="#{dealerStoreManager.selectedSalesPartnerStore.owner.partnerUser.userName}"/>
+
+                <h:outputLabel value="Description"/>
+                <p:inplace>
+                    <h:inputText id="desc" value="#{dealerStoreManager.selectedSalesPartnerStore.desc}"/>
+                </p:inplace>
+            </h:panelGrid>
+            <p:separator/>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{dealerStoreManager.selectedSalesPartnerStore.equipmentList}"
+                             var="equip" paginator="true" rows="15" filteredValue="#{dealerStoreManager.filteredEquipmentList}"
+                             selection="#{dealerStoreManager.selectedEquipment}" selectionMode="single" rowKey="#{equip.id}">
+                    <f:facet name="header">Equipment in the store</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{equip.id}</p:column>
+                    <p:column headerText="Provider">#{equip.provider.name}</p:column>
+                    <p:column headerText="Part number">#{equip.partNumber}</p:column>
+                    <p:column headerText="Model">#{equip.model.name}</p:column>
+                    <p:column headerText="Brand">#{equip.brand.name}</p:column>
+                    <p:column headerText="Type">#{equip.type.name}</p:column>
+                    <p:column headerText="Mac Address">#{equip.macAddress}</p:column>
+                    <p:column headerText="Price">#{equip.price.nominalForView}</p:column>
+                    <p:column headerText="Discount">#{equip.price.discountForView}%</p:column>
+                    <p:column headerText="Status">#{equip.status}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Transfer" onclick="PF('campDialog').show(); return false;"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor stores', 'INSERT')
+                                             and uISecurityManager.securityManager.checkUIPermissions('Equipment', 'UPDATE')}"/>
+                        <p:commandButton value="View" action="#{equipmentManager.show}" update=":eqForm:messages"/>
+                        <p:button value="Import" outcome="/pages/store/equip/import.xhtml" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Equipment', 'INSERT')}"/>
+                        Total: #{dealerStoreManager.selectedSalesPartnerStore.equipmentList.size()}</f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#{dealerManager.goToIndex}" value="Cancel" />
+                <p:commandButton action="#{dealerManager.save}" value="Save" update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

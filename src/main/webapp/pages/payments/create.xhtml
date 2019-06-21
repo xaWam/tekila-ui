@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Payment</ui:define>
+			<ui:define name="content">
+                            <p:messages/>
+                            <h:form onkeypress="if (event.keyCode === 13) return false;">                                    
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <f:facet name="header">
+					<h:outputText value="Paymennt information" />
+                                    </f:facet>
+                                    <h:outputLabel value="Amount" for="amount" styleClass="required"></h:outputLabel>
+                                    <h:inputText value="#{paymentManager.payment.amount}" id="amount" required="true" requiredMessage="Amount is required"></h:inputText>
+                                    <h:outputLabel value="Description" for="dsc"></h:outputLabel>
+                                    <h:inputText value="#{paymentManager.payment.dsc}" id="dsc"></h:inputText>
+                                </h:panelGrid>
+                                <p:separator/>
+				<h:panelGrid columns="1">
+                                    <p:dataTable value="#{paymentManager.subscriptionList}" var="sb" selection="#{paymentManager.selectedSubscription}" selectionMode="single"
+                                                 paginator="true" lazy="true" rows="10" rowKey="#{sb.id}" filteredValue="#{paymentManager.filteredSubscriptionList}">
+						<f:facet name="header">Subscriptions</f:facet>
+                                                <p:column headerText="Agreement" filterBy="#{sb.agreement}">#{sb.agreement}</p:column>
+                                                <p:column headerText="Service" filterBy="#{sb.service.name}">#{sb.service.name}</p:column>
+                                                <p:column headerText="Master account" filterBy="#{sb.subscriber.masterAccount}">#{sb.subscriber.masterAccount}</p:column>
+					</p:dataTable> 
+				</h:panelGrid>
+                                        
+				<h:panelGrid columns="2">
+                                    <h:commandButton action="#" value="Reset" type="reset"/>
+                                    <h:commandButton action="#{paymentManager.create()}" value="Save" />
+                                </h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

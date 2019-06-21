@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Rates</ui:define>
+			<ui:define name="content">
+				<h:form id="rateForm">
+                                    <p:dataTable widgetVar="paymentsTable" id="subDataTable" value="#{rateManager.rateList}" var="rt" paginator="true" rows="15" filteredValue="#{rateManager.filteredRateList}"
+					selection="#{rateManager.selected}" selectionMode="single" rowKey="#{rt.id}"
+					>
+						<f:facet name="header">Rates</f:facet>
+						<p:column headerText="Id">#{rate.id}</p:column>
+						<p:column headerText="Name" filterBy="#{rt.name}" filterMatchMode="contains">							
+							#{rt.name}							
+						</p:column>
+						<p:column headerText="Price" filterBy="#{rt.price}" filterMatchMode="equals">
+							<p:outputLabel value="#{rt.priceForView}" id="ratePrice"/>
+						</p:column>
+						<p:column headerText="Description">#{rt.desc}</p:column>
+						<f:facet name="footer">
+                        <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+						<p:commandButton process="subDataTable" value="View" action="#{rateManager.show()}"></p:commandButton>
+                        <p:button value="Add"  outcome="/pages/subscription/rate/create.xhtm"/>
+                        Total: #{fn:length(rateManager.rateList)}</f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

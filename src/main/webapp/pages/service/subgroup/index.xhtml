@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Service Subgroups</ui:define>
+    <ui:define name="content">
+        <h:form id="subForm">
+            <p:growl id="messages"/>
+            <p:dataTable widgetVar="subTable" id="subDataTable" value="#{serviceSubgroupManager.subgroupLazyList}"
+                         var="srv" paginator="true" rows="10"
+                         selection="#{serviceSubgroupManager.selected}" selectionMode="single" rowKey="#{srv.id}"
+                         lazy="true" editable="true">
+                <f:facet name="header">Service Subgroups</f:facet>
+
+                <p:ajax event="rowEdit" listener="#{serviceSubgroupManager.onRowEdit}" update=":subForm:messages"/>
+
+                <p:column headerText="Name" filterBy="#{srv.name}" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{srv.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{srv.name}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Provider" filterBy="#{srv.provider.name}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.provider.name}"/>
+                </p:column>
+                <p:column headerText="Type" filterBy="#{srv.type}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.type}"/>
+                </p:column>
+                <p:column headerText="Operations">
+                    <p:rowEditor/>
+                </p:column>
+                <f:facet name="footer">
+                    <p:commandButton value="Clear" onclick="PF('subTable').clearFilters();"
+                                     update="@form"></p:commandButton>
+                    <p:button value="Add" outcome="/pages/service/subgroup/create.xhtml"/>
+                    Total: #{serviceSubgroupManager.subgroupLazyList.rowCount}</f:facet>
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+</html>

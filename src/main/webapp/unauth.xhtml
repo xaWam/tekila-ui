@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+    <h:head>
+        <title><ui:insert name="pageTitle">Welcome to Narhome!</ui:insert></title>
+        <h:outputStylesheet name="css/admin.css"></h:outputStylesheet>
+    </h:head>
+	<h:body>
+       <h:form id="loginForm">
+           <div class="login">
+
+               <div class="unauth-screen">
+                 <table class="unauth-error">
+                   <tr><td><img src="/resources/img/icons/503.gif" height="200" alt=""/></td>
+                   <td><h3>You don't have enough permissions to access this module</h3>
+                       Please be informed that all your actions are being logged.<br/>
+                       If you think that you arrived at this page by mistake, please <a style="color: blue" href="mailto:narhomebilling@azerfon.az?subject=Permission required">contact support</a><br/>
+                   </td></tr>
+                   </table>
+                   <p><a href="javascript:window.history.back()">Return to Tekila Billing System</a></p>
+               </div>
+               <div style="clear: both"></div>
+           </div>
+       </h:form>
+    </h:body>
+</html>
+
+
+
+

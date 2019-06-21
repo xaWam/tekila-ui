@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Minipop</ui:define>
+    <ui:define name="content">
+        <h:form id="minipopCreate">
+            <p:growl id="messages"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">
+                    <h:outputText value="MiniPop information"/>
+                </f:facet>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                 rowClasses="odd-row,even-row" columns="2">
+
+                        <h:outputLabel value="Category"/>
+                        <p:selectOneMenu id="category" value="#{minipopManager.category}"
+                                         style="width: 200px;">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select Categoty" itemValue="#{null}"/>
+                            <f:selectItems value="#{minipopManager.categoryList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Provider"/>
+                        <p:selectOneMenu value="#{minipopManager.provider}" converter="#{providerConverter}" style="width:200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a provider"/>
+                            <f:selectItems value="#{minipopManager.providerSelectList}" var="prov"
+                                           itemLabel="#{prov.name}" itemValue="#{prov}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Port number" for="addr" styleClass="required"></h:outputLabel>
+                        <h:inputText id="portNum" value="#{minipopManager.miniPop.numberOfPorts}" required="true"
+                                     requiredMessage="Address need to be filled"/>
+
+                        <h:outputLabel value="MAC" for="mac" ></h:outputLabel>
+                        <h:inputText id="mac" value="#{minipopManager.miniPop.mac}" label="MAC"
+                        />
+
+                        <h:outputLabel value="Switch" for="switch" styleClass="required"></h:outputLabel>
+                        <h:inputText id="switch" value="#{minipopManager.miniPop.switch_id}" required="true"
+                                     label="Switch"
+                                     requiredMessage="Switch need to be filled"/>
+
+                        <h:outputLabel value="Street"/>
+                        <h:selectOneMenu value="#{minipopManager.street}" converter="#{streetConverter}" style="width:100%" id="streets">
+                        <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                        <f:selectItems value="#{minipopManager.streetsList}" var="st"
+                                       itemLabel="#{st.name}" itemValue="#{st}"/>
+                        </h:selectOneMenu>
+
+                        <h:outputLabel value="Address" for="addr" styleClass="required"></h:outputLabel>
+                        <h:inputText id="addr" value="#{minipopManager.miniPop.address}" required="true" label="Address"
+                                     requiredMessage="Address need to be filled"/>
+
+                        <h:outputLabel value="Block" for="block" ></h:outputLabel>
+                        <h:inputText id="block" value="#{minipopManager.miniPop.block}" />
+
+                        <h:outputLabel value="Houses" for="houses" ></h:outputLabel>
+                        <h:inputText id="houses" value="#{minipopManager.housesAsText}" />
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                 rowClasses="odd-row,even-row" columns="2">
+
+                        <h:outputLabel value="Ats"/>
+                        <p:selectOneMenu value="#{minipopManager.ats}" converter="#{atsConverter}"  style="width: 200px">
+                            <p:ajax event="change" update="midipopSelect midiPort streets" listener="#{minipopManager.onAtsSelect}"/>
+                            <f:selectItem noSelectionOption="true" value="#{null}" itemLabel="Select a ats"/>
+                            <f:selectItems value="#{minipopManager.atsSelectList}" var="ats" itemValue="#{ats}" itemLabel="#{ats.name}" />
+                        </p:selectOneMenu>
+
+
+                        <h:outputLabel value="Midipop"/>
+                        <p:selectOneMenu id="midipopSelect" value="#{minipopManager.midipop}" converter="#{midipopConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" value="#{null}" itemLabel="Select a midipop"/>
+                            <f:selectItems value="#{minipopManager.midipopList}" var="midi" itemValue="#{midi}" itemLabel="#{midi.name}" />
+
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Nas"/>
+                        <p:selectOneMenu value="#{minipopManager.nas}" converter="#{nasConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a nas"/>
+                            <f:selectItems value="#{minipopManager.nasSelectList}" var="nas" itemLabel="#{nas.name}" itemValue="#{nas}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Midipop slot"/>
+                        <h:inputText id="midiPortSlot" value="#{minipopManager.midipopSlot}" />
+
+
+                        <h:outputLabel value="Midipop port"/>
+                        <h:inputText id="midiPort" value="#{minipopManager.midipopPortNumber}" />
+
+                        <h:outputLabel value="Sub vlan" for="svlan"></h:outputLabel>
+                        <h:inputText id="svlan" value="#{minipopManager.miniPop.subVlan}" label="Sub vlan"/>
+
+                        <h:outputLabel value="IP" for="ip" ></h:outputLabel>
+                        <h:inputText id="ip" value="#{minipopManager.miniPop.ip}" label="IP"
+                        />
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+            </p:panelGrid>
+            <p:separator/>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{minipopManager.create()}" value="Save"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor','INSERT')}"
+                                 update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

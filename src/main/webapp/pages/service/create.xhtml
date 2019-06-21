@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!--
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Service</ui:define>
+			<ui:define name="content">
+                            <p:messages/>
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Service information" />
+						</f:facet>
+                                            <h:outputLabel value="Name" for="serviceName" styleClass="required"></h:outputLabel>
+                                                <h:inputText id="serviceName" value="#{serviceManager.srv.name}"  required="true" label="Name" requiredMessage="Name need to be filled"/>
+
+                                                <h:outputLabel for ="providers" value="Provider"/>
+                                                <h:selectOneMenu id="providers" value="#{serviceManager.profileIdForView}" required="true" requiredMessage="Provider is required">
+                                                    <f:selectItem itemLabel="Select provider" noSelectionOption="true"/>
+                                                    <f:selectItems value="#{serviceManager.providerList}"/>
+                                                </h:selectOneMenu>
+
+                                                <h:outputLabel value="Installation fee" styleClass="required"></h:outputLabel>
+                                                <h:inputText value="#{serviceManager.srv.installationFee}" requiredMessage="Installationn fee must be provided" required="true"/>
+
+                                                <h:outputLabel value="Type" for="serviceType" styleClass="required"/>
+                                                <h:selectOneMenu id="serviceType" value="#{serviceManager.srv.serviceType}" required="true" requiredMessage="Type must be selected">
+                                                    <f:selectItem itemLabel="Select item"  noSelectionOption="true"/>
+                                                    <f:selectItems value="#{serviceManager.serviceTypeSelectList}"/>
+                                                </h:selectOneMenu>
+
+                                                <h:outputLabel value="Bill by lifecycle?" for="serviceBill"/>
+                                                <h:selectBooleanCheckbox value="#{serviceManager.srv.isBillByLifeCycle}" id="serviceBill"/>
+
+                                                <h:outputLabel for="serviceProfile" value="Profile" styleClass="required"/>
+                                                <h:selectOneMenu value="#{serviceManager.profile}" id="serviceProfile" required="true" requiredMessage="Profile must be selected">
+                                                    <f:selectItem itemLabel="Select item"  noSelectionOption="true"/>
+                                                    <f:selectItems value="#{serviceManager.profileList}"/>
+						</h:selectOneMenu>
+
+                                                <h:outputLabel for="serviceResource" value="Resources" styleClass="required"/>
+                                                <h:selectManyMenu id="serviceResource" value="#{serviceManager.resourceIdList}" required="true" requiredMessage="Resource must be selected">
+                                                    <f:selectItems value="#{serviceManager.resourceSelectList}"/>
+                                                </h:selectManyMenu>
+
+                                                <h:outputLabel value="Description"/>
+                                                <h:inputText value="#{serviceManager.srv.dsc}"/>
+					</h:panelGrid>
+                                        <p:separator/>
+
+					<h:panelGrid columns="2">
+						<h:commandButton action="#" value="Reset" type="reset"/>
+                                                <h:commandButton action="#{serviceManager.create()}" value="Save" />
+					</h:panelGrid>
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+        <f:metadata>
+            <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+        </f:metadata>
+         
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Make Refund</ui:define>
+            <ui:define name="content">
+                <p:messages/>
+                <h:form> 
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">  
+                        <f:facet name="header">Refund</f:facet>
+                        <h:outputLabel value="Cheque No." for="cheque" styleClass="required"/>
+                        <h:inputText id="cheque" value="#{subscriber.refund.chequeID}" required="true" requiredMessage="Cheque No. is required" />
+                        
+                        <h:outputLabel value="Amount" for="amount" styleClass="required"/>
+                        <h:inputText id="amount" value="#{subscriber.manats}" title="Enter manats" required="true" requiredMessage="Amount is required"/>
+
+                        <h:outputLabel value="Description" for="dsc"/>
+                        <h:inputText id="dsc" value="#{subscriber.refund.dsc}"/>                        
+                    </h:panelGrid>
+                    <p:spacer height="10"/>
+                    <p:dataTable id="subTable" value="#{subscriber.chargedSubscriber.subscriptions}" var="sbn" selection="#{subscriber.selectedSubscription}" selectionMode="single" rowKey="#{sbn.id}">
+                        <f:facet name="header">Subscriptions for #{subscriber.chargedSubscriber.details.firstName} #{subscriber.chargedSubscriber.details.middleName} #{subscriber.chargedSubscriber.details.surname}</f:facet>
+                        <p:column headerText="Service">#{sbn.service.name}</p:column>
+                        <p:column headerText="Agreement No.">#{sbn.agreement}</p:column>
+                        <p:column headerText="Master account">#{sbn.subscriber.masterAccount}</p:column>
+                        <p:column headerText="Balance">#{sbn.balance.realBalanceForView}</p:column>
+                        <p:column headerText="Status">#{sbn.status}</p:column>                        
+                    </p:dataTable>
+                    <h:panelGrid columns="2">
+                        <h:commandButton action="#{subscriber.addRefund()}" value="Save"
+                            rendered="#{uISecurityManager.securityManager.checkUIPermissions('Refund', 'INSERT')}"
+                        />
+                        <p:confirmDialog global="true" closeOnEscape="true">
+                            <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                            <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                        </p:confirmDialog>
+                    </h:panelGrid>	
+                </h:form>
+            </ui:define>
+	</ui:composition>
+
+</html>

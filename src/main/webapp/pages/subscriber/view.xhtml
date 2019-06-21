@@ -1,0 +1,797 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+        Replace path to template, title, header and body
+        with actual data.
+-->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Subscriber</ui:define>
+    <ui:define name="content">
+        <p:tabView>
+            <p:tab title="Subscriber">
+                <h:form id="subForm">
+                    <p:growl/>
+                    <p:outputPanel id="corpPanel" rendered="#{subscriber.selected.type eq 'CORP'}">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2">
+                            <p:tab title="Billing settings">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Functional category"/>
+                                    <h:selectOneMenu value="#{subscriber.selected.subscriber.fnCategory}"
+                                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}">
+                                        <f:selectItems value="#{subscriber.fnCatSelectList}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="#{subscriber.selected.subscriber.fnCategory}"
+                                                   rendered="#{not uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}"/>
+
+                                    <h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+                                    <p:selectBooleanCheckbox id="lifecycleCorp"
+                                                             value="#{subscriber.selected.subscriber.billedByLifeCycle}"
+                                                             disabled="true"/>
+                                    <h:outputLabel value="Lifecycle type" for="lifecycleType"/>
+
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <p:selectOneListbox id="lifecycleTypCorp"
+                                                            value="#{subscriber.selected.subscriber.lifeCycle}">
+                                            <f:selectItems value="#{subscriber.lifeCycleTypeSelectItems}"/>
+                                        </p:selectOneListbox>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Taxation category" for="taxCat"/>
+
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.subscriber.taxCategory.name}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu id="taxCatCorp" value="#{subscriber.selectedTaxCategory}">
+                                                <f:selectItems value="#{subscriber.taxCategorySelectListForView}"/>
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Language"/>
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.language}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu value="#{subscriber.selected.language}">
+                                                <f:selectItems value="#{subscriber.langList}"/>
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:inplace>
+                                </h:panelGrid>
+
+                            </p:tab>
+                            <p:tab title="General information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Company Type" for="subCompanyType" styleClass="required"/>
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <p:selectOneRadio value="#{subscriber.selected.companyType}"
+                                                          id="subCompanyType">
+                                            <f:selectItems value="#{subscriber.companyTypeSelectList}"/>
+                                        </p:selectOneRadio>
+                                    </p:inplace>
+                                    <h:outputLabel value="Company name" for="subCompanyName" styleClass="required"/>
+                                    <p:inplace><h:inputText id="subCompanyName"
+                                                            value="#{subscriber.selected.companyName}" required="true"/>
+                                    </p:inplace>
+                                    <h:outputLabel value="Subscriber Type" for="subscriberTypeCorp"/>
+                                    <h:outputText id="subscriberTypeCorp" value="#{subscriber.selected.type.typeName}"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Contact person information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Name" for="subNameCorp" styleClass="required"/>
+                                    <p:inplace event="dblclick" effect="slide" effectSpeed="fast">
+                                        <h:inputText id="subNameCorp" value="#{subscriber.selected.firstName}"
+                                                     required="true"/>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Father's Name" for="subNameMiddleCorp" styleClass="required"/>
+                                    <p:inplace event="dblclick">
+                                        <h:inputText id="subNameMiddleCorp" value="#{subscriber.selected.middleName}"
+                                                     required="true"/>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Surname" for="subSurName" styleClass="required"/>
+                                    <p:inplace event="dblclick"><h:inputText id="subSurName"
+                                                                             value="#{subscriber.selected.surname}"
+                                                                             required="true"/></p:inplace>
+
+                                    <h:outputLabel value="Citizenship" for="subCitizenCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subCitizenCorp"
+                                                                                               value="#{subscriber.selected.citizenship}"/></p:inplace>
+
+                                    <h:inputHidden id="subTypeCorp" value="#{subscriber.enumSubTypeCorp}"
+                                                   binding="#{subscriber.subType}"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Passport &amp; Contact information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Country of registration"
+                                                   for="subIssueCountryCorp"></h:outputLabel>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subIssueCountryCorp"
+                                                                                               value="#{subscriber.selected.country}"/></p:inplace>
+                                    <h:outputLabel value="Bank account" for="subSeriesCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subSeriesCorp"
+                                                                                               value="#{subscriber.selected.bankAccount}"/></p:inplace>
+                                    <h:outputLabel value="Registration / Tax ID" for="subPassNumCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPassNumCorp"
+                                                                                               value="#{subscriber.selected.passportNumber}"/></p:inplace>
+                                    <h:outputLabel value="Issued authority" for="subPassAuthCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPassAuthCorp"
+                                                                                               value="#{subscriber.selected.passportAuthority}"/></p:inplace>
+                                    <h:outputLabel value="Date of Issue" for="subIssueDateCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><p:calendar id="subIssueDateCorp"
+                                                                                              value="#{subscriber.selected.passportIssueDate}"
+                                                                                              navigator="true"
+                                                                                              pagedate="01/01/1980"
+                                                                                              pattern="dd/MM/yyyy"></p:calendar></p:inplace>
+                                    <h:outputLabel value="Valid till (month/year)" for="subValidTillCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><p:inputMask id="subValidTillCorp"
+                                                                                               mask="99/9999"
+                                                                                               value="#{subscriber.selected.passportValidTill}"></p:inputMask></p:inplace>
+                                    <h:outputLabel value="Email" for="subPassEmailCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.email}" id="subPassEmailCorp"/></p:inplace>
+                                    <h:outputLabel value="Contact # (mobile)" for="subContactCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick">
+                                        <f:facet name="output">
+                                            <h:outputText
+                                                    value="+#{fn:substringAfter(subscriber.selected.phoneMobile, '+')}"
+                                                    rendered="#{fn:startsWith(subscriber.selected.phoneMobile, '+')}"
+                                                    id="subContactCorp"/>
+                                            <h:outputText value="+#{subscriber.selected.phoneMobile}"
+                                                          rendered="#{not fn:startsWith(subscriber.selected.phoneMobile, '+')}"
+                                                          id="subContactCorp2"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <h:panelGroup>
+                                                <h:panelGrid columns="3">
+                                                    <h:outputLabel value="+"/>
+                                                    <h:inputText value="#{subscriber.phoneMobileCode}"
+                                                                 id="subContactMob" style="width: 50px;" required="true"
+                                                                 requiredMessage="Phone number is required"
+                                                                 validator="#{subscriber.checkNationalCode}">
+                                                    </h:inputText>
+                                                    <h:inputText value="#{subscriber.phoneMobileBody}" required="true"
+                                                                 style="width: 150px;"
+                                                                 requiredMessage="Phone number is required"
+                                                                 validator="#{subscriber.checkPhoneNumber}">
+                                                    </h:inputText>
+                                                </h:panelGrid>
+                                            </h:panelGroup>
+                                        </f:facet>
+                                    </p:inplace>
+                                    <h:outputLabel value="Contact # (mobile 2)" for="subContact_2_Corp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.phoneMobileAlt}"
+                                            id="subContact_2_Corp"/></p:inplace>
+                                    <h:outputLabel value="Contact # (landline)" for="subContact_3_Corp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.phoneLandline}"
+                                            id="subContact_3_Corp"/></p:inplace>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Address (invoicing / billing)">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="City" for="subInvCityCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.city}" id="subInvCityCorp"/></p:inplace>
+                                    <h:outputLabel value="ATS #" for="subATSCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.ats}" id="subATSCorp"/></p:inplace>
+                                    <h:outputLabel value="Street" for="subInvStreetCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.street}" id="subInvStreetCorp"/></p:inplace>
+                                    <h:outputLabel value="Building" for="subInvBuildingCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.building}"
+                                            id="subInvBuildingCorp"/></p:inplace>
+                                    <h:outputLabel value="Apartment" for="subInvApCorp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.apartment}" id="subInvApCorp"/></p:inplace>
+                                </h:panelGrid>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h:panelGrid columns="2">
+                            <p:button outcome="/admin.xhtml?faces-redirect=true" value="Cancel"/>
+                            <p:commandButton action="#{subscriber.update}" value="Save" update="subForm"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'UPDATE')}"
+                            >
+                                <p:confirm header="Confirm update" message="Do you really want to save changes?"
+                                           icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" closeOnEscape="true">
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"
+                                                 icon="ui-icon-close"/>
+                            </p:confirmDialog>
+                        </h:panelGrid>
+                    </p:outputPanel>
+
+                    <p:outputPanel id="invPanel" rendered="#{subscriber.selected.type eq 'INDV'}">
+                        <p:accordionPanel multiple="true" activeIndex="0,1">
+                            <p:tab title="Billing settings">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Functional category"/>
+                                    <h:selectOneMenu value="#{subscriber.selected.subscriber.fnCategory}"
+                                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}">
+                                        <f:selectItems value="#{subscriber.fnCatSelectList}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="#{subscriber.selected.subscriber.fnCategory}"
+                                                   rendered="#{not uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}"/>
+
+                                    <h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+                                    <p:selectBooleanCheckbox id="lifecycle"
+                                                             value="#{subscriber.selected.subscriber.billedByLifeCycle}"
+                                                             disabled="true"/>
+                                    <h:outputLabel value="Lifecycle type" for="lifecycleType"/>
+
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <p:selectOneListbox id="lifecycleType"
+                                                            value="#{subscriber.selected.subscriber.lifeCycle}">
+                                            <f:selectItems value="#{subscriber.lifeCycleTypeSelectItems}"/>
+                                        </p:selectOneListbox>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Taxation category" for="taxCat"/>
+
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.subscriber.taxCategory.name}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu id="taxCat" value="#{subscriber.selectedTaxCategory}">
+                                                <f:selectItems value="#{subscriber.taxCategorySelectListForView}"/>
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Language"/>
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.language}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:selectOneMenu value="#{subscriber.selected.language}">
+                                                <f:selectItems value="#{subscriber.langList}"/>
+                                            </p:selectOneMenu>
+                                        </f:facet>
+                                    </p:inplace>
+                                </h:panelGrid>
+
+
+                            </p:tab>
+                            <p:tab title="General information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel for="subCreate">Created on</h:outputLabel>
+                                    <h:outputText id="subCreate" value="#{subscriber.selected.entryDate}">
+
+                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                    </h:outputText>
+                                    <h:outputLabel for="subPayment">Last paid on</h:outputLabel>
+                                    <h:outputText id="subPayment"
+                                                  value="#{subscriber.selected.subscriber.lastPaymentDateAsDate}">
+                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                    </h:outputText>
+
+                                    <h:outputLabel value="Gender" for="subGender" styleClass="required"/>
+                                    <p:inplace event="dblclick" effect="slide">
+                                        <p:selectOneRadio value="#{subscriber.selected.gender}" id="subGender">
+                                            <f:selectItems value="#{subscriber.genderSelectList}"/>
+                                        </p:selectOneRadio>
+                                    </p:inplace>
+                                    <h:outputLabel value="Name" for="subNameInd" styleClass="required"/>
+                                    <p:inplace event="dblclick" effect="slide" effectSpeed="fast">
+                                        <h:inputText id="subNameInd" value="#{subscriber.selected.firstName}"
+                                                     required="true"/>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Middle Name" for="subNameMiddleInd" styleClass="required"/>
+                                    <p:inplace event="dblclick">
+                                        <h:inputText id="subNameMiddleInd" value="#{subscriber.selected.middleName}"
+                                                     required="true"/>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Surname" for="subSurNameInd" styleClass="required"/>
+                                    <p:inplace event="dblclick"><h:inputText id="subSurNameInd"
+                                                                             value="#{subscriber.selected.surname}"
+                                                                             required="true"/></p:inplace>
+
+                                    <h:outputLabel value="Date of Birth" for="subPlaceOfBirth" styleClass="required"/>
+                                    <p:inplace event="dblclick">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.dateOfBirth}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:calendar value="#{subscriber.selected.dateOfBirth}" navigator="true"
+                                                        pagedate="01/01/1980" pattern="dd/MM/yyyy" required="true">
+                                            </p:calendar>
+                                        </f:facet>
+                                    </p:inplace>
+                                    <h:outputLabel value="Place of Birth" for="subPlaceOfBirth"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPlaceOfBirth"
+                                                                                               value="#{subscriber.selected.cityOfBirth}"/></p:inplace>
+                                    <h:outputLabel value="Citizenship" for="subCitizen"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subCitizen"
+                                                                                               value="#{subscriber.selected.citizenship}"/></p:inplace>
+
+                                    <h:outputLabel value="Comment" for="comment"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="comment"
+                                                                                               value="#{subscriber.selected.comments}"/>
+                                    </p:inplace>
+
+                                    <h:outputLabel value="Subscriber Type" for="subscriberType"/>
+                                    <h:outputText id="subscriberType" value="#{subscriber.selected.type.typeName}"/>
+                                </h:panelGrid>
+                                <h:inputHidden id="subType" value="#{subscriber.selected.type}"/>
+                            </p:tab>
+
+                            <p:tab title="Passport &amp; Contact information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Country of issue" for="subIssueCountry"></h:outputLabel>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subIssueCountry"
+                                                                                               value="#{subscriber.selected.country}"/></p:inplace>
+                                    <h:outputLabel value="Series" for="subSeries"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subSeries"
+                                                                                               value="#{subscriber.selected.passportSeries}"/></p:inplace>
+                                    <h:outputLabel value="Pincode" for="subSeries"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPinCode"
+                                                                                               value="#{subscriber.selected.pinCode}"/></p:inplace>
+                                    <h:outputLabel value="Number" for="subPassNum"
+                                                   rendered="true"/>
+                                    <p:inplace emptyLabel="None" event="dblclick" rendered="true">
+                                        <h:inputText id="subPassNum" value="#{subscriber.selected.passportNumber}"
+                                                     rendered="#{uISecurityManager.hasPermission('Subscriber', 'UPDATE') or (uISecurityManager.hasPermission('PassportNumberAdd', 'INSERT') and (empty subscriber.selected.passportNumber))}"/>
+                                    </p:inplace>
+                                    <h:outputLabel value="Issued authority" for="subPassAuth"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPassAuth"
+                                                                                               value="#{subscriber.selected.passportAuthority}"/></p:inplace>
+                                    <h:outputLabel value="Date of Issue" for="subIssueDate"/>
+                                    <p:inplace emptyLabel="None" event="dblclick">
+                                        <f:facet name="output">
+                                            <h:outputText value="#{subscriber.selected.passportIssueDate}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <p:calendar id="subIssueDate"
+                                                        value="#{subscriber.selected.passportIssueDate}"
+                                                        navigator="true" pagedate="01/01/1980"
+                                                        pattern="dd/MM/yyyy"></p:calendar>
+                                        </f:facet>
+                                    </p:inplace>
+                                    <h:outputLabel value="Valid till (month/year)" for="subValidTill"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><p:inputMask id="subValidTill"
+                                                                                               mask="99/9999"
+                                                                                               value="#{subscriber.selected.passportValidTill}"></p:inputMask></p:inplace>
+                                    <h:outputLabel value="Email" for="subPassEmail"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.email}" id="subPassEmail"/></p:inplace>
+                                    <h:outputLabel value="Contact # (mobile)" for="subContact"/>
+                                    <p:inplace emptyLabel="None" event="dblclick">
+                                        <f:facet name="output">
+                                            <h:outputText
+                                                    value="+#{fn:substringAfter(subscriber.selected.phoneMobile, '+')}"
+                                                    rendered="#{fn:startsWith(subscriber.selected.phoneMobile, '+')}"
+                                                    id="subContact"/>
+                                            <h:outputText value="+#{subscriber.selected.phoneMobile}"
+                                                          rendered="#{not fn:startsWith(subscriber.selected.phoneMobile, '+')}"
+                                                          id="subContact2"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <h:panelGroup>
+                                                <h:panelGrid columns="3">
+                                                    <h:outputLabel value="+"/>
+                                                    <h:inputText value="#{subscriber.phoneMobileCode}"
+                                                                 id="subContactMobCorp" style="width: 50px;"
+                                                                 required="true"
+                                                                 requiredMessage="Phone number is required"
+                                                                 validator="#{subscriber.checkNationalCode}">
+                                                    </h:inputText>
+                                                    <h:inputText value="#{subscriber.phoneMobileBody}" required="true"
+                                                                 style="width: 150px;"
+                                                                 requiredMessage="Phone number is required"
+                                                                 validator="#{subscriber.checkPhoneNumber}">
+                                                    </h:inputText>
+                                                </h:panelGrid>
+                                            </h:panelGroup>
+                                        </f:facet>
+                                    </p:inplace>
+                                    <h:outputLabel value="Contact # (mobile 2)" for="subContact_2"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.phoneMobileAlt}"
+                                            id="subContact_2"/></p:inplace>
+                                    <h:outputLabel value="Contact # (landline)" for="subContact_3"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.phoneLandline}" id="subContact_3"/></p:inplace>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Address (invoicing / billing">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                             rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="City" for="subInvCity"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.city}" id="subInvCity"/></p:inplace>
+                                    <h:outputLabel value="ATS #" for="subATS"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.ats}" id="subATS"/></p:inplace>
+                                    <h:outputLabel value="Street" for="subInvStreet"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.street}" id="subInvStreet"/></p:inplace>
+                                    <h:outputLabel value="Building" for="subInvBuilding"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.building}" id="subInvBuilding"/></p:inplace>
+                                    <h:outputLabel value="Apartment" for="subInvAp"/>
+                                    <p:inplace emptyLabel="None" event="dblclick"><h:inputText
+                                            value="#{subscriber.selected.apartment}" id="subInvAp"/></p:inplace>
+                                </h:panelGrid>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h:panelGrid columns="2">
+                            <p:button outcome="/admin.xhtml?faces-redirect=true" value="Cancel"/>
+                            <p:commandButton action="#{subscriber.update}" value="Save" update="subForm"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'UPDATE')}"
+                            >
+                                <p:confirm header="Confirm update" message="Do you really want to save changes?"
+                                           icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" closeOnEscape="true">
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"
+                                                 icon="ui-icon-close"/>
+                            </p:confirmDialog>
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </h:form>
+            </p:tab>
+
+            <p:tab title="Subscriptions">
+                <h:form id="subscriptionsForm" style="margin-bottom: 15px;">
+                    <p:messages id="errMessages"/>
+                    <h:panelGrid columns="1" id="SubscriptionsPanel">
+
+                        <p:blockUI block="SubscriptionsPanel" trigger="runBilling">
+                            Please wait...
+                        </p:blockUI>
+
+                        <p:dataTable id="subscriptions" value="#{subscriber.selected.subscriber.subscriptions}" var="sn"
+                                     selection="#{subscriber.selectedSubscription}" selectionMode="single"
+                                     rowKey="#{sn.id}">
+                            <f:facet name="header">Subscriptions</f:facet>
+                            <p:ajax event="rowSelect" update="@form" listener="#{subscriber.getAddTicketPageAddress}"/>
+                            <p:column headerText="ID">#{sn.id}</p:column>
+                            <p:column headerText="Agreement">#{sn.agreement}</p:column>
+                            <p:column headerText="Tariff plan">#{sn.service.name}</p:column>
+                            <p:column headerText="Status">#{sn.status}</p:column>
+                            <p:column headerText="Balance">#{sn.balance.realBalanceForView}</p:column>
+                            <p:column headerText="Created on">
+                                <h:outputText value="#{sn.creationDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Activated on">
+                                <h:outputText value="#{sn.activationDateAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Expires on">
+                                <h:outputText value="#{sn.expiresAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Expires (w G.P.)">
+                                <h:outputText value="#{sn.expirationDateWithGracePeriodAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Billed UpTo">
+                                <h:outputText value="#{sn.billedUpToDateAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Last payment on">
+                                <h:outputText value="#{sn.lastPaymentDateAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Last status change on">
+                                <h:outputText value="#{sn.lastStatusChangeAsDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:dialog widgetVar="moveDialog" closable="true" closeOnEscape="true" showEffect="slide"
+                                  maximizable="false" width="840">
+
+
+                            <p:panelGrid rowClasses="odd-row,even-row" columns="1" id="subscriberSearch"
+                                         styleClass="large-input">
+                                <f:facet name="header">Search for subscriber</f:facet>
+                                <p:outputPanel id="searchFields">
+                                    <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                                 rowClasses="odd-row,even-row" columns="2">
+                                        <h:outputLabel>Subscriber name</h:outputLabel>
+                                        <h:inputText value="#{subscriber.subscriberName}">
+                                        </h:inputText>
+
+                                        <h:outputLabel>Subscriber middlename</h:outputLabel>
+                                        <h:inputText value="#{subscriber.subscriberMiddleName}">
+                                        </h:inputText>
+
+                                        <h:outputLabel>Subscriber surname</h:outputLabel>
+                                        <h:inputText value="#{subscriber.subscriberSurname}">
+                                        </h:inputText>
+                                    </p:panelGrid>
+                                </p:outputPanel>
+                            </p:panelGrid>
+
+                            <h:panelGrid columns="2">
+                                <p:commandButton actionListener="#{subscriber.resetMoveForms}" value="Clear"
+                                                 update="subscriptionsForm:subscriberList"/>
+                                <p:commandButton action="#{subscriber.searchSubscribers}" value="Search"
+                                                 update="subscriptionsForm:subscriberList"
+                                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"/>
+                            </h:panelGrid>
+
+                            <p:dataTable id="subscriberList" value="#{subscriber.subscriberList}"
+                                         selection="#{subscriber.selectedSubscriber}" selectionMode="single"
+                                         var="subscr" paginator="true" rows="10" rowKey="#{subscr.id}" lazy="true">
+                                <f:facet name="header">Select subscriber to whom subscription will be attached</f:facet>
+                                <p:column headerText="Subscriber Id">#{subscr.id}</p:column>
+                                <p:column headerText="Subscriber name">#{subscr.details.firstName}</p:column>
+                                <p:column headerText="Subscriber surname">#{subscr.details.surname}</p:column>
+                                <p:column headerText="Subscriber moddilename">#{subscr.details.middleName}</p:column>
+                            </p:dataTable>
+
+                            <p:commandButton value="Attach" action="#{subscriber.attachSubscription}"
+                                             update="subscriptionsForm:errMessages">
+                                <p:confirm header="Confirm operation"
+                                           message="Do you really want to perform this operation?"
+                                           icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" closeOnEscape="true">
+                                <p:commandButton value="Yes" type="button" icon="ui-icon-check"
+                                                 styleClass="ui-confirmdialog-yes"/>
+                                <p:commandButton value="No" type="button" icon="ui-icon-close"
+                                                 styleClass="ui-confirmdialog-no"/>
+                            </p:confirmDialog>
+                        </p:dialog>
+
+
+                        <f:facet name="footer">
+                            <p:commandButton value="View" action="#{subscriber.viewSubscription()}"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'READ')}"/>
+
+                            <p:commandButton id="actionsButton" value="Operations" type="button" icon="ui-icon-gear"/>
+                            <p:tieredMenu overlay="true" trigger="actionsButton" my="left top" at="left bottom">
+                                <p:submenu label="Add" icon="ui-icon-plus">
+                                    <p:submenu label="Subscription"
+                                               icon="ui-icon-document"
+                                               rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'INSERT')}">
+
+                                        <p:menuitem value="CityNet"
+                                                    action="#{subscriber.addSubscriptionCitynet()}"/>
+
+                                        <p:menuitem value="Narhome"
+                                                    action="#{subscriber.addSubscriptionAzertelecom()}"/>
+
+                                        <p:menuitem value="Azertelecom Postpaid"
+                                                    action="#{subscriber.addSubscriptionAzertelecomPOST()}"/>
+
+                                        <p:menuitem value="BBTV Naxchivan"
+                                                    action="#{subscriber.addSubscriptionBbtv()}"/>
+
+                                        <p:menuitem value="BBTV Baku"
+                                                    action="#{subscriber.addSubscriptionBbtvBaku()}"/>
+
+                                        <p:menuitem value="Qutu CityNet"
+                                                    action="#{subscriber.addSubscriptionQutuCityNet()}"/>
+
+                                        <p:menuitem value="Qutu Azertelecom"
+                                                    action="#{subscriber.addSubscriptionQutuNarHome()}"/>
+
+                                        <p:menuitem value="Uninet"
+                                                    action="#{subscriber.addSubscriptionUninet()}"/>
+
+                                        <p:menuitem value="NarFix"
+                                                    action="#{subscriber.addSubscriptionNarFix()}"/>
+
+                                        <p:menuitem value="Dataplus"
+                                                    action="#{subscriber.addSubscriptionDataplus()}"/>
+
+                                        <p:menuitem value="Global"
+                                                    action="#{subscriber.addSubscriptionGlobal()}"/>
+
+                                        <p:menuitem value="Pilot"
+                                                    action="#{subscriber.addSubscriptionCNC()}"/>
+                                    </p:submenu>
+                                    <p:menuitem value="Trouble ticket" icon="ui-icon-comment"
+                                                binding="#{subscriber.addTicketMenuItem}"
+                                                actionListener="#{subscriber.onTicketAddClicked}" target="_blank"
+                                                update="subscriptionsForm"
+                                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('TroubleTicket', 'INSERT')}"/>
+                                    <p:menuitem value="One-time service" icon="ui-icon-script"
+                                                action="#{subscriber.redirectToOneTimeVASList()}"
+                                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"
+                                                update="@form"/>
+                                </p:submenu>
+
+                                <p:submenu label="Modify" icon="ui-icon-gear">
+
+                                    <p:menuitem value="Activate" icon="ui-icon-check"
+                                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"
+                                                action="#{subscriber.activate()}" update="subscriptionsForm"
+                                    >
+                                    </p:menuitem>
+
+                                    <p:menuitem id="runBilling" value="Run Billing" icon="ui-icon-play"
+                                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"
+                                                action="#{subscriber.bill()}" update="subscriptionsForm"
+                                    >
+                                    </p:menuitem>
+
+                                    <p:menuitem value="Move Subscription" icon="ui-icon-move"
+                                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"
+                                                onclick="PF('moveDialog').show();"
+                                    >
+                                    </p:menuitem>
+
+                                </p:submenu>
+
+                                <p:menuitem value="Delete" icon="ui-icon-delete"
+                                            rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'DELETE')}"
+                                            action="#{subscriber.delete()}" update="subscriptionsForm:errMessages">
+                                </p:menuitem>
+                            </p:tieredMenu>
+
+                        </f:facet>
+
+                        <p:contextMenu for="subscriptions" style="width: 60px"
+                                       rendered="#{not empty subscriber.selected.subscriber.subscriptions}">
+                            <p:menuitem value="View" icon="ui-icon-folder-open"
+                                        action="#{subscriber.viewSubscription}"/>
+                        </p:contextMenu>
+
+                    </h:panelGrid>
+                </h:form>
+            </p:tab>
+
+            <p:tab title="Tickets">
+                <h:form id="ticketsForm" style="margin-bottom: 15px;">
+                    <p:messages/>
+
+                    <h:panelGrid columns="1">
+
+                        <p:dataTable value="#{subscriber.troubleTickets}" var="tt" rowKey="#{tt.id}"
+                                     rows="15" paginator="true" filteredValue="#{subscriber.filteredTickets}"
+                                     selection="#{subscriber.selectedTicket}" selectionMode="single"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('TroubleTicket', 'READ')}">
+                            <f:facet name="header">Trouble Tickets</f:facet>
+                            <p:ajax event="rowSelect" update="@form" listener="#{subscriber.getShowTicketAddress}"/>
+                            <p:column headerText="Id">#{tt.id}</p:column>
+                            <p:column headerText="Agreement">#{tt.agreement}</p:column>
+                            <p:column headerText="Created">
+                                <h:outputText value="#{tt.created}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="User">#{tt.responsiblePerson}</p:column>
+                            <p:column headerText="Group">#{tt.group}</p:column>
+                            <p:column headerText="Status">#{tt.status}</p:column>
+                            <p:column headerText="Classification">#{tt.classification}</p:column>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="View" binding="#{subscriber.viewTicketButton}"
+                                                 actionListener="#{subscriber.onTicketViewClicked}" update="@form"/>
+                            </f:facet>
+
+                        </p:dataTable>
+                    </h:panelGrid>
+
+                </h:form>
+            </p:tab>
+        </p:tabView>
+    </ui:define>
+
+    <ui:define name="east">
+        <h:form>
+            <p:menu rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}">
+                <p:submenu label="Administrative"
+                           rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}">
+                    <p:menuitem value="History"
+                                outcome="/pages/subscriber/history/index.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+            <p:separator
+                    rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}"/>
+            <p:menu>
+                <p:submenu label="Operational">
+                    <p:menuitem value="Compensation"
+                                outcome="/pages/subscriber/ind/compensation.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Compensation', 'READ')}"/>
+                    <p:menuitem value="Refund"
+                                outcome="/pages/subscriber/ind/refund.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Refund', 'INSERT')}"/>
+                    <p:menuitem value="Manual Payment"
+                                outcome="/pages/subscriber/ind/manualpayment.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'INSERT')}"/>
+                    <p:menuitem value="Charges"
+                                outcome="/pages/subscriber/ind/charges.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Charge', 'READ')}"/>
+                    <p:menuitem value="Payments"
+                                outcome="/pages/subscriber/ind/view_payments.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'READ')}"/>
+                    <p:menuitem value="Refunds"
+                                outcome="/pages/subscriber/ind/view_refunds.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Refund', 'READ')}"/>
+                    <p:menuitem value="Invoices"
+                                outcome="/pages/subscriber/ind/invoices.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Invoice', 'READ')}"/>
+                    <p:menuitem value="Finance Transactions"
+                                outcome="/pages/subscriber/ind/transactions.xhtml?subscriber=#{subscriber.selected.subscriber.id}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Transactions', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+            <p:separator
+                    rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"/>
+            <p:menu rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"
+            >
+                <p:submenu label="VAS"
+                           rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"
+                >
+                    <p:menuitem value="One-time services"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Value Added Services', 'INSERT')}"
+                                outcome="/pages/subscriber/vas/onetime.xhtml?subscriber=#{subscriber.selected.subscriber.id}&amp;subscription=#{subscriber.selectedSubscription.id}&amp;faces-redirect=true&amp;includeViewParams=true"/>
+                </p:submenu>
+            </p:menu>
+            <p:separator rendered="#{uISecurityManager.securityManager.checkUIPermissions('Adjustment', 'INSERT')}"/>
+            <p:menu rendered="#{uISecurityManager.securityManager.checkUIPermissions('Adjustment', 'INSERT')}">
+                <p:submenu label="Finance">
+                    <p:menuitem value="Adjust from balance"
+                                outcome="/pages/finance/adj/create_debit.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                    <p:menuitem value="Adjust to balance"
+                                outcome="/pages/finance/adj/create_credit.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+
+                    <p:menuitem value="Adjust from promo balance"
+                                outcome="/pages/finance/adj/create_promo_debit.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                    <p:menuitem value="Adjust to promo balance"
+                                outcome="/pages/finance/adj/create_promo_credit.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+
+                    <p:menuitem value="Transfer balance"
+                                outcome="/pages/finance/balance/view_balances.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

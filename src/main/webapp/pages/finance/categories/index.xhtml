@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View accounting categories</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:messages/>
+                <p:dataTable value="#{accCategoryManager.lazyCategoryList}" var="cat" rowKey="#{cat.id}" selection="#{accCategoryManager.selectedCategory}" selectionMode="single"
+                    lazy="true" paginator="true" rows="15" filteredValue="#{accCategoryManager.filteredCategoryList}">
+                    <f:facet name="header">Accounting categories</f:facet>
+                    <p:column headerText="Id">#{cat.id}</p:column>
+                    <p:column headerText="Name">#{cat.name}</p:column>
+                    <p:column headerText="Type">#{cat.type}</p:column>
+                    <p:column headerText="Category">#{cat.taxCategory.name}</p:column>
+                    <p:column headerText="Desc">#{cat.dsc}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{accCategoryManager.view()}" update="@form"/>
+                        <p:button value="Add" outcome="/pages/finance/categories/create.xhtml"/>
+                    </f:facet>
+                </p:dataTable>                 
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

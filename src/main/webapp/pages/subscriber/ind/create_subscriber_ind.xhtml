@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin_two_panels.xhtml">
+			<ui:define name="pageTitle">Create Subscriber (Individual)</ui:define>
+			<ui:define name="content">
+				<h:form  styleClass="small-input">
+					<p:growl id="messages" escape="false"/>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Billing settings" />
+						</f:facet>
+							<h:outputLabel value="Functional category"/>
+							<h:selectOneMenu value="#{subscriber.funcCat}" rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}">
+								<f:selectItems value="#{subscriber.fnCatSelectList}"/>
+							</h:selectOneMenu>
+							<h:outputLabel value="#{subscriber.funcCat}" rendered="#{not uISecurityManager.securityManager.checkUIPermissions('SubscriberFunctionalCategory', 'INSERT')}"/>
+
+							<h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+							<p:selectBooleanCheckbox id="lifecycle" value="#{subscriber.managedByLifeCycle}" disabled="true"/>
+							<h:outputLabel value="Lifecycle Type"/>
+							<p:selectOneListbox value="#{subscriber.subscriberLifeCycleType}">
+								<f:selectItems value="#{subscriber.lifeCycleTypeSelectItems}"/>
+							</p:selectOneListbox>
+							<h:outputLabel value="Taxation Category"/>
+							<p:selectOneMenu value="#{subscriber.selectedTaxCategory}">
+								<f:selectItems value="#{subscriber.taxCategorySelectList}"/>
+							</p:selectOneMenu>
+
+							<h:outputLabel value="Language"/>
+							<p:selectOneMenu value="#{subscriber.sub.language}">
+								<f:selectItems value="#{subscriber.langList}"/>
+							</p:selectOneMenu>
+					</h:panelGrid>
+					<p:separator></p:separator>	
+                                        
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="General information" />
+						</f:facet>
+						<h:outputLabel value="Gender" for="subGender" styleClass="required"/>
+						<p:selectOneRadio value="#{subscriber.sub.gender}" id="subGender" required="true" requiredMessage="Gender is required">
+							<f:selectItems value="#{subscriber.genderSelectList}"/>
+						</p:selectOneRadio>			
+						<h:outputLabel value="Name" for="subName" styleClass="required"/>
+						<h:inputText id="subName" value="#{subscriber.sub.firstName}" required="true" requiredMessage="Firstname is required"/>
+						<h:outputLabel value="Middle / Father's Name" for="subNameMiddle" styleClass="required"/>
+						<h:inputText id="subNameMiddle" value="#{subscriber.sub.middleName}" required="true" requiredMessage="Middlename / Father's name is required"/>
+						<h:outputLabel value="Surname" for="subSurName" styleClass="required"/>
+						<h:inputText id="subSurName" value="#{subscriber.sub.surname}" required="true" requiredMessage="Surname is required"/>
+						<h:outputLabel value="Date of Birth" for="subPlaceOfBirth" styleClass="required"/>
+						<p:calendar value="#{subscriber.sub.dateOfBirth}" navigator="true" pagedate="01/01/1980" pattern="dd/MM/yyyy" required="true" requiredMessage="Date of birth is required" yearRange="c-50:c+50">
+						</p:calendar>
+						<h:outputLabel value="Place of Birth" for="subPlaceOfBirth"/>
+						<h:inputText id="subPlaceOfBirth" value="#{subscriber.sub.cityOfBirth}"/>
+						<h:outputLabel value="Citizenship" for="subCitizen"/>
+						<h:inputText id="subCitizen" value="#{subscriber.sub.citizenship}"/>
+					</h:panelGrid>
+					<h:inputHidden id="subType" value="#{subscriber.sub.type}"/>												
+					
+					<p:separator></p:separator>	
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="Passport &amp; Contact Information" />
+						</f:facet>											
+						<h:outputLabel value="Country of issue" for="subIssueCountry"></h:outputLabel>
+						<h:inputText id="subIssueCountry" value="#{subscriber.sub.country}"/>
+						<h:outputLabel value="Series" for="subSeries"/>
+						<h:inputText id="subSeries" value="#{subscriber.sub.passportSeries}"/>
+						<h:outputLabel value="Number" for="subPassNum" styleClass="required"/>
+						<h:inputText id="subPassNum" value="#{subscriber.sub.passportNumber}" required="true" requiredMessage="Passport number required and should not be duplicate"/>
+						<h:outputLabel value="Pincode" styleClass="required"/>
+						<h:inputText id="subPassPincode" value="#{subscriber.sub.pinCode}" required="true" requiredMessage="Pincode must be provided"/>
+						<h:outputLabel value="Issued authority" for="subPassAuth"/>
+						<h:inputText id="subPassAuth" value="#{subscriber.sub.passportAuthority}"/>
+						<h:outputLabel value="Date of Issue" for="subIssueDate"/>
+						<p:calendar id="subIssueDate" value="#{subscriber.sub.passportIssueDate}" navigator="true" pagedate="01/01/1980" pattern="dd/MM/yyyy" yearRange="c-50:c+50"/>
+						<h:outputLabel value="Valid till (month/year)" for="subValidTill"/>
+						<p:inputMask id="subValidTill" mask="99/9999" value="#{subscriber.sub.passportValidTill}"></p:inputMask>
+						<h:outputLabel value="Email" for="subPassEmail"/>
+						<h:inputText value="#{subscriber.sub.email}" id="subPassEmail"/>
+						<h:outputLabel value="Contact # (mobile)" for="subContact" styleClass="required"/>
+						<h:panelGroup>
+								<h:panelGrid columns="3">
+									<h:outputLabel value="+"/>
+									<h:inputText value="#{subscriber.phoneMobileCode}" id="subContact" style="width: 50px;" required="true" requiredMessage="Phone number is required" validator="#{subscriber.checkNationalCode}">
+									</h:inputText>
+									<h:inputText value="#{subscriber.phoneMobileBody}" required="true" style="width: 150px;" requiredMessage="Phone number is required" validator="#{subscriber.checkPhoneNumber}">
+									</h:inputText>
+							 	</h:panelGrid>
+						</h:panelGroup>
+
+						<h:outputLabel value="Contact # (mobile 2)" for="subContact_2"/>
+						<h:inputText value="#{subscriber.sub.phoneMobileAlt}" id="subContact_2"/>
+						<h:outputLabel value="Contact # (landline)" for="subContact_3"/>
+						<h:inputText value="#{subscriber.sub.phoneLandline}" id="subContact_3"/>						
+					</h:panelGrid>
+					<p:separator></p:separator>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="Address (invoicing / billing)" />							
+						</f:facet>												
+						<h:outputLabel value="City" for="subInvCity"/>
+						<h:inputText value="#{subscriber.sub.city}" id="subInvCity"/>	
+						<h:outputLabel value="ATS #" for="subATS"/>
+						<h:inputText value="#{subscriber.sub.ats}" id="subATS"/>						
+						<h:outputLabel value="Street" for="subInvStreet"/>
+						<h:inputText value="#{subscriber.sub.street}" id="subInvStreet"/>						
+						<h:outputLabel value="Building" for="subInvBuilding"/>
+						<h:inputText value="#{subscriber.sub.building}" id="subInvBuilding"/>						
+						<h:outputLabel value="Apartment" for="subInvAp"/>
+						<h:inputText value="#{subscriber.sub.apartment}" id="subInvAp"/>										
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<p:commandButton action="#" value="Reset" type="reset"/>
+						<p:commandButton action="#{subscriber.create()}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkPermissions('Subscriber', 'INSERT')}"/>
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

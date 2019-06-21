@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriberArchiveManager.subscriberID}"/>
+    <f:viewParam name="version" value="#{subscriberArchiveManager.archivedDataID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Subscriber Archive</ui:define>
+    <ui:define name="content">
+        <p:tabView>
+            <p:tab title="Subscriber">
+                <h:form id="subForm">
+                    <p:growl/>
+                    <p:outputPanel id="corpPanel" rendered="#{subscriberArchiveManager.selectedArchivedData.type eq 'CORP'}">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2">
+                            <p:tab title="Billing settings">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+                                    <p:selectBooleanCheckbox id="lifecycleCorp" value="#{subscriber.selected.subscriber.billedByLifeCycle}" disabled="true"/>
+
+                                    <h:outputLabel value="Lifecycle type"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.lifeCycle}"/>
+
+                                    <h:outputLabel value="Taxation category" for="taxCat"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.taxCategory.name}"/>
+
+                                    <h:outputLabel value="Language"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.lang}"/>
+
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="General information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Company Type" for="subCompanyType" styleClass="required"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.companyType}" id="subCompanyType"/>
+
+                                    <h:outputLabel value="Company name" for="subCompanyName" styleClass="required"/>
+                                    <h:outputText id="subCompanyName" value="#{subscriberArchiveManager.selectedArchivedData.companyName}" required="true"/>
+
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Contact person information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Name" for="subNameCorp" styleClass="required"/>
+                                    <h:outputText id="subNameCorp" value="#{subscriberArchiveManager.selectedArchivedData.firstName}" required="true"/>
+
+                                    <h:outputLabel value="Father's Name" for="subNameMiddleCorp" styleClass="required"/>
+                                    <h:outputText id="subNameMiddleCorp" value="#{subscriberArchiveManager.selectedArchivedData.middleName}" required="true"/>
+
+                                    <h:outputLabel value="Surname" for="subSurName" styleClass="required"/>
+                                    <h:outputText id="subSurName" value="#{subscriberArchiveManager.selectedArchivedData.surname}" required="true"/>
+
+                                    <h:outputLabel value="Citizenship" for="subCitizenCorp"/>
+                                    <h:inputText id="subCitizenCorp" value="#{subscriberArchiveManager.selectedArchivedData.citizenship}"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="ID/Passport information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Country of registration" for="subIssueCountryCorp"></h:outputLabel>
+                                    <h:outputText id="subIssueCountryCorp" value="#{subscriberArchiveManager.selectedArchivedData.country}"/>
+                                    <h:outputLabel value="Bank account" for="subSeriesCorp"/>
+                                    <h:outputText id="subSeriesCorp" value="#{subscriberArchiveManager.selectedArchivedData.bankAccount}"/>
+                                    <h:outputLabel value="Registration ID" for="subPassNumCorp"/>
+                                    <h:outputText id="subPassNumCorp" value="#{subscriberArchiveManager.selectedArchivedData.passportNumber}"/>
+                                    <h:outputLabel value="Issued authority" for="subPassAuthCorp"/>
+                                    <h:outputText id="subPassAuthCorp" value="#{subscriberArchiveManager.selectedArchivedData.passportAuthority}"/>
+                                    <h:outputLabel value="Date of Issue" for="subIssueDateCorp"/>
+                                    <h:outputText id="subIssueDateCorp" value="#{subscriberArchiveManager.selectedArchivedData.passportIssueDate}"/>
+                                    <h:outputLabel value="Valid till (month/year)" for="subValidTillCorp"/>
+                                    <h:outputText id="subValidTillCorp" mask="99/9999" value="#{subscriberArchiveManager.selectedArchivedData.passportValidTill}"/>
+                                    <h:outputLabel value="Email" for="subPassEmailCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.email}" id="subPassEmailCorp"/>
+                                    <h:outputLabel value="Contact # (mobile)" for="subContactCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneMobile}" id="subContactCorp"/>
+                                    <h:outputLabel value="Contact # (mobile 2)" for="subContact_2_Corp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneMobileAlt}" id="subContact_2_Corp"/>
+                                    <h:outputLabel value="Contact # (landline)" for="subContact_3_Corp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneLandline}" id="subContact_3_Corp"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Address (invoicing / billing)">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="City" for="subInvCityInd"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.city}" id="subInvCityInd"/>
+                                    <h:outputLabel value="ATS #" for="subATSInd"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.ats}" id="subATSInd"/>
+                                    <h:outputLabel value="Street" for="subInvStreetInd"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.street}" id="subInvStreetInd"/>
+                                    <h:outputLabel value="Building" for="subInvBuildingInd"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.building}" id="subInvBuildingInd"/>
+                                    <h:outputLabel value="Apartment" for="subInvApInd"/>
+                                    <h:inputText value="#{subscriberArchiveManager.selectedArchivedData.apartment}" id="subInvApInd"/>
+                                </h:panelGrid>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h:panelGrid columns="2">
+                            <p:button outcome="/pages/subscriber/history/index.xhtml?subscriber=#{subscriberArchiveManager.selectedArchivedData.subscriber.id}&amp;faces-redirect=true" value="Cancel"/>
+                            <p:commandButton action="#{subscriberArchiveManager.restore}" value="Restore" icon="ui-icon-alert" update="subForm"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'UPDATE')}"
+                                    >
+                                <p:confirm header="Confirm restore" message="Do you really want to restore this entity?" icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" closeOnEscape="true">
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"
+                                                 icon="ui-icon-close"/>
+                            </p:confirmDialog>
+                        </h:panelGrid>
+                    </p:outputPanel>
+
+                    <p:outputPanel id="invPanel" rendered="#{subscriberArchiveManager.selectedArchivedData.type eq 'INDV'}">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2">
+                            <p:tab title="Object information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Id"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.id}"/>
+
+                                    <h:outputLabel value="Version"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.objectVersion}"/>
+
+                                    <h:outputLabel value="Archived date"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.archivedAsDate}">
+                                        <f:convertDateTime pattern="HH:mm:ss dd.MM.yyyy"/>
+                                    </h:outputText>
+
+                                    <h:outputLabel value="User"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.user.userName}"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Billing settings">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+                                    <h:outputText id="lifecycle" value="#{subscriberArchiveManager.selectedArchivedData.billedByLifeCycle}" disabled="true"/>
+                                    <h:outputLabel value="Lifecycle type" for="lifecycleType"/>
+
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.lifeCycle}" id="lifecycleType"/>
+
+                                    <h:outputLabel value="Taxation category" for="taxCat"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.taxCategory.name}" id="taxCat"/>
+
+                                    <h:outputLabel value="Language"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.lang}"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="General information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel for="subCreate">Created on</h:outputLabel>
+                                    <h:outputText id="subCreate" value="#{subscriberArchiveManager.selectedArchivedData.entryDate}">
+                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                    </h:outputText>
+                                    <h:outputLabel value="Gender" for="subGender" styleClass="required"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.gender}" id="subGender"/>
+
+                                    <h:outputLabel value="Name" for="subNameInd" styleClass="required"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.firstName}" id="subNameInd"/>
+
+                                    <h:outputLabel value="Middle Name" for="subNameMiddleInd" styleClass="required"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.middleName}" id="subNameMiddleInd"/>
+
+                                    <h:outputLabel value="Surname" for="subSurNameInd" styleClass="required"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.surname}" id="subSurNameInd"/>
+
+                                    <h:outputLabel value="Date of Birth" for="subPlaceOfBirth" styleClass="required"/>
+                                    <h:outputText value="#{subscriber.selected.dateOfBirth}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                    <h:outputLabel value="Place of Birth" for="subPlaceOfBirth"/>
+                                    <h:outputText id="subPlaceOfBirth" value="#{subscriberArchiveManager.selectedArchivedData.cityOfBirth}"/>
+                                    <h:outputLabel value="Citizenship" for="subCitizen"/>
+                                    <h:outputText id="subCitizen" value="#{subscriberArchiveManager.selectedArchivedData.citizenship}"/>
+                                </h:panelGrid>
+                            </p:tab>
+
+                            <p:tab title="ID/Passport information">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="Country of issue" for="subIssueCountry"></h:outputLabel>
+                                    <h:outputText id="subIssueCountry" value="#{subscriberArchiveManager.selectedArchivedData.country}"/>
+                                    <h:outputLabel value="Series" for="subSeries"/>
+                                    <h:outputText id="subSeries" value="#{subscriberArchiveManager.selectedArchivedData.passportSeries}"/>
+                                    <h:outputLabel value="Number" for="subPassNum"/>
+                                    <h:outputText id="subPassNum" value="#{subscriberArchiveManager.selectedArchivedData.passportNumber}"/>
+                                    <h:outputLabel value="Issued authority" for="subPassAuth"/>
+                                    <h:outputText id="subPassAuth" value="#{subscriberArchiveManager.selectedArchivedData.passportAuthority}"/>
+                                    <h:outputLabel value="Date of Issue" for="subIssueDate"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.passportIssueDate}" id="subIssueDate">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText>
+                                    <h:outputLabel value="Valid till (month/year)" for="subValidTill"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.passportValidTill}" id="subValidTill"/>
+                                    <h:outputLabel value="Email" for="subPassEmail"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.email}" id="subPassEmail"/>
+                                    <h:outputLabel value="Contact # (mobile)" for="subContact"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneMobile}" id="subContact"/>
+                                    <h:outputLabel value="Contact # (mobile 2)" for="subContact_2"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneMobileAlt}" id="subContact_2"/>
+                                    <h:outputLabel value="Contact # (landline)" for="subContact_3"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.phoneLandline}" id="subContact_3"/>
+                                </h:panelGrid>
+                            </p:tab>
+                            <p:tab title="Address (invoicing / billing)">
+                                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                    <h:outputLabel value="City" for="subInvCityCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.city}" id="subInvCityCorp"/>
+                                    <h:outputLabel value="ATS #" for="subATSCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.ats}" id="subATSCorp"/>
+                                    <h:outputLabel value="Street" for="subInvStreetCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.street}" id="subInvStreetCorp"/>
+                                    <h:outputLabel value="Building" for="subInvBuildingCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.building}" id="subInvBuildingCorp"/>
+                                    <h:outputLabel value="Apartment" for="subInvApCorp"/>
+                                    <h:outputText value="#{subscriberArchiveManager.selectedArchivedData.apartment}" id="subInvApCorp"/>
+                                </h:panelGrid>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h:panelGrid columns="2">
+                            <p:button outcome="/pages/subscriber/history/index.xhtml?subscriber=#{subscriberArchiveManager.selectedArchivedData.subscriber.id}&amp;faces-redirect=true" value="Cancel"/>
+                            <p:commandButton action="#{subscriberArchiveManager.restore}" value="Restore" icon="ui-icon-alert" update="subForm"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'UPDATE')}"
+                                    >
+                                <p:confirm header="Confirm restore" message="Do you really want to restore this entity?" icon="ui-icon-alert"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" closeOnEscape="true">
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"
+                                                 icon="ui-icon-check"/>
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"
+                                                 icon="ui-icon-close"/>
+                            </p:confirmDialog>
+                        </h:panelGrid>
+                    </p:outputPanel>
+                </h:form>
+            </p:tab>
+        </p:tabView>
+    </ui:define>
+
+    <ui:define name="east">
+        <h:form>
+            <p:menu rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}">
+                <p:submenu label="Administrative" rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}">
+                    <p:menuitem value="History" outcome="/pages/subscriber/history/index.xhtml?subscriber=#{subscriberArchiveManager.selectedArchivedData.subscriber.id}" rendered="#{uISecurityManager.securityManager.checkUIPermissions('SubscriberArchive', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+            <p:separator rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"/>
+            <p:menu>
+                <p:submenu label="Navigaton" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}">
+                    <p:menuitem value="Subscriber details" outcome="/pages/subscriber/view.xhtml?subscriber=#{subscriberArchiveManager.selectedArchivedData.subscriber.id}" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

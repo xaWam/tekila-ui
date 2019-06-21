@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Batch Status Change</ui:define>
+    <ui:define name="content">
+        <h:form id="batch_state_change" enctype="multipart/form-data">
+            <p:growl id="messages" showDetail="true"/>
+            <p:panel header="Batch subscriptions">
+
+                <p:fileUpload style="width: 200px;height: 30px;" value="#{batchManager.agreementChangesFile}"
+                              mode="simple" label="Choose a file"/>
+
+                <h:panelGrid columns="2" style="margin-top: 10px; border: none;">
+                    <p:commandButton id="uploadAndProcess"
+                                     value="Upload and Process"
+                                     actionListener="#{batchManager.uploadAgreementChangeFile}"
+                                     update="@form"
+                                     ajax="false"/>
+
+                    <p:commandButton value="SampleDownload"
+                                     ajax="false"
+                                     icon="ui-icon-arrowthick-1-s">
+                        <p:fileDownload value="#{batchManager.sampleAgreementChangeFile}"/>
+                    </p:commandButton>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <p:separator/>
+
+            <p:panelGrid columns="1" id="resultPanel">
+                <p:dataTable var="batchAgr" value="#{batchManager.wrapperAgreementChangeBatchSet}">
+                    <f:facet name="header">
+                        List of Agreement change requests
+                    </f:facet>
+                    <p:column headerText="Old agreement">
+                        <h:outputText value="#{batchAgr.oldAgreement}"/>
+                    </p:column>
+
+                    <p:column headerText="Target Agreement">
+                        <h:outputText value="#{batchAgr.agreement}"/>
+                    </p:column>
+
+                    <p:column headerText="Target Service name">
+                        <h:outputText value="#{batchAgr.serviceName}"/>
+                    </p:column>
+                    <p:column headerText="Should has promo">
+                        <h:outputText value="#{batchAgr.hasPromo? 'Has promo':'No promo' }"/>
+                    </p:column>
+                    <p:column headerText="Name">
+                        <h:outputText value="#{batchAgr.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Surname">
+                        <h:outputText value="#{batchAgr.surname}"/>
+                    </p:column>
+                    <p:column headerText="Father name">
+                        <h:outputText value="#{batchAgr.fatherName}"/>
+                    </p:column>
+                    <p:column headerText="Pin code">
+                        <h:outputText value="#{batchAgr.pinCode}"/>
+                    </p:column>
+                    <p:column headerText="ID serial number">
+                        <h:outputText value="#{batchAgr.idSerialNumber}"/>
+                    </p:column>
+                    <p:column headerText="Mobile">
+                        <h:outputText value="#{batchAgr.mobile}"/>
+                    </p:column>
+                    <p:column headerText="Home number">
+                        <h:outputText value="#{batchAgr.homeNumber}"/>
+                    </p:column>
+                    <p:column headerText="Address">
+                        <h:outputText value="#{batchAgr.address}"/>
+                    </p:column>
+                    <p:column headerText="Message">
+                        <h:outputText value="#{batchAgr.message}"/>
+                    </p:column>
+                </p:dataTable>
+                <p:commandButton value="Apply changes into system"
+                                 onclick="PF('blockui').show()"
+                                 onsuccess="PF('blockui').hide()" ajax="true"
+                                 onerror="PF('blockui').hide()"
+                                 update="@form"
+                                 actionListener="#{batchManager.applyAgreementChangesIntoSystem}"/>
+            </p:panelGrid>
+
+
+            <p:blockUI block="@form" trigger="uploadAndProcess" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Uploading and Processing, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>
+

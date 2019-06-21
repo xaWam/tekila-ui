@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+         <f:metadata>
+             <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+             <f:viewParam name="paymentID" value="#{subscriber.singlePaymentID}"/>
+         </f:metadata>
+         
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">View Payment</ui:define>
+			<ui:define name="content">
+				<h:form id="rateForm">
+                    <p:growl id="messages"/>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                        <f:facet name="header">Payment</f:facet>
+                        <h:outputLabel value="Id">
+
+                        </h:outputLabel>
+                        <h:outputText value="${subscriber.singlePayment.id}"/>
+
+                        <h:outputLabel value="Date"></h:outputLabel>
+                        <h:outputText value="#{subscriber.singlePayment.fd}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                        <h:outputLabel value="Service"/>
+                        <h:outputText value="#{subscriber.singlePayment.service.name}"/>
+
+                        <h:outputLabel value="Cheque / Document No."/>
+                        <h:outputText value="#{subscriber.singlePayment.chequeID}"/>
+
+                        <h:outputLabel value="Start balance"/>
+                        <h:outputText value="#{subscriber.singlePayment.transaction ne null ? subscriber.singlePayment.transaction.getStartBalanceAsDouble() : ''}"/>
+                        <h:outputLabel value="Amount"/>
+                        <h:outputText value="#{subscriber.singlePayment.amount}"/>
+
+                        <h:outputLabel value="End balance"/>
+                        <h:outputText value="#{subscriber.singlePayment.transaction ne null ? subscriber.singlePayment.transaction.getEndBalanceAsDouble() : ''}"/>
+
+                        <h:outputLabel value="Status"/>
+                        <h:graphicImage title="Void" rendered="#{subscriber.singlePayment.status eq -1}" value="/resources/img/icons/cancel24.png"/>
+                        <h:graphicImage title="Regular" rendered="#{subscriber.singlePayment.status eq 0}" value="/resources/img/icons/check24.png"/>
+
+                        <h:outputLabel value="Method"/>
+                        <h:outputText value="#{subscriber.singlePayment.methodForUI ne null ? subscriber.singlePayment.methodForUI : ''}"/>
+
+                        <h:outputLabel value="Purpose"/>
+                        <h:outputText value="#{subscriber.singlePayment.purpose}"/>
+
+                        <h:outputLabel value="Currency"/>
+                        <h:outputText value="#{subscriber.singlePayment.currency}"/>
+
+                        <h:outputLabel value="Description"/>
+                        <h:outputText value="#{subscriber.singlePayment.dsc}"/>
+
+                        <h:outputLabel value="Internal Description"/>
+                        <h:outputText value="#{subscriber.singlePayment.internalDsc}"/>
+
+                        <h:outputLabel value="Source"/>
+                        <h:outputText value="#{subscriber.singlePayment.extUser ne null ? subscriber.singlePayment.extUser.username : ''}"/>
+
+                        <h:outputLabel value="User"/>
+                        <h:outputText value="#{subscriber.singlePayment.user ne null ? subscriber.singlePayment.user.userName : ''}"/>
+
+                        <h:outputLabel value="RRN"/>
+                        <h:outputText value="#{subscriber.singlePayment.rrn ne null ? subscriber.singlePayment.rrn : ''}"/>
+
+                        <h:outputLabel value="RID"/>
+                        <h:outputText value="#{subscriber.singlePayment.rid ne null ? subscriber.singlePayment.rid : ''}"/>
+
+                        <h:outputLabel value="Test Payment"/>
+                        <h:outputText value="#{subscriber.singlePayment.testPayment ? 'Yes' : 'No'}"/>
+
+                        <h:outputLabel value="Manually Activated Campaign"/>
+                        <h:outputText value="#{subscriber.campaignName}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="Void" action="#{subscriber.cancelPayment}" update="@form" rendered="#{uISecurityManager.hasPermission('Payment', 'UPDATE')}">
+                            <p:confirm header="Confirm operation" message="Do you really want to perform this operation?" icon="ui-icon-alert"/>
+                        </p:commandButton>
+                        <p:confirmDialog global="true" closeOnEscape="true">
+                            <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                            <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                        </p:confirmDialog>
+                    </h:panelGrid>
+				</h:form>
+			</ui:define>
+                        <ui:define name="east">
+                            <h:form>
+                                <p:menu>
+                                    <p:submenu label="Navigation">
+                                        <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"/>
+                                        <p:menuitem value="Payments" outcome="/pages/subscriber/ind/view_payments?subscriber=#{subscriber.subscriberId}"
+                                                    rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'READ')}"
+                                                />
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
+                        </ui:define>
+	</ui:composition>
+</html>

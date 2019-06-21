@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<f:metadata>
+        <f:viewParam name="imsi" value="#{imsiManager.imsiID}"/>
+	</f:metadata>
+
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View IMSI</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages"/>
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                    <f:facet name="header">IMSI</f:facet>
+                    <h:outputLabel value="ICCID"/>
+                    <h:outputText value="#{imsiManager.selected.iccid}"/>
+
+                    <h:outputLabel value="IMSI"/>
+                    <h:outputText value="#{imsiManager.selected.identifier}"/>
+
+                    <h:outputLabel value="MSISDN"/>
+                    <h:outputText value="#{imsiManager.selected.msisdn}"/>
+
+                   <h:outputLabel value="Provider"/>
+                   <h:outputText value="#{imsiManager.selected.provider.name}"/>
+
+                    <h:outputLabel value="Status"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{imsiManager.selected.status}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{imsiManager.selected.status}">
+                                <f:selectItems value="#{imsiManager.statusList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="Category"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{imsiManager.selected.category}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{imsiManager.selected.category}">
+                                <f:selectItems value="#{imsiManager.categoryList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="User"/>
+                    <h:outputText value="#{imsiManager.selected.user.userName}"/>
+
+                </h:panelGrid>
+
+                <h:panelGrid columns="3">
+                    <p:button value="Cancel" outcome="/pages/store/mobile/imsi/inex.xhtml"/>
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{imsiManager.edit}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkUIPermissions('IMSI', 'UPDATE')}"/>
+                </h:panelGrid>
+
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

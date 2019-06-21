@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create a Bank</ui:define>
+        <ui:define name="content">
+            <h:form onkeypress="if (event.keyCode === 13) return false;">
+                <p:messages/>
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                    <f:facet name="header">Create a bank</f:facet>
+                    <h:outputLabel value="Bank name" for="bankName"/>
+                    <h:inputText id="bankName" value="#{bankManager.bank.name}"/>
+                    
+                    <h:outputLabel value="Bank account" for="bankAcc"/>
+                    <h:inputText id="bankAcc" value="#{bankManager.bank.account}"/>
+                    
+                    <h:outputLabel value="BIC" for="bankBIC"/>
+                    <h:inputText id="bankBIC" value="#{bankManager.bank.bic}"/>
+                    
+                    <h:outputLabel value="Currency List" for="currencyList"/>
+                    <h:selectOneMenu value="#{bankManager.currencyCode}" id="currencyList">
+                        <f:selectItems value="#{bankManager.currencyList}"/>
+                    </h:selectOneMenu>
+                    
+                    <h:outputLabel for="bankList" value="Head office (if branch)"/>
+                    <h:selectOneMenu id="bankList" value="#{bankManager.parentID}">
+                        <f:selectItem noSelectionOption="true" itemLabel="Select head office"/>
+                        <f:selectItems value="#{bankManager.parentList}"/>                        
+                    </h:selectOneMenu>
+                    
+                    <h:outputLabel value="Description" for="bankDsc"/>
+                    <h:inputText value="#{bankManager.bank.dsc}" id="bankDsc"/>
+                </h:panelGrid>
+                <p:separator/>
+                <h:panelGrid columns="3">
+                    <p:commandButton value="Cancel" action="/pages/finance/banks/index.xhtml"/>
+                    <p:commandButton value="Reset" type="reset" action="#"/>                    
+                    <p:commandButton value="Save" action="#{bankManager.create()}"/>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core"
+        >
+    <f:metadata>
+        <f:viewParam name="role" value="#{roleManager.roleID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">
+            <h:outputText value="Create Role" rendered="#{not empty roleManager.roleID}"/>
+            <h:outputText value="View / Edit Role #{roleManager.role.name}" rendered="#{empty roleManager.roleID}"/>
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="roleForm">
+                <p:messages/>
+                <h:panelGrid rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column" columns="2">
+                    <f:facet name="header">
+                        <h:outputText value="Create Role" rendered="#{not empty roleManager.roleID}"/>
+                        <h:outputText value="View / Edit Role #{roleManager.role.name}" rendered="#{empty roleManager.roleID}"/>
+                    </f:facet>
+                    <h:outputLabel styleClass="required">Name</h:outputLabel>
+                    <h:inputText value="#{roleManager.role.name}" required="true" requiredMessage="Name is required" size="200"/>
+
+                    <h:outputLabel value="Description" />
+                    <h:inputText value="#{roleManager.role.dsc}" size="200"/>
+                </h:panelGrid>
+
+                <p:spacer height="10"/>
+                <p:dataTable value="#{roleManager.providerList}" var="prov" rowKey="#{prov.id}"
+                             selection="#{roleManager.selectedProvider}" selectionMode="single" paginator="true" lazy="true" rows="15">
+                    <f:facet name="header">Service providers</f:facet>
+                    <p:column headerText="Id">#{prov.id}</p:column>
+                    <p:column headerText="Name">#{prov.name}</p:column>
+                </p:dataTable>
+
+                <p:dataTable id="modules" value="#{roleManager.moduleList}" var="md" selection="#{roleManager.selectedModule}"
+                    rows="15" paginator="true"  selectionMode="single" rowKey="#{md.id}" lazy="true">
+                    <f:facet name="header">Modules</f:facet>
+                    <p:ajax event="rowSelect" listener="#{roleManager.onRowSelect}" update=":roleForm:submodules"/>
+                    <p:column headerText="Id">#{md.id}</p:column>
+                    <p:column headerText="Name">#{md.name}</p:column>
+                </p:dataTable>
+
+               <p:dataTable id="submodules" value="#{roleManager.permissionRowList}" selectionMode="multiple" var="perm"
+                    selection="#{roleManager.selectedPermissionRows}" paginator="true" rows="15" rowKey="#{perm.subModule.id}">
+                   <f:facet name="header">Permissions</f:facet>
+                   <p:column headerText="Name">#{perm.subModule.name}</p:column>
+                   <p:column headerText="Privileges">
+                       <p:selectManyCheckbox value="#{perm.selectedPrivilegeList}" >
+                           <f:selectItems value="#{perm.privilegeList}" var="priv" itemLabel="#{priv}" itemValue="#{priv.code}"/>
+                       </p:selectManyCheckbox>
+                   </p:column>
+               </p:dataTable>
+
+                <h:panelGrid columns="2">
+                    <f:facet name="footer">
+                        <p:spacer height="10"/>
+                        <p:button value="Cancel" outcome="/pages/admin/roles/index.xhtml"/>
+                        <p:commandButton value="Save" action="#{roleManager.save}" update="@form"/>
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

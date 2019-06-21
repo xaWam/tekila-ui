@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">IP Address Ranges</ui:define>
+    <ui:define name="content">
+        <p:messages/>
+        <h:form id="rangeForm">
+            <p:dataTable value="#{ipAddressManager.rangeList}" var="range" rowKey="#{range.id}" selection="#{ipAddressManager.selected}" selectionMode="single"
+                         filteredValue="#{ipAddressManager.filteredList}" editable="true" rows="15" lazy="true" paginator="true">
+                <f:facet name="header">IP Ranges</f:facet>
+
+                <p:ajax event="rowEdit" listener="#{ipAddressManager.onRowEdit}"/>
+
+                <p:column headerText="Id">#{range.id}</p:column>
+                <p:column headerText="Nas">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{range.nas.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{range.nas}" converter="#{nasConverter}" style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{ipAddressManager.nasSelectList}" var="nas" itemLabel="#{nas.name}"
+                                               itemValue="#{nas}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Starts at">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{range.start.addressAsString}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{range.start.addressAsString}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Ends at">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{range.end.addressAsString}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{range.end.addressAsString}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:32px">
+                    <p:rowEditor/>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:spacer height="15"/>
+                    <p:commandButton value="View" action="#{ipAddressManager.view}"/>
+                    <p:button value="Add" outcome="/pages/store/range/create.xhtml" rendered="#{uISecurityManager.securityManager.checkUIPermissions('IP Address', 'INSERT')}"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

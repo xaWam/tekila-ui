@@ -1,0 +1,297 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Nas</ui:define>
+    <ui:define name="content">
+        <h:form id="nasForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search for Nas</f:facet>
+                <p:outputPanel id="nasPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Id</h:outputLabel>
+                        <h:inputText value="#{nasManager.nasId}">
+                        </h:inputText>
+
+
+                        <h:outputLabel>Name</h:outputLabel>
+                        <h:inputText value="#{nasManager.name}">
+                        </h:inputText>
+
+                        <h:outputLabel value="Provider"/>
+                        <p:selectOneMenu value="#{nasManager.provider}" converter="#{providerConverter}"
+                                         style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a provider"/>
+                            <f:selectItems value="#{nasManager.providerSelectList}" var="prov" itemValue="#{prov}"
+                                           itemLabel="#{prov.name}"/>
+                        </p:selectOneMenu>
+
+
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Secret key</h:outputLabel>
+                        <h:inputText value="#{nasManager.secretKey}">
+                        </h:inputText>
+
+                        <h:outputLabel>IP</h:outputLabel>
+                        <h:inputText value="#{nasManager.IP}">
+                        </h:inputText>
+
+                        <h:outputLabel>Desc</h:outputLabel>
+                        <h:inputText value="#{nasManager.desc}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="searchNas" action="#{nasManager.search}" value="Search" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Nas', 'READ')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="searchNas" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Searching, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+            <p:dataTable id="nasTable" value="#{nasManager.nasList}"
+                         var="nas" paginator="true" rows="15"
+
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+
+                         editable="true"
+                         selection="#{nasManager.selectedNas}" selectionMode="single" rowkey="#{nas.id}" lazy="true">
+
+                <f:facet name="header">Nas</f:facet>
+                <p:ajax event="rowSelect" listener="#{nasManager.onRowSelect}"/>
+                <p:ajax event="rowEdit" listener="#{nasManager.onRowEdit}"/>
+
+                <p:column style="width:16px">
+                    <p:rowToggler/>
+                </p:column>
+
+                <p:column headerText="Id" style="width: 80px">#{nas.id}</p:column>
+
+                <p:column headerText="Provider">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{nas.provider.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{nas.provider}" converter="#{providerConverter}" style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{nasManager.providerSelectList}" var="prov"
+                                               itemLabel="#{prov.name}" itemValue="#{prov}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Name">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{nas.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{nas.name}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="IP">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{nas.IP}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{nas.IP}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Secret key">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{nas.secretKey}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{nas.secretKey}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Desc">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{nas.desc}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{nas.desc}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:32px">
+                    <p:rowEditor/>
+                </p:column>
+
+                <p:ajax event="rowToggle" listener="#{nasManager.onRowToggle}"/>
+
+                <p:rowExpansion>
+                    <p:panelGrid columns="2" columnClasses="label,value">
+
+                        <p:dataTable id="attTable" value="#{nas.attributeList}"
+                                     var="att" paginator="true" rows="15"
+
+                                     rowkey="#{att.id}">
+
+                            <f:facet name="header">Attribute</f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{attributeManager.onRowEdit}"/>
+
+                            <p:column headerText="Id" style="width: 80px">#{att.id}</p:column>
+
+                            <p:column headerText="Name">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{att.name}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{att.name}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="Tag">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{att.tag}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{att.tag}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Value">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{att.value}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{att.value}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="Desc">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{att.description}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{att.description}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="Status">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{att.status}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{att.status}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:panelGrid>
+                    <p:panelGrid>
+                        <p:dataTable id="ipRangeTable" value="#{nasManager.getIpRangeListByNas(nas)}"
+                                     var="ip" paginator="true" rows="15"
+                                     rowkey="#{ip.id}">
+
+                            <f:facet name="header">Ip Ranges</f:facet>
+
+                            <p:column headerText="Id">#{ip.id}</p:column>
+                            <p:column headerText="Start">#{ip.start.getAddressAsString()}</p:column>
+                            <p:column headerText="End">#{ip.end.getAddressAsString()}</p:column>
+
+                        </p:dataTable>
+                    </p:panelGrid>
+                </p:rowExpansion>
+
+                <f:facet name="footer">
+                    <p:button value="Add"
+                              rendered="#{uISecurityManager.securityManager.checkUIPermissions('Nas', 'INSERT')}"
+                              outcome="/pages/store/radius/nas/create.xhtml"/>
+                    <!--p:commandButton value="Change Attribute" onclick="PF('eqChangeDialog').show(); return false;"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Nas', 'INSERT')}"/-->
+                    <p:commandButton action="#{nasManager.edit()}" value="Edit"/>
+
+                    <p:spacer width="10"/>
+                    <h:outputText value="Total: #{nasManager.nasList.rowCount}"/>
+                </f:facet>
+            </p:dataTable>
+
+            <p:dialog widgetVar="eqChangeDialog" id="eqDialog" closable="true" closeOnEscape="true" maximizable="false"
+                      width="500" showEffect="explode">
+                <f:facet name="header">Change Attributes</f:facet>
+                <p:outputPanel id="eqWrapperPanel">
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="eqGrid"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Nas', 'INSERT')}"
+                    >
+                        <f:facet name="header">Change Attributes</f:facet>
+                        <p:outputPanel id="eqPanel">
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+
+                                <h:outputLabel>Attribute List</h:outputLabel>
+                                <p:selectCheckboxMenu id="checkMenu" label="Check attributes"
+                                                      value="#{nasManager.selectedAttrList}"
+                                                      filter="true" filterMatchMode="startsWith">
+                                    <f:selectItems value="#{nasManager.attributeList}" var="att" itemLabel="#{att.name}"
+                                                   itemValue="#{att.id}"/>
+                                </p:selectCheckboxMenu>
+
+                            </p:panelGrid>
+                        </p:outputPanel>
+                        <p:commandButton value="Change" action="#{nasManager.updateNas}"
+                                         onclick="PF('eqChangeDialog').hide();"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <script type="text/javascript">
+                function proceedWithProvDialog() {
+                    if (jQuery('#sbForm\\:stdReason_input').val() || jQuery('#sbForm\\:otherReason').val()) {
+                        PF('provDialog').hide();
+                        PF('blockUIGeneral').show();
+                    }
+                }
+            </script>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

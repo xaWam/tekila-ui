@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+    <f:metadata>
+        <f:viewParam name="group" value="#{groupManager.groupID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">
+            <h:outputText rendered="#{empty groupManager.groupID}" value="Create group"/>
+            <h:outputText rendered="#{not empty groupManager.groupID}" value="Edit group #{groupManager.group.groupName}"/>
+        </ui:define>
+        <ui:define name="content">
+            <h:form id="groupForm">
+                <p:messages id="messages"/>
+                <h:panelGrid rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column" columns="2">
+                    <f:facet name="header">
+                        <h:outputText rendered="#{empty groupManager.groupID}" value="Create group"/>
+                        <h:outputText rendered="#{not empty groupManager.groupID}" value="Edit group #{groupManager.group.groupName}"/>
+                    </f:facet>
+                    <h:outputLabel styleClass="required">Name</h:outputLabel>
+                    <h:inputText value="#{groupManager.group.groupName}" required="true" requiredMessage="Name is required"/>
+
+                    <h:outputLabel>Email</h:outputLabel>
+                    <h:inputText value="#{groupManager.group.email}"/>
+
+                    <h:outputLabel>Description</h:outputLabel>
+                    <h:inputText value="#{groupManager.group.dsc}"/>
+                </h:panelGrid>
+
+                <p:dataTable value="#{groupManager.roleList}" selection="#{groupManager.group.roles}"
+                     var="role" rowKey="#{role.id}" rows="100" paginator="true" lazy="true" rowSelectMode="add">
+                    <f:facet name="header">Roles</f:facet>
+                    <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                    <p:column headerText="Id">#{role.id}</p:column>
+                    <p:column headerText="Name">#{role.name}</p:column>
+                    <p:column headerText="Module">#{role.module.name}</p:column>
+                    <p:column headerText="Description">#{role.dsc}</p:column>
+                </p:dataTable>
+                <h:panelGrid columns="2">
+                    <f:facet name="footer">
+                        <p:spacer height="10"/>
+                        <p:button value="Cancel" outcome="/pages/admin/groups/index.xhtml"/>
+                        <p:commandButton value="Save" action="#{groupManager.save}" update=":groupForm:messages"/>
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

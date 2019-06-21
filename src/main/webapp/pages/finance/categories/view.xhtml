@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <f:metadata>
+        <f:viewParam name="category" value="#{accCategoryManager.categoryID}"/>
+    </f:metadata>
+    
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View Accounting Category</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:messages/>
+                <h:panelGrid rowClasses="odd-row, even-row" columnClasses="lbl-column, data-column" columns="2">
+                    <f:facet name="header">View accounting category</f:facet>
+                    <h:outputLabel for="catName" value="Name"/>
+                    <p:inplace>
+                        <h:inputText id="catName" value="#{accCategoryManager.selectedCategory.name}"/>
+                    </p:inplace>
+                    
+                    <h:outputLabel for="accCatType" value="Type"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{accCategoryManager.selectedCategory.type}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu id="accCatType" value="#{accCategoryManager.selectedCategory.type}">
+                                <f:selectItems value="#{accCategoryManager.viewAccCatList}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+                    
+                    <h:outputLabel for="accTaxCat" value="Taxation category"/>
+                    
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{accCategoryManager.selectedCategory.taxCategory.name}"/>
+                        </f:facet>
+                        <f:facet name="input">  
+                            <h:selectOneMenu id="accTaxCat" value="#{accCategoryManager.taxCatID}">                           
+                                <f:selectItems value="#{accCategoryManager.viewTaxCatList}"/>
+                            </h:selectOneMenu>                
+                        </f:facet>
+                    </p:inplace>
+                    
+                    <h:outputLabel for="catDesc" value="Description"/>
+                    <h:inputText id="catDesc" value="#{accCategoryManager.selectedCategory.dsc}"/>                
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:commandButton value="Reset" action="#" type="reset"/>
+                    <p:commandButton value="Save" action="#{accCategoryManager.edit()}" update="@form"/> 
+                </h:panelGrid>                
+            </h:form>    
+        </ui:define>
+    </ui:composition>
+</html>
+

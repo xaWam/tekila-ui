@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View Banks</ui:define>
+        <ui:define name="content">
+            <p:messages/>
+            <h:form>
+                <p:dataTable value="#{bankManager.bankList}" var="bank" rows="15" filteredValue="#{bankManager.filteredBankList}"
+                    rowKey="#{bank.id}" selection="#{bankManager.selectedBank}" selectionMode="single" paginator="true">
+                    <f:facet name="header">View Banks</f:facet>
+                    <p:column headerText="Id">#{bank.id}</p:column>
+                    <p:column headerText="Name" filterBy="#{bank.name}">#{bank.name}</p:column>
+                    <p:column headerText="Account" filterBy="#{bank.account}">#{bank.account}</p:column>
+                    <p:column headerText="Currency" filterBy="#{bank.currency.code}">#{bank.currency.code}</p:column>
+                    <p:column headerText="BIC" filterBy="#{bank.bic}">#{bank.bic}</p:column>
+                    <p:column headerText="Head" filterBy="#{bank.parent}">
+                        <h:outputText value="#{bank.parent ne null ? bank.parent.name : null}"/>
+                    </p:column>
+                    <p:column headerText="Desc" filterBy="#{bank.dsc}">#{bank.dsc}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{bankManager.view()}"/>
+                        <p:button value="Add" outcome="/pages/finance/banks/create.xhtml"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

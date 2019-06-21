@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Submodules</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:messages/>
+            <p:dataTable value="#{subModuleManager.subModuleList}" var="sub" selection="#{subModuleManager.selected}" paginator="true"
+                         selectionMode="single" rows="15" rowKey="#{sub.id}" lazy="true">
+                <f:facet name="header">Submodules</f:facet>
+                <p:column headerText="Id" filterBy="#{sub.id}">#{sub.id}</p:column>
+                <p:column headerText="Module" filterBy="#{sub.module.name}">#{sub.module.name}</p:column>
+                <p:column headerText="Name" filterBy="#{sub.name}">#{sub.name}</p:column>
+                <f:facet name="footer">
+                    <p:spacer height="10"/>
+                    <p:commandButton value="View" action="#{subModuleManager.show}" update="@form"/>
+                    <p:button value="Add" outcome="/pages/admin/submodules/submodule.xhtml"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

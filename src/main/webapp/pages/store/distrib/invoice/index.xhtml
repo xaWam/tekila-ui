@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="distributor" value="#{salesPartnerInvoceManager.salesPartnerID}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Distributor invoices</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <!--<p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search for distributors</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Name"/>
+                        <h:inputText value="#{distributorManager.nameParameter}"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{distributorManager.search()}" value="Search" update="messages eqTable" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor', 'READ')}"/>
+            </h:panelGrid>
+            -->
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{salesPartnerInvoceManager.invoiceList}"
+                             var="inv" paginator="true" rows="15"
+                             filteredValue="#{salesPartnerInvoceManager.filteredInvoicesList}"
+                             selection="#{salesPartnerInvoceManager.invoice}" selectionMode="single"
+                             lazy="true" rowKey="#{inv.id}" binding="#{salesPartnerInvoceManager.invoiceTable}">
+                    <f:facet name="header">Invoices</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{inv.id}</p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{inv.creationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Distributor">#{inv.partner.name}</p:column>
+                    <p:column headerText="Sum charged">#{inv.getSumChargedForView()}</p:column>
+                    <p:column headerText="Sum paid">#{inv.getSumPaidForView()}</p:column>
+                    <p:column headerText="Closing balance">#{inv.getBalanceForView()}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{salesPartnerInvoceManager.show}"
+                            rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor invoice', 'READ')}"
+                            update=":eqForm:messages"/>
+                        Total: #{salesPartnerInvoceManager.invoiceList.rowCount}</f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Distributor" action="#{salesPartnerInvoceManager.returnToDistributor}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor', 'READ')}"
+                            />
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

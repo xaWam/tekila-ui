@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Corporate Subscriber</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Rate information" />
+						</f:facet>
+						<h:outputLabel value="Name" for="rateName"></h:outputLabel>
+						<h:inputText id="rateName" value="#{rateManager.rate.name}" required="true" requiredMessage="Need to be filled"/>
+						<h:outputLabel value="Use promo resources?" for="ratePromo"/>
+						<h:selectBooleanCheckbox value="#{rateManager.rate.usePromoResources}" id="ratePromo" />
+						<h:outputLabel value="Price" for="ratePrice"/>
+						<h:inputText value="#{rateManager.rate.priceEdit}" id="ratePrice" required="true"/>
+						<h:outputLabel value="Active from" for="rateActiveFrom"/>
+						<p:calendar id="rateActiveFrom" value="#{rateManager.activeFrom}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true"/>
+						<h:outputLabel value="Active till" for="rateActiveTill"/>
+						<p:calendar id="rateActiveTill" value="#{rateManager.activeTill}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true"/>
+						<h:outputLabel value="Description"/>
+						<h:inputText value="#{rateManager.rate.desc}"/>
+					</h:panelGrid>
+					<h:panelGrid columns="3">
+						<p:commandButton action="#" value="Reset" type="reset"/>
+						<p:commandButton action="/pages/subscription/rate/index" value="Cancel"/>
+						<p:commandButton action="#{rateManager.create()}" value="Save" />
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

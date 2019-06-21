@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Resource Bucket #{resourceBucketManager.selected.type} / #{resourceBucketManager.selected.capacity} - View/Edit</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Resource Bucket #{resourceBucketManager.selected.type} / #{resourceBucketManager.selected.capacity}" />
+						</f:facet>
+						<h:outputLabel value="Type" for="rateName"/>
+						<p:inplace event="dblclick">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{resourceBucketManager.selected.type}"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <h:selectOneMenu id="rateName" value="#{resourceBucketManager.selected.type}">
+                                                            <f:selectItems value="#{resourceBucketManager.typeList}"/>
+                                                        </h:selectOneMenu>
+                                                    </f:facet>
+						</p:inplace>
+						
+						<h:outputLabel value="Capacity" for="ratePrice"/>
+						<p:inplace>
+                                                    <h:inputText value="#{resourceBucketManager.selected.capacity}" id="ratePrice"/>
+						</p:inplace>						
+						
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:commandButton action="/pages/bucket/index" value="Cancel"/>
+                                                <h:commandButton action="#{resourceBucketManager.update()}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

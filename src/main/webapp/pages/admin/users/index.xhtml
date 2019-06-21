@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Users</ui:define>
+    <ui:define name="content">
+        <h:form id="listForm">
+            <p:messages id="messages"/>
+            <p:panelGrid id="searchPanel" rowClasses="odd-row,even-row" columns="3" styleClass="small-input">
+                <f:facet name="header">Search</f:facet>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Username"></h:outputLabel>
+                        <h:inputText value="#{userManager.username}"/>
+
+                        <h:outputLabel value="Group"/>
+                        <p:selectOneMenu value="#{userManager.groupID}">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a group"/>
+                            <f:selectItems value="#{userManager.groupSelectList}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="First name"/>
+                        <h:inputText value="#{userManager.firstName}"/>
+
+                        <h:outputLabel value="Surname"/>
+                        <h:inputText value="#{userManager.surname}"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Email"></h:outputLabel>
+                        <h:inputText value="#{userManager.email}"/>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <p:panelGrid columns="2">
+                <p:commandButton value="Search" action="#{userManager.search}" process="searchPanel @this" update="@form"/>
+                <p:commandButton value="Reset" action="#{userManager.reset}" process="searchPanel @this" update="@form"/>
+            </p:panelGrid>
+            <p:dataTable value="#{userManager.userList}" var="us" selection="#{userManager.selectedUsers}"
+                         paginator="true"
+                         id="userTable"
+                         lazy="true" rows="15"
+                         rowStyleClass="#{us.status eq 'BLOCKED' ? 'blocked-user' : null}"
+                         rowIndexVar="#{us.id}"  >
+                <f:facet name="header">
+                    Users
+                </f:facet>
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="Id" styleClass="id">#{us.id}</p:column>
+                <p:column headerText="Userame">#{us.userName}</p:column>
+                <p:column headerText="Group">#{us.group.groupName}</p:column>
+                <p:column headerText="Email">#{us.email}</p:column>
+                <p:column headerText="Name">#{us.firstName} #{us.middleName} #{us.surname}</p:column>
+                <p:column headerText="Status">#{us.status}</p:column>
+                <f:facet name="footer">
+                    <p:commandButton value="View" action="#{userManager.show}" process="userTable" update=":listForm:messages"/>
+                    <p:commandButton value="Block selected Users" update="userTable" process="userTable"
+                                     actionListener="#{userManager.block}"/>
+                    <p:commandButton value="UnBlock selected Users" update="userTable" process="userTable"
+                                     actionListener="#{userManager.unblock}"/>
+                    <p:commandButton value="Send Bulk Email" onclick="PF('mail-sender').show()"/>
+                    <p:button value="Add" outcome="/pages/admin/users/user.xhtml"/>
+                </f:facet>
+            </p:dataTable>
+            <p:dialog header="Send Bulk email notification" widgetVar="mail-sender">
+                <p:outputLabel value="Subject : "/>
+                <p:inputText value="#{userManager.emailSubject}" required="true" requiredMessage="Subject must be specified"/>
+                <p:selectOneRadio value="#{userManager.sendingOption}" required="true"
+                                  requiredMessage="One of the sending option must be selected">
+                    <f:selectItem itemLabel="TO ALL USERS" itemValue="all"/>
+                    <f:selectItem itemLabel="TO SELECTED USERS" itemValue="selected"  />
+                </p:selectOneRadio>
+                <p:separator/>
+                <p:editor required="true" requiredMessage="Message can not be empty"
+                          value="#{userManager.emailText}" height="300" style="margin-bottom:10px"/>
+                <p:separator/>
+                <p:commandButton value="Send" update="listForm"
+                                 actionListener="#{userManager.sendMailNotification}">
+                    <p:confirm header="Confirmation" message="Are you sure to send notification to all/selected users ?" icon="ui-icon-alert" />
+                </p:commandButton>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

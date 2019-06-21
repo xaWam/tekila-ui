@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<f:metadata>
+    <f:viewParam name="notification" value="#{notificationManager.notificationID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Payment notification</ui:define>
+    <ui:define name="content">
+        <script type="text/javascript">
+            function onClick(btn) {
+                console.log($('#notifmsg').val());
+                $('#notifmsg').val($('#notifmsg').val() + ' {%' + $(btn).attr('value') + '%} ');
+            }
+
+            function onClickSubj(btn) {
+                $('#subj').val($('#subj').val() + ' {%' + $(btn).attr('value') + '%} ');
+            }
+        </script>
+        <h:form prependId="false">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="1" style="width: 100%;">
+                <f:facet name="header">Payment notification</f:facet>
+            </h:panelGrid>
+
+            <p:dataTable value="#{notificationManager.providers}" selection="#{notificationManager.selected.providerList}"
+                         var="prov" rowKey="#{prov.id}" rows="15" paginator="true" rowSelectMode="add">
+                <f:facet name="header">Providers</f:facet>
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="Id">#{prov.id}</p:column>
+                <p:column headerText="Name">#{prov.name}</p:column>
+            </p:dataTable>
+
+            <p:dataTable value="#{notificationManager.serviceList}" selection="#{notificationManager.selected.serviceList}"
+                         lazy="true" paginator="true" rows="15" rowKey="#{srv.id}" var="srv" rowSelectMode="add">
+                <f:facet name="header">Services</f:facet>
+                <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                <p:column headerText="Id">#{srv.id}</p:column>
+                <p:column headerText="Provider">#{srv.provider.name}</p:column>
+                <p:column headerText="Service">#{srv.name}</p:column>
+                <p:column headerText="Group">
+                    <h:outputText value="#{srv.group.name}"/>
+                </p:column>
+                <p:column headerText="Billed by Lifecycle?">
+                    <h:outputText value="#{srv.isBillByLifeCycle}"/>
+                </p:column>
+                <p:column headerText="Type" filterBy="#{srv.serviceType}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.serviceType}"/>
+                </p:column>
+                <p:column headerText="Installation Fee" filterBy="#{srv.installationFee}" >
+                    <h:outputText value="#{srv.installationFee}"/>
+                </p:column>
+            </p:dataTable>
+
+            <h:panelGrid styleClass="notif-table" rowClasses="odd-row, even-row" columnClasses="lbl-column,data-column" columns="2" cellpadding="5" cellspacing="5">
+                <h:outputLabel value="Language" styleClass="required"/>
+                <h:selectOneMenu value="#{notificationManager.selected.language}">
+                    <f:selectItems value="#{notificationManager.langList}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Channell" styleClass="required"/>
+                <p:selectOneMenu value="#{notificationManager.selected.channell}">
+                    <f:selectItem itemLabel="Select a channell"/>
+                    <f:selectItems value="#{notificationManager.channellList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Event" styleClass="required"/>
+                <p:selectOneMenu value="#{notificationManager.selected.event}">
+                    <f:selectItem itemLabel="Select an event"/>
+                    <f:selectItems value="#{notificationManager.eventList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="All lifecycles"/>
+                <h:selectBooleanCheckbox value="#{notificationManager.applyToAllLifecycleTypes}">
+                    <f:ajax listener="#{notificationManager.onLifeCycleCheckBoxValueChange}" render="lifecycle"/>
+                </h:selectBooleanCheckbox>
+
+                <h:outputLabel value="Lifecycle" styleClass="required"/>
+                <h:selectOneMenu id="lifecycle" disabled="#{notificationManager.applyToAllLifecycleTypes}" value="#{notificationManager.selected.lifeCycleType}" required="true" requiredMessage="Lifecycle is required">
+                    <f:selectItem itemLabel="Select lifecycle" noSelectionOption="true"/>
+                    <f:selectItems value="#{notificationManager.lifeCycleTypes}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="All subscriber types"/>
+                <h:selectBooleanCheckbox value="#{notificationManager.applyToAllSubscriberTypes}">
+                    <f:ajax listener="#{notificationManager.onSubscriberTypeValueChange}" render="sub_type"/>
+                </h:selectBooleanCheckbox>
+
+                <h:outputLabel value="Subscriber type" styleClass="required"/>
+                <h:selectOneMenu id="sub_type" disabled="#{notificationManager.applyToAllSubscriberTypes}" value="#{notificationManager.selected.subscriberType}" required="true" requiredMessage="Subscriber type is required">
+                    <f:selectItem itemLabel="Select type" noSelectionOption="true"/>
+                    <f:selectItems value="#{notificationManager.subscriberTypes}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Subject" styleClass="required"/>
+                <h:panelGroup>
+                    <h:panelGrid columns="2" styleClass="notif-inner">
+                        <h:inputText id="subj" value="#{notificationManager.selected.subject}" required="true" requiredMessage="Subject is required" style="width: 440px;"/>
+                        <h:panelGroup>
+                            <table cellspacing="2">
+                                <tr>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="BALANCE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="PAYMENT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="SERVICE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="DEBT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="EXPIRATION_DATE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="AGREEMENT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="STATUS" class="notif-btn"/></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="VAS_SERVICE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="SUBSCRIBER" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="INVOICE_ID" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="USERNAME" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClickSubj(this)" value="PASSWORD" class="notif-btn"/></td>
+                                </tr>
+                            </table>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </h:panelGroup>
+
+                <h:outputLabel value="Notification" styleClass="required"/>
+                <h:panelGroup>
+                    <h:panelGrid columns="2" styleClass="notif-inner">
+                        <p:inputTextarea id="notifmsg" widgetVar="notifmsg" cols="70" rows="30" autoResize="true" value="#{notificationManager.selected.notification}" required="true" requiredMessage="Notification is required"/>
+                        <h:panelGroup>
+                            <table cellspacing="2">
+                                <tr>
+                                    <td><input type="button" onclick="onClick(this)" value="BALANCE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="PAYMENT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="SERVICE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="DEBT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="EXPIRATION_DATE" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="AGREEMENT" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="STATUS" class="notif-btn"/></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="button" onclick="onClick(this)" value="SUBSCRIBER" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="INVOICE_ID" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="USERNAME" class="notif-btn"/></td>
+                                    <td><input type="button" onclick="onClick(this)" value="PASSWORD" class="notif-btn"/></td>
+                                </tr>
+                            </table>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </h:panelGroup>
+                <f:facet name="footer">
+                    <p:spacer height="10"/>
+                    <p:button value="Cancel" outcome="/pages/notifications/index.xhtml"/>
+                    <p:commandButton value="Save" action="#{notificationManager.save}" update="messages">
+                            <p:confirm header="Confirm update" message="Do you really want to save changes?" icon="ui-icon-alert"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="true" closeOnEscape="true">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"
+                                         icon="ui-icon-check"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no"
+                                         icon="ui-icon-close"/>
+                    </p:confirmDialog>
+                </f:facet>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

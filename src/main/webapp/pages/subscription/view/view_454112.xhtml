@@ -1,0 +1,705 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+-->
+<f:metadata>
+    <f:viewParam name="subscription" value="#{subscriptionManager.subscriptionID}"/>
+    <f:viewParam name="subscriber" value="#{subscriptionManager.subscriberID}"/>
+    <f:event type="preRenderView" listener="#{subscriptionManager.onPageLoad}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Subscription #{subscriptionManager.selected.agreement} - View/Edit</ui:define>
+    <ui:define name="content">
+        <h:form id="sbForm" onkeypress="return event.keyCode != 13;">
+            <p:growl id="messages" severity="info,warn,error,fatal" showDetail="true"/>
+            <p:accordionPanel activeIndex="0" dynamic="true" multiple="true" cache="true" id="accordionPanel">
+
+
+                <p:tab title="Details &amp; Settings">
+                    <h:panelGrid id="sbnInfo" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row">
+                        <f:facet name="header">
+                            &nbsp;
+                        </f:facet>
+                        <h:outputLabel for="subscriptionName" value="Name"/>
+                        <p:inplace id="subscriptionName" editor="true" emptyLabel="N/A">
+                            <p:inputText value="#{subscriptionManager.nameSurname}" />
+                        </p:inplace>
+
+                        <h:outputLabel value="Agreement"/>
+                        <h:outputText value="#{subscriptionManager.selected.agreement}"/>
+
+
+                        <h:outputLabel value="Status"/>
+
+                        <p:outputPanel id="sbnStatus">
+
+                            <h:outputText id="statusR" value="#{subscriptionManager.selected.status}"
+                                          rendered="#{not (uISecurityManager.hasPermission('Subscription', 'UPDATE')
+                                                    and uISecurityManager.hasPermission('SubscriptionStatusChange', 'UPDATE'))}"/>
+
+                            <script type="text/javascript">
+                                function showStatusChangeDialog(data) {
+                                    if (data.status == 'success') {
+                                        PF('statusChangeDialog').show();
+                                    }
+                                }
+                            </script>
+
+
+                            <p:inplace id="statusWU"
+                                       rendered="#{uISecurityManager.hasPermission('Subscription', 'UPDATE')  and uISecurityManager.hasPermission('SubscriptionStatusChange', 'UPDATE')}">
+                                <f:facet name="output">
+                                    <h:outputText value="#{subscriptionManager.selected.status}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{subscriptionManager.selectedStatus}" id="statusSelectU"
+                                                     widgetVar="statusSelect">
+                                        <f:ajax listener="#{subscriptionManager.onStatusChange}"
+                                                render=":sbForm:messages statusSelectU"/>
+                                        <f:selectItems value="#{subscriptionManager.subscriptionStatusList}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:inplace>
+
+
+                            <p:spacer width="30" height="0"
+                                      rendered="#{(subscriptionManager.selected.service.provider.id eq subscriptionManager.citynetProviderId or
+                                                            subscriptionManager.selected.service.provider.id eq subscriptionManager.uninetProviderId)
+                                                            and subscriptionManager.selected.status eq 'FINAL'
+                                                            and uISecurityManager.hasPermission('Subscription', 'UPDATE')
+                                                            and uISecurityManager.hasPermission('SubscriptionStatusChange', 'UPDATE')}"/>
+                            <p:commandButton value="Restore"
+                                             action="#{subscriptionManager.restoreToInitialFromFinal}"
+                                             rendered="#{(subscriptionManager.selected.service.provider.id eq subscriptionManager.citynetProviderId or
+                                                            subscriptionManager.selected.service.provider.id eq subscriptionManager.uninetProviderId)
+                                                                and subscriptionManager.selected.status eq 'FINAL'
+                                                                and uISecurityManager.hasPermission('Subscription', 'UPDATE')
+                                                                and uISecurityManager.hasPermission('SubscriptionStatusChange', 'UPDATE')}"
+                                             oncomplete="if(args.restored)location.reload(true);"
+                                             update=":sbForm:messages"/>
+                        </p:outputPanel>
+                        <h:outputLabel value="Balance" for="realBalance"/>
+                        <h:outputText value="#{subscriptionManager.selected.balance.realBalanceForView} (#{subscriptionManager.selected.balance.promoBalanceForView} AZN)"
+                                      id="realBalance"/>
+                    </h:panelGrid>
+
+
+
+
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row">
+
+                        <f:facet name="header"> &nbsp; </f:facet>
+
+                        <h:outputLabel for="subscriptionCreateDate" value="Created on"/>
+                        <h:outputText id="subscriptionCreateDate" value="#{subscriptionManager.selected.creationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+
+
+                        <h:outputLabel for="subscriptionActivationDate" value="Activated on"/>
+                        <h:outputText id="subscriptionActivationDate"
+                                      rendered="#{not uISecurityManager.hasPermission('SubscriptionActivationDate', 'UPDATE')}"
+                                      value="#{subscriptionManager.selected.activationDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+
+                        <p:inplace id="subscriptionActivationDateS" editor="true" rendered="#{uISecurityManager.hasPermission('SubscriptionActivationDate', 'UPDATE')}">
+                            <p:calendar value="#{subscriptionManager.selected.activationDateAsDate}" label="text" pattern="dd.MM.yyyy HH:mm:ss">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </p:calendar>
+                        </p:inplace>
+
+
+                        <h:outputLabel for="subscriptionPaymentDate" value="Last payment on"/>
+                        <h:outputText id="subscriptionPaymentDate"
+                                      value="#{subscriptionManager.selected.lastPaymentDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+
+                        <h:outputLabel for="subscriptionExpDate" value="Expires on"/>
+                        <h:outputText id="subscriptionExpDate" value="#{subscriptionManager.selected.expiresAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+
+                        <h:outputLabel for="subscriptionBillDate" value="Billed UpTo"/>
+                        <h:outputText id="subscriptionBillDate"
+                                      value="#{subscriptionManager.selected.billedUpToDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+
+
+
+                    </h:panelGrid>
+
+
+
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row">
+
+                        <f:facet name="header"> &nbsp; </f:facet>
+
+                        <h:outputLabel value="Service provider"/>
+                        <h:outputText value="#{subscriptionManager.selected.service.provider.name}"/>
+
+                        <h:outputLabel value="City"/>
+                        <h:outputLabel value="#{subscriptionManager.selected.details.city} #{subscriptionManager.selected.details.street}
+                            #{subscriptionManager.selected.details.building}  #{subscriptionManager.selected.details.apartment}"/>
+
+                        <h:outputLabel value="Created by"/>
+                        <h:outputText
+                                value="#{subscriptionManager.selected.user ne null ? subscriptionManager.selected.user.userName : '-'}"/>
+                        <h:outputLabel value="Comment" for="comment"/>
+                        <p:inplace emptyLabel="None" event="click">
+                            <p:editor id="comment" value="#{subscriptionManager.selected.details.comments}"
+                                      width="1000" height="200"/>
+                        </p:inplace>
+
+
+
+
+                    </h:panelGrid>
+
+
+
+
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row">
+
+                        <f:facet name="header"> &nbsp; </f:facet>
+
+                        <h:outputLabel value="Service"/>
+                        <h:outputText  value="#{subscriptionManager.selected.service.name} "/>
+                        <h:outputLabel for="servicefee" value="Service Fee (AZN)"/>
+                        <p:inplace id="servicefee" editor="true" emptyLabel="N/A">
+                            <p:inputText value="#{subscriptionManager.selected.serviceFeeRateForView}" />
+                        </p:inplace>
+
+                        <h:outputLabel value="Ats"/>
+                        <h:outputText value="#{subscriptionManager.ats.name}"/>
+
+                        <h:outputLabel value="One Time Prolongation" for="prolong"/>
+                        <p:commandButton id="prolong"
+                                         actionListener="#{subscriptionManager.prolongPrepaidSubscriptionOneTime}"
+                                         value="Prolong one month"
+                                         onstart="proceedWithProvDialog()"
+                                         oncomplete="PF('blockUIGeneral').hide();"
+                                         update=":sbForm:accordionPanel :sbForm:messages"/>
+
+                    </h:panelGrid>
+
+                    <f:facet name="header"> &nbsp; </f:facet>
+
+
+                    <p:panelGrid columns="1">
+                        <p:dataTable id="settingsTable"  editable="false" style="width: auto" editMode="cell"
+                                     value="#{subscriptionManager.selected.settings}"
+                                     var="set" rowKey="#{set.id}">
+                            <f:facet name="header">Settings</f:facet>
+                            <p:column headerText="Name" style="text-align: right">
+                                <h:outputText value="#{set.properties.title}"/>
+                            </p:column>
+                            <p:column headerText="Value" style="text-align: left">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText
+                                                value="#{(set.properties.title == 'BROADBAND_SWITCH' or
+                                                                set.properties.title == 'DEALER' or
+                                                                set.properties.title == 'SERVICE_TYPE') ?
+                                                    subscriptionManager.getNameFromId(set) : set.value}
+                                                    #{set.properties.title == 'IP_ADDRESS' ?subscriptionManager.staticIpCountAsText : ''}"/>
+                                    </f:facet>
+                                    <f:facet name="input"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}">
+                                        <h:inputText value="#{set.value}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panelGrid>
+
+                    <p:panelGrid>
+                        <f:facet name="footer">
+                            <p:commandButton value="Edit Settings"
+                                             onclick="PF('settingsChangeDialog').show(); return false;"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"/>
+                        </f:facet>
+                    </p:panelGrid>
+
+
+                </p:tab>
+
+
+                <p:tab title="External system">
+                    <p:outputPanel id="technStatusPanel"
+                                   rendered="#{subscriptionManager.selected.service.serviceType eq 'BROADBAND'}">
+                        <h:panelGrid columns="2" style="margin-bottom: 10px;" columnClasses="lbl-column,data-column">
+                            <f:facet name="header">Provisioned status</f:facet>
+                            <h:outputLabel>Account Status</h:outputLabel>
+                            <h:outputText
+                                    value="#{not empty subscriptionManager.technicalStatus ? subscriptionManager.technicalStatus.getElement('BROADBAND_ACTIVE').value : 'N/A'}"></h:outputText>
+                            <h:outputLabel>Access level</h:outputLabel>
+                            <h:outputText
+                                    value="#{not empty subscriptionManager.technicalStatus ? subscriptionManager.technicalStatus.getElement('BROADBAND_REDIRECT').value : 'N/A'}"></h:outputText>
+                        </h:panelGrid>
+
+                        <p:dataTable var="ajr" value="#{subscriptionManager.authRejectionStatuses}"
+                                     emptyMessage="No Errors..." id="rejectionReasons" >
+                            <f:facet name="header" >Authentication</f:facet>
+                            <p:column style="text-align: center;font-size: 16px !important;" >
+                                <h:outputText style="font-family: sans-serif !important;font-size: 16px !important;color: red;font-weight: bold" value="#{ajr}"></h:outputText>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton value="Refresh"
+                                                 actionListener="#{subscriptionManager.refreshAuthRejectionReasons}"
+                                                 process="@this" update="rejectionReasons"
+                                                 icon="ui-icon-refresh" />
+                            </f:facet>
+                        </p:dataTable>
+
+                        <p:dataTable value="#{subscriptionManager.onlineStats}" var="stat" rowKey="#{stat.id}" rows="1"
+                                     emptyMessage="User is offline">
+                            <f:facet name="header">Online session</f:facet>
+                            <p:column headerText="Start time">
+                                <h:outputText value="#{stat.startTime}">
+                                    <f:convertDateTime pattern="HH:mm:ss dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Duration">
+                                <h:outputText value="#{stat.duration}"/>
+                            </p:column>
+                            <p:column headerText="Uploaded (MB)">
+                                #{stat.up}
+                            </p:column>
+                            <p:column headerText="Downloaded (MB)">
+                                #{stat.down}
+                            </p:column>
+                            <p:column headerText="NAS IP Address">
+                                #{stat.nasIpAddress}
+                            </p:column>
+                            <p:column headerText="User IP Address">
+                                #{stat.framedAddress}
+                            </p:column>
+                            <p:column headerText="Dslam IP Address">
+                                #{stat.dslamIpAddress}
+                            </p:column>
+                        </p:dataTable>
+                        <p:panel style="margin-top: 10px;" columns="3">
+                            <p:commandButton value="Refresh" icon="ui-icon-refresh"
+                                             action="#{subscriptionManager.reloadSession}" update="technStatusPanel"/>
+                            <p:commandButton value="Disconnect" icon="ui-icon-power"
+                                             actionListener="#{subscriptionManager.disconnectSession}"
+                                             update="technStatusPanel :sbForm:messages"/>
+                            <p:commandButton value="Provision" icon="ui-icon-arrowthick-2-e-w"
+                                             onclick="PF('provDialog').show(); return false;" id="reprovisionBtn2"/>
+                        </p:panel>
+
+                        <p:dataTable value="#{subscriptionManager.offlineStats}" var="offlinestat"
+                                     rowKey="#{offlinestat.id}" rows="5"
+                                     emptyMessage="No previous sessions found.">
+                            <f:facet name="header">Offline sessions</f:facet>
+                            <p:column headerText="Start time">
+                                <h:outputText value="#{offlinestat.startTime}">
+                                    <f:convertDateTime pattern="HH:mm:ss dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="End time">
+                                <h:outputText value="#{offlinestat.endTime}">
+                                    <f:convertDateTime pattern="HH:mm:ss dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Duration(sec)">
+                                #{offlinestat.sessionDuration}
+                            </p:column>
+                            <p:column headerText="Uploaded (MB)">
+                                #{offlinestat.up}
+                            </p:column>
+                            <p:column headerText="Downloaded (MB)">
+                                #{offlinestat.down}
+                            </p:column>
+                            <p:column headerText="User Ip Address">
+                                #{offlinestat.framedAddress}
+                            </p:column>
+                            <p:column headerText="Nas Ip Address">
+                                #{offlinestat.nasIpAddress}
+                            </p:column>
+                            <p:column headerText="Dslam Ip Address">
+                                #{offlinestat.dslamIpAddress}
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+
+                    <h:panelGrid columns="2" style="margin-bottom: 10px; border: 1px solid black;"
+                                 columnClasses="lbl-column,data-column"
+                                 id="usage" rendered="#{subscriptionManager.cityNet}">
+                        <f:facet name="header">Usage</f:facet>
+
+                        <p:outputLabel for="startDate" value="Start Date:"/>
+                        <p:calendar id="startDate" value="#{subscriptionManager.usageStartDate}"/>
+
+                        <p:outputLabel for="endDate" value="End Date:"/>
+                        <p:calendar id="endDate" value="#{subscriptionManager.usageEndDate}"/>
+
+                        <h:outputLabel>Download</h:outputLabel>
+                        <h:outputText id="download_usage" value="#{subscriptionManager.usageDownload}"></h:outputText>
+
+                        <h:outputLabel>Upload</h:outputLabel>
+                        <h:outputText id="upload_usage" value="#{subscriptionManager.usageUpload}"></h:outputText>
+
+                        <p:commandButton id="UsageGetBtn" value="get" icon="ui-icon-refresh"
+                                         action="#{subscriptionManager.getUsage}" update="download_usage upload_usage"
+                                         process="@this endDate startDate download_usage upload_usage"/>
+
+                    </h:panelGrid>
+
+                    <p:blockUI block="usage" trigger="UsageGetBtn"/>
+                </p:tab>
+
+                <p:tab title="Notification settings">
+                    <h:panelGrid columns="1" id="notifGrid">
+                        <f:facet name="header">Notification settings</f:facet>
+
+                        <p:dataTable value="#{subscriptionManager.notificationSettings}" var="row" rows="100"
+                                     rowKey="#{row.id}">
+                            <p:column headerText="Event">
+                                <h:outputText value="#{row.event}"/>
+                            </p:column>
+                            <p:column headerText="Notifications">
+                                <p:selectManyCheckbox value="#{row.selectedChannelList}">
+                                    <f:selectItems value="#{row.channelList}" var="ch" itemLabel="#{ch}"
+                                                   itemValue="#{ch.code}"/>
+                                </p:selectManyCheckbox>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Campaigns">
+                    <p:dataTable value="#{subscriptionManager.campaignList}" var="camp" lazy="true" paginator="true"
+                                 rows="15"
+                                 rowKey="#{camp.id}" id="sbnCampList"
+                                 selection="#{subscriptionManager.selectedRegister}" selectionMode="single">
+                        <f:facet name="header">List of campaigns joined</f:facet>
+                        <p:column headerText="Id">#{camp.campaign.id}</p:column>
+                        <p:column headerText="Name">#{camp.campaign.name}</p:column>
+                        <p:column headerText="Bonus">#{camp.bonusAmountForView}</p:column>
+                        <p:column headerText="Status">#{camp.status}</p:column>
+                        <p:column headerText="Joined on">
+                            <h:outputText value="#{camp.joinDate.toDate()}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Months left">#{camp.lifeCycleCount}</p:column>
+                        <p:column headerText="Processed on">
+                            <h:outputText value="#{camp.processedDate ne null ? camp.processedDate.toDate() : ''}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Notes">
+                            <h:outputText value="#{camp.campaignNotes}"/>
+                        </p:column>
+                        <p:column headerText="BonusDate">
+                            <h:outputText value="#{camp.bonusDate.toDate()}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:menuButton value="Action"
+                                  rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}">
+                        <p:menuitem value="Add" onclick="PF('campDialog').show(); return false;"
+                                    update=":sbForm:messages"/>
+                        <p:menuitem value="Activate" action="#{subscriptionManager.activateCampaign}"
+                                    update="sbnCampList :sbForm:messages :sbForm:accordionPanel"/>
+                        <p:menuitem value="Delete" action="#{subscriptionManager.deleteCampaign}">
+                        </p:menuitem>
+                    </p:menuButton>
+                </p:tab>
+                <p:tab title="Address">
+                    <h:panelGrid id="addressInfo" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row">
+                        <h:outputLabel value="City"/>
+                        <h:inputText value="#{subscriptionManager.selected.details.city}"/>
+
+                        <h:outputLabel value="Street"/>
+                        <h:inputText value="#{subscriptionManager.selected.details.street}"/>
+
+                        <h:outputLabel value="Building"/>
+                        <h:inputText value="#{subscriptionManager.selected.details.building}"/>
+
+                        <h:outputLabel value="Apartment"/>
+                        <h:inputText value="#{subscriptionManager.selected.details.apartment}"/>
+                    </h:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+            <p:separator/>
+            <h:panelGrid columns="2" style="margin-top: 10px;">
+                <p:button outcome="/admin.xhtml" value="Cancel"/>
+                <p:commandButton action="#{subscriptionManager.save()}" update="@form messages" value="Save"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}">
+                    <p:confirm header="Confirm operation" message="Do you really want to perform this operation?"
+                               icon="ui-icon-alert"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" closeOnEscape="true">
+                    <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                    <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                </p:confirmDialog>
+                <p:blockUI block=":sbForm" widgetVar="blockUIGeneral">
+                    <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                                   value="Requesting, please wait..."/><br/><br/>
+                    <p:graphicImage value="/resources/img/loading.gif"/>
+                </p:blockUI>
+
+
+            </h:panelGrid>
+
+            <p:dialog position="center"
+                      widgetVar="settingsChangeDialog"
+                      closable="true"
+                      closeOnEscape="true"
+                      maximizable="false"
+                      resizable="false"
+                      width="330px">
+                <f:facet name="header" >Change Settings</f:facet>
+                <p:outputPanel>
+                    <h:panelGrid id="globalSettingsGrid" columns="2" width="300px">
+                        <h:outputLabel value="Service" for="serviceName"/>
+                        <p:selectOneMenu value="#{subscriptionManager.serviceId}" id="serviceName" required="true"
+                                         requiredMessage="Service is required">
+                            <f:selectItem itemLabel="Select service" noSelectionOption="true"/>
+                            <f:selectItems value="#{subscriptionManager.serviceSelectList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="ATS"/>
+                        <p:selectOneMenu value="#{subscriptionManager.details.ats}" id="atsSelect"
+                                         requiredMessage="ATS is required">
+                            <f:selectItem itemLabel="Select ATS" noSelectionOption="true"/>
+                            <f:selectItems value="#{subscriptionManager.atsSelectList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Reseller"/>
+                        <p:selectOneMenu value="#{subscriptionManager.selectedReseller}" id="resellerSelect">
+                            <f:selectItem itemLabel="Select Reseller" noSelectionOption="true"/>
+                            <f:selectItems value="#{subscriptionManager.resellerSelectList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Static IP"/>
+                        <h:inputText value="#{subscriptionManager.staticIp}" size="130"/>
+
+                        <h:outputLabel value="Username"/>
+                        <h:inputText value="#{subscriptionManager.username}" size="130"/>
+
+                        <h:outputLabel value="Password"/>
+                        <h:inputText value="#{subscriptionManager.password}" size="130"/>
+
+
+                        <p:ajaxStatus>
+                            <f:facet name="start">
+                                <h:graphicImage value="/resources/img/ajaxloader.gif" style="width:50px;height:30px;"/>
+                            </f:facet>
+
+                            <f:facet name="complete">
+                                <h:outputText/>
+                            </f:facet>
+                        </p:ajaxStatus>
+                        <p:commandButton actionListener="#{subscriptionManager.saveOperation}" value="Save changes"
+                                         update=":sbForm:accordionPanel messages :sbForm:globalSettingsGrid"
+                                         process=":sbForm:globalSettingsGrid"
+                                         oncomplete="PF('settingsChangeDialog').hide()" />
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog id="statusChangeDialog" widgetVar="statusChangeDialog" closeOnEscape="true" closable="true"
+                      maximizable="false" width="840" showEffect="explode" dynamic="true">
+                <f:facet name="header">Status change details</f:facet>
+                <p:panelGrid columns="2" columnClasses="lbl-column,data-column">
+                    <h:outputLabel value="Start date"/>
+                    <p:calendar value="#{subscriptionManager.statusChangeStartDate}" pattern="dd/MM/yyyy HH:mm:ss"
+                                navigator="true" styleClass="small-calendar"/>
+
+                    <h:outputLabel value="Apply Reversal on the End date"
+                                   rendered="#{not empty subscriptionManager.selectedStatus
+                                   and subscriptionManager.selectedStatus ne 'FINAL' and subscriptionManager.selectedStatus ne 'PRE_FINAL'}" />
+                    <p:selectBooleanCheckbox value="#{subscriptionManager.applyReversalEndDate}"
+                                             rendered="#{not empty subscriptionManager.selectedStatus
+                                             and subscriptionManager.selectedStatus ne 'FINAL' and subscriptionManager.selectedStatus ne 'PRE_FINAL'}"/>
+                    <h:outputLabel value="End date"
+                                   rendered="#{not empty subscriptionManager.selectedStatus
+                                   and subscriptionManager.selectedStatus ne 'FINAL' and subscriptionManager.selectedStatus ne 'PRE_FINAL'}"/>
+                    <p:calendar value="#{subscriptionManager.statusChangeEndDate}" pattern="dd/MM/yyyy HH:mm:ss"
+                                navigator="true"
+                                rendered="#{not empty subscriptionManager.selectedStatus
+                                and subscriptionManager.selectedStatus ne 'FINAL' and subscriptionManager.selectedStatus ne 'PRE_FINAL'}"
+                                styleClass="small-calendar"/>
+
+                    <h:outputLabel value="Value Added Serice name"/>
+                    <h:outputText
+                            value="#{not empty subscriptionManager.statusChangeRule ? subscriptionManager.statusChangeRule.vas.name : '-'}"/>
+
+                    <h:outputLabel value="Price"/>
+                    <h:outputText
+                            value="#{not empty subscriptionManager.statusChangeRule ? subscriptionManager.statusChangeRule.vas.priceInDouble: 0} AZN"/>
+                </p:panelGrid>
+                <p:commandButton value="Change status" actionListener="#{subscriptionManager.changeStatus}"
+                                 oncomplete="PF('statusChangeDialog').hide();"
+                                 update=":sbForm:accordionPanel:sbnInfo :sbForm:messages"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'UPDATE')}"/>
+            </p:dialog>
+
+            <p:dialog widgetVar="staticIpDialog" id="staticIpDialog" width="400">
+                <p:panelGrid columns="3">
+                    <h:outputLabel value="Static IP"/>
+                    <h:inputText value="#{subscriptionManager.staticIp}" size="130"/>
+                </p:panelGrid>
+                <p:commandButton value="Add IP" action="#{subscriptionManager.addStaticIP}"
+                                 rendered="#{subscriptionManager.selected.getSettingByType('IP_ADDRESS') eq null}"
+                                 update=":sbForm:accordionPanel staticIpDialog messages" process="staticIpDialog"
+                                 oncomplete="PF('staticIpDialog').hide();"/>
+                <p:commandButton value="Modify IP" action="#{subscriptionManager.modifyStaticIP}"
+                                 rendered="#{subscriptionManager.selected.getSettingByType('IP_ADDRESS') ne null}"
+                                 update=":sbForm:accordionPanel staticIpDialog messages" process="staticIpDialog"
+                                 oncomplete="PF('staticIpDialog').hide();"/>
+                <p:commandButton value="Remove IP" action="#{subscriptionManager.removeStaticIP}"
+                                 rendered="#{subscriptionManager.selected.getSettingByType('IP_ADDRESS') ne null}"
+                                 update=":sbForm:accordionPanel staticIpDialog messages" process="staticIpDialog"
+                                 oncomplete="PF('staticIpDialog').hide();"/>
+            </p:dialog>
+
+            <p:dialog id="campDialog" widgetVar="campDialog" closeOnEscape="true" closable="true"
+                      maximizable="false" width="840" showEffect="explode">
+                <p:ajax event="close" listener="#{subscriptionManager.onCampaignDialogClosed}" update="campList"/>
+                <p:panelGrid columns="1" id="campPanel">
+                    <f:facet name="header">Search for Campaign</f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid columns="2">
+                            <h:outputLabel value="Name"/>
+                            <h:inputText value="#{subscriptionManager.campaignName}" style="width: 415px;"
+                                         onkeypress="return true;">
+                                <f:ajax listener="#{subscriptionManager.onCampaignSearch}" render="campList"/>
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:commandButton value="Reset" actionListener="#{subscriptionManager.resetCampaignList}"
+                                     update="campPanel campList"/>
+                </p:panelGrid>
+
+                <p:dataTable value="#{subscriptionManager.availableCampaignList}"
+                             selection="#{subscriptionManager.selectedCampaign}" selectionMode="single"
+                             var="camp" rowKey="#{camp.id}" rows="10" paginator="true" id="campList" lazy="true"
+                             editable="true" editMode="cell">
+                    <f:facet name="header">Available campaigns List</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{camp.id}</p:column>
+                    <p:column headerText="Name">#{camp.name}</p:column>
+                    <p:column headerText="Type">#{camp.target}</p:column>
+                    <p:column headerText="Description">#{camp.desc}</p:column>
+
+                    <p:column headerText="Notes">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="Click to enter notes"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="campaignNotes" value="#{subscriptionManager.campaignNotes}"
+                                             style="width:96%"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#{subscriptionManager.addCampaign}" id="campDialogSaveBtn" value="Save"
+                                     rendered="#{uISecurityManager.hasPermission('Subscription', 'UPDATE')}"
+                                     oncomplete="PF('campDialog').hide();"
+                                     update=":sbForm:accordionPanel :sbForm:accordionPanel:sbnCampList :sbForm:messages"/>
+                </h:panelGrid>
+            </p:dialog>
+
+            <p:dialog id="provDialog" dynamic="true" widgetVar="provDialog" closeOnEscape="true" closable="true"
+                      maximizable="false" width="840" showEffect="explode">
+                <p:ajax event="close" listener="#{subscriptionManager.onProvisioningDialogClosed}" update="provDialog"/>
+                <p:panelGrid columns="2" id="provPanel">
+                    <f:facet name="header">Reason</f:facet>
+                    <h:outputLabel value="Standard"/>
+                    <p:selectOneMenu id="stdReason" value="#{subscriptionManager.provisioningReasonStandard}">
+                        <f:ajax event="change" render="provPanel"/>
+                        <f:selectItem noSelectionOption="true" itemLabel="Select a reason"/>
+                        <f:selectItem itemLabel="Channels or Internet did not open after payment"
+                                      itemValue="Channels or Internet did not open after payment"/>
+                        <f:selectItem itemLabel="Channels ot Internet unexpectedly stopped workinng"
+                                      itemValue="Channels or Internet unexpectedly stopped workinng"/>
+                        <f:selectItem itemLabel="Other reason" itemValue="Other reason"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Other"
+                                   rendered="#{subscriptionManager.provisioningReasonStandard eq 'Other reason'}"/>
+                    <h:inputText id="otherReason" value="#{subscriptionManager.provisioningReason}"
+                                 style="width: 600px;"
+                                 binding="#{subscriptionManager.provisioiningReasonOtherInput}"
+                                 rendered="#{subscriptionManager.provisioningReasonStandard eq 'Other reason'}"
+                                 validator="#{subscriptionManager.validateReprovisioningReason}"/>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton actionListener="#{subscriptionManager.reprovision}" id="provDialogSaveBtn"
+                                     value="Proceed"
+                                     onstart="proceedWithProvDialog()"
+                                     oncomplete="PF('blockUIGeneral').hide();"
+                                     update=":sbForm:messages sbForm:provPanel"/>
+                </h:panelGrid>
+            </p:dialog>
+
+            <script type="text/javascript">
+                function proceedWithProvDialog() {
+                    if (jQuery('#sbForm\\:stdReason_input').val() || jQuery('#sbForm\\:otherReason').val()) {
+                        PF('provDialog').hide();
+                        PF('blockUIGeneral').show();
+                    }
+                }
+            </script>
+        </h:form>
+
+        <p:dialog id="manualActivateDialog" widgetVar="manualActivateDialog" closeOnEscape="true" closable="true"
+                  maximizable="false" width="840" showEffect="explode" dynamic="true">
+            <f:facet name="header">Manual Activation</f:facet>
+
+            <h:form>
+                <p:panelGrid columns="2" columnClasses="lbl-column,data-column">
+                    <h:outputLabel value="Activation date"/>
+                    <p:calendar value="#{subscriptionManager.selected.activationDate}" pattern="MM/dd/yyyy hh:mm:ss a"
+                                navigator="true" styleClass="small-calendar" converter="dateTimeConverter"/>
+                </p:panelGrid>
+                <p:commandButton value="Activate" actionListener="#{subscriptionManager.activateSubscriptionManually}"
+                                 oncomplete="PF('manualActivateDialog').hide();"
+                                 update=":sbForm:accordionPanel :sbForm:messages"
+                                 rendered="#{uISecurityManager.hasPermission('SubscriptionActivate', 'UPDATE')}"/>
+            </h:form>
+        </p:dialog>
+
+
+
+
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation" styleClass="disable-scroll">
+                    <p:menuitem value="Offline stats" action="#{subscriptionManager.goToOfflineStats()}"/>
+                    <p:menuitem value="Subscriber details" action="#{subscriptionManager.redirect()}"/>
+                </p:submenu>
+            </p:menu>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

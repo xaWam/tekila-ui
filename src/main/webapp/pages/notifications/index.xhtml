@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin_two_panels.xhtml">
+        <ui:define 
+            name="pageTitle">Notifications
+        </ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages" life="2000" />
+
+                <p:panelGrid rowClasses="odd-row,even-row" columns="3" styleClass="small-input">
+                    <f:facet name="header">Search for notifications</f:facet>
+                    <p:outputPanel id="eqPanel">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>Event</h:outputLabel>
+                            <p:selectOneMenu value="#{notificationManager.event}">
+                                <f:selectItem itemLabel="SelectItem" noSelectionOption="true"/> 
+                                <f:selectItems value="#{notificationManager.eventList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel>Channel</h:outputLabel>
+                            <p:selectOneMenu value="#{notificationManager.notificationChannell}">
+                                <f:selectItem itemLabel="SelectItem" noSelectionOption="true"/> 
+                                <f:selectItems value="#{notificationManager.channellList}"/>
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>Language</h:outputLabel>
+                            <p:selectOneMenu value="#{notificationManager.lang}">
+                                <f:selectItem itemLabel="SelectItem" noSelectionOption="true"/> 
+                                <f:selectItems value="#{notificationManager.langList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel>Subject</h:outputLabel>
+                            <h:inputText value="#{notificationManager.subject}">
+                            </h:inputText>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>Provider</h:outputLabel>
+                            <p:selectOneMenu value="#{notificationManager.providerID}">
+                                <f:selectItem itemLabel="SelectItem" noSelectionOption="true"/> 
+                                <f:selectItems value="#{notificationManager.providerSelectList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel>Notification</h:outputLabel>
+                            <h:inputText value="#{notificationManager.notificationText}">
+                            </h:inputText>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#{notificationManager.reset}" value="Reset" update="@form, messages"/>
+                    <p:commandButton action="#{notificationManager.search}" value="Search" update="@form, messages"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Notification', 'READ')}"/>
+                </h:panelGrid>
+
+
+
+
+                <p:dataTable value="#{notificationManager.filteredNotificationList}" selection="#{notificationManager.selected}" var="nf"
+                             selectionMode="single" rows="15" paginator="true" rowKey="#{nf.id}">
+                    <f:facet name="header">Notifications</f:facet>
+                    <p:column headerText="Id">#{nf.id}</p:column>
+                    <p:column headerText="Event">#{nf.event}</p:column>
+                    <p:column headerText="Channell">#{nf.channell}</p:column>
+                    <p:column headerText="Language">#{nf.language}</p:column>
+                    <p:column headerText="Subject">#{nf.subject}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{notificationManager.show}" update="@form"/>
+                        <p:button value="Add" outcome="/pages/notifications/create.xhtml"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

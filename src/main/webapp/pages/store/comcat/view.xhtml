@@ -1,0 +1,65 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<f:metadata>
+    <f:viewParam name="category" value="#{commercialCategoryManager.categoryID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Commercial Category</ui:define>
+    <ui:define name="content">
+        <h:form id="main-search-form">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">Commercial category</f:facet>
+                <h:outputLabel value="Name"/>
+                <p:inplace>
+                    <h:inputText value="#{commercialCategoryManager.selected.name}"/>
+                </p:inplace>
+
+                <h:outputLabel value="Tax category"/>
+                <p:inplace>
+                    <f:facet name="output">
+                        <h:outputText value="#{commercialCategoryManager.selected.taxCategory.name}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                    <p:selectOneMenu value="#{commercialCategoryManager.taxCat}">
+                        <f:selectItem itemLabel="Select a category" noSelectionOption="true"/>
+                        <f:selectItems value="#{commercialCategoryManager.taxCategoryList}"/>
+                    </p:selectOneMenu>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Price"/>
+                <p:inplace>
+                    <f:facet name="output">
+                        <h:outputText value="#{commercialCategoryManager.selected.getPriceForView()}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                    <p:outputPanel>
+                        <h:inputText value="#{commercialCategoryManager.amountWholePart}"/>
+                        <h:outputText value="."/>
+                        <h:inputText value="#{commercialCategoryManager.amountDecimalPart}"/>
+                    </p:outputPanel>
+                    </f:facet>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="3">
+                <p:button value="Cancel" outcome="/pages/store/comcat/index.xhtml"/>
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{commercialCategoryManager.edit}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkUIPermissions('CommercialCategory', 'UPDATE')}"/>
+            </h:panelGrid>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

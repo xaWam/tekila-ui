@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD 
+GlassFish Application Server 3.1 Servlet 3.0//EN" 
+"http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
+
+<glassfish-web-app>
+    <security-role-mapping>
+        <role-name>backoffice</role-name>
+        <group-name>backoffice</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>administrators</role-name>
+        <group-name>administrators</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>sales</role-name>
+        <group-name>sales</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>finance</role-name>
+        <group-name>finance</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>user</role-name>
+        <group-name>user</group-name>
+    </security-role-mapping>
+    <session-config>
+        <session-manager persistence-type="replicated">
+            <manager-properties>
+                <property name="relaxCacheVersionSemantics" value="true"/>
+            </manager-properties>
+        </session-manager>
+        <!--<cookie-properties>-->
+            <!--<property name="cookieDomain" value="azerfon.az"/>-->
+        <!--</cookie-properties>-->
+    </session-config>
+</glassfish-web-app>

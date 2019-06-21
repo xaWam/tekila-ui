@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">View Subscriber (Corporate)</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="General information" />
+						</f:facet>
+						<h:outputLabel value="Company Type" for="subCompanyType" styleClass="required"/>
+						<p:inplace event="dblclick" effect="slide">
+						<p:selectOneRadio value="#{subscriber.selected.companyType}" id="subCompanyType">
+							<f:selectItems value="#{subscriber.companyTypeSelectList}"/>
+						</p:selectOneRadio>
+						</p:inplace>
+                                                <h:outputLabel value="Company name" for="subCompanyName" styleClass="required"/>
+						<p:inplace><h:inputText id="subCompanyName" value="#{subscriber.selected.companyName}" required="true"/>
+						</p:inplace>
+					 </h:panelGrid>
+					 <p:separator></p:separator>
+					 <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Contact Person information" />
+						</f:facet>			
+						
+						<h:outputLabel value="Name" for="subName" styleClass="required"/>
+						<p:inplace event="dblclick" effect="slide" effectSpeed="fast">
+						<h:inputText id="subName" value="#{subscriber.selected.firstName}" required="true"/>
+						</p:inplace>
+						
+						<h:outputLabel value="Middle Name" for="subNameMiddle" styleClass="required"/>
+						<p:inplace event="dblclick">
+						<h:inputText id="subNameMiddle" value="#{subscriber.selected.middleName}" required="true"/> 
+						</p:inplace>
+						
+						<h:outputLabel value="Surname" for="subSurName" styleClass="required"/>
+						<p:inplace event="dblclick"><h:inputText id="subSurName" value="#{subscriber.selected.surname}" required="true"/></p:inplace>
+												
+						<h:outputLabel value="Citizenship" for="subCitizen"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subCitizen" value="#{subscriber.selected.citizenship}"/></p:inplace>
+					</h:panelGrid>
+					<h:inputHidden id="subType" value="#{subscriber.enumSubTypeCorp}" binding="#{subscriber.subType}"/>												
+					
+					<p:separator></p:separator>	
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="ID/Passport Information" />
+						</f:facet>											
+						<h:outputLabel value="Country of registration" for="subIssueCountry"></h:outputLabel>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subIssueCountry" value="#{subscriber.selected.country}"/></p:inplace>
+						<h:outputLabel value="Bank account" for="subSeries"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subSeries" value="#{subscriber.selected.bankAccount}"/></p:inplace>
+						<h:outputLabel value="Registration ID" for="subPassNum"/>
+						<p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPassNum" value="#{subscriber.selected.passportNumber}"/></p:inplace>
+						<h:outputLabel value="Issued authority" for="subPassAuth"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subPassAuth" value="#{subscriber.selected.passportAuthority}"/></p:inplace>
+						<h:outputLabel value="Date of Issue" for="subIssueDate"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><p:calendar id="subIssueDate" value="#{subscriber.selected.passportIssueDate}" navigator="true" pagedate="01/01/1980" pattern="dd/MM/yyyy"></p:calendar></p:inplace>
+						<h:outputLabel value="Valid till (month/year)" for="subValidTill"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><p:inputMask id="subValidTill" mask="99/9999" value="#{subscriber.selected.passportValidTill}"></p:inputMask></p:inplace>
+						<h:outputLabel value="Email" for="subPassEmail"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.email}" id="subPassEmail"/></p:inplace>
+						<h:outputLabel value="Contact # (mobile)" for="subContact"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneMobile}" id="subContact"/></p:inplace>
+						<h:outputLabel value="Contact # (mobile 2)" for="subContact_2"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneMobileAlt}" id="subContact_2"/></p:inplace>
+						<h:outputLabel value="Contact # (landline)" for="subContact_3"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneLandline}" id="subContact_3"/></p:inplace>						
+					</h:panelGrid>
+					<p:separator></p:separator>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="Address (invoicing / billing)" />						
+						</f:facet>												
+						<h:outputLabel value="City" for="subInvCity"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.city}" id="subInvCity"/></p:inplace>
+						<h:outputLabel value="ATS #" for="subATS"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.ats}" id="subATS"/></p:inplace>
+						<h:outputLabel value="Street" for="subInvStreet"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.street}" id="subInvStreet"/></p:inplace>						
+						<h:outputLabel value="Building" for="subInvBuilding"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.building}" id="subInvBuilding"/></p:inplace>						
+						<h:outputLabel value="Apartment" for="subInvAp"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.apartment}" id="subInvAp"/></p:inplace>										
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:commandButton action="/pages/subscriber/corp/index" value="Cancel"/>
+						<h:commandButton action="#{subscriber.update}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

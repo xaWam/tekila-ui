@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Midipop</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Create Midipop</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Name</h:outputLabel>
+                        <h:inputText value="#{midipopManager.name}">
+                        </h:inputText>
+
+                        <h:outputLabel value="Ats"/>
+                        <p:selectOneMenu value="#{midipopManager.ats}" converter="#{atsConverter}">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select ats"/>
+                            <f:selectItems value="#{midipopManager.atsSelectList}" var="ats" itemValue="#{ats}" itemLabel="#{ats.name}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel>Switch Ip</h:outputLabel>
+                        <h:inputText value="#{midipopManager.switchIp}">
+                        </h:inputText>
+
+                        <h:outputLabel>Switch Port</h:outputLabel>
+                        <h:inputText value="#{midipopManager.switchPort}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Cable</h:outputLabel>
+                        <h:inputText value="#{midipopManager.cable}">
+                        </h:inputText>
+
+                        <h:outputLabel>Nodes</h:outputLabel>
+                        <h:inputText value="#{midipopManager.nodes}">
+                        </h:inputText>
+
+                        <h:outputLabel>Vlan</h:outputLabel>
+                        <h:inputText value="#{midipopManager.vlan}">
+                        </h:inputText>
+
+                        <h:outputLabel value="Status"/>
+                        <p:selectOneMenu value="#{midipopManager.status}">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Select status"/>
+                            <f:selectItems value="#{midipopManager.statusList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="createMidipop" action="#{midipopManager.create}" value="Create" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Midipop', 'INSERT')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="createMidipop" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Creating, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

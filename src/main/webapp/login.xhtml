@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<!--
+        Replace path to template, title, header and body
+        with actual data.
+-->
+<f:metadata>
+    <f:event type="preRenderView" listener="#{loginManager.onPrerenderView}"/>
+    <f:viewParam name="username" value="#{loginManager.username}"/>
+    <f:viewParam name="key" value="#{loginManager.key}"/>
+    <f:event type="preRenderView" listener="#{loginManager.passwordResetConfirmation}"/>
+</f:metadata>
+
+<h:head>
+    <title><ui:insert name="paageTitle">TekILA: The Convergent Billing System</ui:insert></title>
+    <h:outputStylesheet name="css/admin.css"></h:outputStylesheet>
+</h:head>
+<h:body id="body">
+    <h:form id="loginForm" binding="#{loginManager.loginForm}">
+        <p:growl id="growl" sticky="true" for="loginForm"/>
+        <div class="login">
+
+            <div>
+                <!--                    <p:message for="loginForm" id="message" style="text-align: center;"/>-->
+
+                <div class="logo">
+                    <img src="/rsz_2tekila_logo.png" alt="logo" width="500" style="margin-left: 100px;"/>
+                </div>
+
+                <div class="app-title">
+                    <!--h2>Telekom &amp; ISP Logical Application</h2-->
+                </div>
+
+                <div class="login-form">
+                    <div class="control-group">
+                        <h:inputText class="login-field" id="login-name" required="true" rendered="true"
+                                     value="#{loginManager.username}"/>
+                        <p:watermark for="login-name" value="Username" id="watermarkUsername"/>
+                        <label class="login-field-icon fui-user" for="login-name"></label>
+                    </div>
+
+                    <div class="control-group">
+                        <h:inputSecret class="login-field" id="login-pass" required="false"
+                                       value="#{loginManager.password}"/>
+                        <p:watermark for="login-pass" value="Password" id="watermarkPassword"/>
+                        <label class="login-field-icon fui-lock" for="login-pass"></label>
+                    </div>
+
+                    <p:splitButton value="Login" action="#{loginManager.login}" update="growl"
+                                   styleClass="ui-priority-primary">
+                        <p:menuitem value="Forgot password" actionListener="#{loginManager.startResetPassword}"
+                                    update="growl" icon="ui-icon-arrowrefresh-1-w" onclick="PF('bui').show();"
+                                    oncomplete="PF('bui').hide()"/>
+                        <p:menuitem value="Need Help?"
+                                    url="mailto:narhomebilling@azerfon.az?subject=The%20subject%20of%20the%20mail"
+                                    update="growl" icon="ui-icon-mail-closed"/>
+                    </p:splitButton>
+                    <br/>
+
+                    <p:blockUI block=":body" widgetVar="bui">
+                        Please wait...
+                    </p:blockUI>
+                    <br/>
+
+
+                    <p class="browser-warn">Best used with Chrome / Firefox!</p>
+
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+
+    </h:form>
+
+</h:body>
+</html>
+
+
+
+

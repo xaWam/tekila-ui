@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+    <!-- 
+            Replace path to template, title, header and body
+            with actual data.
+    -->
+    <f:metadata>
+        <f:viewParam name="subscriber" value="${subscriber.subscriberId}"/>
+    </f:metadata>
+
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View invoices</ui:define>
+        <ui:define name="content">                             
+            <h:form>
+                <p:growl id="messages"/>
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="balanceSearch">
+                    <f:facet name="header">Search for Invoice</f:facet>
+                    <p:outputPanel id="balanceSearch_1">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel value="Id"/>
+                            <h:inputText id="sbnId" value="#{subscriber.invoiceID}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel id="balanceSearch_2">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel value="State"/>
+                            <p:selectOneMenu value="#{subscriber.searchInvoiceStatus}">
+                                <f:selectItem itemLabel="Select state" noSelectionOption="true"/>
+                                <f:selectItems value="#{subscriber.searchInvoiceStatusList}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton actionListener="#{subscriber.resetForms}" value="Clear" update="@form"/>
+                    <p:commandButton action="#{subscriber.searchInvoices}" value="Search" update="subDataTable"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Invoice', 'READ')}"/>
+                </h:panelGrid>
+
+                <p:dataTable id="subDataTable" value="#{subscriber.invoiceList}" var="inv" paginator="true" rows="15"
+                             filteredValue="#{subscriber.filteredInvoiceList}"
+                             selection="#{subscriber.selectedInvoice}" selectionMode="single" rowKey="#{inv.id}" lazy="true" widgetVar="paymentsTable">
+                    <f:facet name="header">Invoices</f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{inv.id}"/>
+                    </p:column>
+                    <p:column headerText="Creation date">
+                        <h:outputText value="#{inv.creationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Closing Balance">
+                        <h:outputText value="#{inv.balanceForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total">
+                        <h:outputText value="#{inv.sumChargedForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Sum Paid">
+                        <h:outputText value="#{inv.sumPaidForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="State">
+                        <h:outputText value="#{inv.state}">
+                        </h:outputText>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton process="subDataTable" value="View" action="#{subscriber.showInvoice()}"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('Invoice', 'READ')}">
+                        </p:commandButton>
+                        <p:menuButton value="Export to.." rendered="#{uISecurityManager.securityManager.checkUIPermissions('Invoice', 'READ') and subscriber.postpaid}">
+                            <p:menuitem id="ExportPDF" value="PDF" actionListener="#{subscriber.downloadInvoice}" styleClass="export-pdf"/>
+                        </p:menuButton>
+
+                        Total: #{subscriber.invoiceList.rowCount}
+
+                    </f:facet>
+                </p:dataTable>			
+            </h:form>
+        </ui:define>
+        <ui:define name="east">
+            <h:form>
+                <p:menu>
+                    <p:submenu label="Navigation">
+                        <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"/>
+                    </p:submenu>
+                </p:menu>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

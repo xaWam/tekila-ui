@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Service Group</ui:define>
+			<ui:define name="content">
+                            <p:messages/>
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Service group information" />
+						</f:facet>
+                                                
+                                            <h:outputLabel value="Name"/>
+                                            <h:inputText value="#{serviceGroupManager.group.name}"/>
+                                            
+                                            <h:outputLabel value="Service provider"/>
+                                            <h:selectOneMenu value="#{serviceGroupManager.serviceProviderId}">
+                                                <f:selectItem noSelectionOption="true" itemLabel="Select provider"/>
+                                                <f:selectItems value="#{serviceGroupManager.providerSelectList}"/>
+                                            </h:selectOneMenu>
+                                            
+                                            <h:selectOneMenu value="#{serviceGroupManager.group.type}">
+                                                <f:selectItem noSelectionOption="true" itemLabel="Select type"/>
+                                                <f:selectItems value="#{serviceGroupManager.typeList}"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">
+						<h:commandButton action="#" value="Reset" type="reset"/>
+                                                <h:commandButton action="#{serviceGroupManager.create()}" value="Save" />
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

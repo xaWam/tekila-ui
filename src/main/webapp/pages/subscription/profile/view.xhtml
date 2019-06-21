@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+          
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Profile #{profileManager.selected} - View/Edit</ui:define>
+			<ui:define name="content">
+				<h:form id="profileForm">
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+                                                    <h:outputText value="Profile #{profileManager.selected.name}" />
+						</f:facet>
+						<h:outputLabel value="Name" for="profileName"/>
+						<p:inplace event="dblclick">
+                                                    <h:inputText value="#{profileManager.selected.name}" id="profileName"/>
+						</p:inplace>
+                                        </h:panelGrid>
+                                        
+                                    	<h:panelGrid columns="1" id="profileRatesPanel">
+                                            <f:facet name="header"><h:outputText value="Rates"/></f:facet>
+                                            <p:dataTable value="#{profileManager.rates}" selection="#{profileManager.selected.rateList}"
+                                                         var="rate" id="rateTable" rows="50" rowKey="#{rate.id}" rowSelectMode="add" paginator="true">
+                                                <p:column selectionMode="multiple" style="width: 16px; text-align: center;"/>
+                                                <p:column headerText="Id">#{rate.id}</p:column>                                                <p:column headerText="Name">#{rate.name}</p:column>
+                                                <p:column headerText="Price">#{rate.priceForView}</p:column>
+                                                <p:column headerText="Active from">
+                                                    <h:outputText value="#{rate.activeFromAsDate}">
+                                                        <f:convertDateTime pattern="dd-MM-yyyy hh:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Active till">
+                                                    <h:outputText value="#{rate.activeTillAsDate}">
+                                                        <f:convertDateTime pattern="dd-MM-yyyy hh:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                            </p:dataTable>
+					</h:panelGrid>
+
+					<h:panelGrid columns="2">
+						<p:commandButton action="/pages/subscription/profile/index" value="Cancel"/>
+                                                <p:commandButton action="#{profileManager.save()}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

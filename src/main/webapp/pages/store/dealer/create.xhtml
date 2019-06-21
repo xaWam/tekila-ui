@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Dealer</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:growl id="messages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Dealer information" />
+                </f:facet>
+
+                <h:outputLabel value="Name" for="name" styleClass="required"></h:outputLabel>
+                <h:inputText id="name" value="#{dealerManager.partner.name}"  required="true" label="Name" requiredMessage="Name need to be filled"/>
+
+                <h:outputLabel value="Email" for="email" styleClass="required"></h:outputLabel>
+                <h:inputText id="email" value="#{dealerManager.userEmail}"  required="true" label="Email" requiredMessage="Email need to be filled"/>
+
+                <h:outputLabel value="Description"/>
+                <h:inputText id="desc" value="#{dealerManager.partner.desc}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Contact person information" />
+                </f:facet>
+
+                <h:outputLabel value="First name" for="name" styleClass="required"></h:outputLabel>
+                <h:inputText id="firstName" value="#{dealerManager.firstName}"  required="true" label="First name" requiredMessage="First name need to be filled"/>
+
+                <h:outputLabel value="Surname" for="surname" styleClass="required"></h:outputLabel>
+                <h:inputText id="surname" value="#{dealerManager.surname}"  required="true" label="Surname" requiredMessage="Surname need to be filled"/>
+            </h:panelGrid>
+
+            <p:separator/>
+            <p:outputPanel id="eqWrapperPanel">
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="eqGrid">
+                    <f:facet name="header">Search for distributors</f:facet>
+                    <p:outputPanel id="eqPanel">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>Name</h:outputLabel>
+                            <h:inputText id="partnum" value="#{dealerManager.distributorName}">
+                                <f:ajax listener="#{dealerManager.searchDistributors}" render="eqTable"/>
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="1"  id="eqTableGrid">
+                    <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{dealerManager.distributorList}" var="distr"
+                                 paginator="true" rows="15" filteredValue="#{dealerManager.filteredDistributors}"
+                                 selection="#{dealerManager.seletedDistributor}" selectionMode="single" lazy="true"
+                                 rowKey="#{distr.id}" binding="#{dealerManager.distributorsTable}" style="margin-top: 10px;">
+                        <f:facet name="header">Distributors</f:facet>
+                        <p:column headerText="Id" styleClass="id">#{distr.id}</p:column>
+                        <p:column headerText="Name">#{distr.name}</p:column>
+                        <p:column headerText="Description">#{distr.desc}</p:column>
+                        <f:facet name="footer">
+                            Total: #{dealerManager.distributorList.rowCount}</f:facet>
+                    </p:dataTable>
+                </h:panelGrid>
+                <p:separator/>
+            </p:outputPanel>
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{dealerManager.create}" value="Save" update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

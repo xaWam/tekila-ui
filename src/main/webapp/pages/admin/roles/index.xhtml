@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Roles</ui:define>
+    <ui:define name="content">
+        <h:form prependId="false">
+            <p:messages id="messages"/>
+            <p:dataTable value="#{roleManager.roleList}" var="role" selection="#{roleManager.selected}" paginator="true"
+                         selectionMode="single" lazy="true" rows="15" rowKey="#{role.id}">
+                <f:facet name="header">Roles</f:facet>
+                <p:column headerText="Id" filterBy="#{role.id}">#{role.id}</p:column>
+                <p:column headerText="Name" filterBy="#{role.name}">#{role.name}</p:column>
+                <p:column headerText="Service provider" filterBy="#{role.provider.name}">#{role.provider.name}</p:column>
+                <p:column headerText="Module" filterBy="#{role.module.name}">#{role.module.name}</p:column>
+                <p:column headerText="Description" filterBy="#{role.dsc}">#{role.dsc}</p:column>
+                <f:facet name="footer">
+                    <p:commandButton value="View" action="#{roleManager.show}" update="@form"/>
+                    <p:button value="Add" outcome="/pages/admin/roles/role.xhtml"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

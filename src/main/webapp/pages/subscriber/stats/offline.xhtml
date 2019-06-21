@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscription" value="#{subOfflineStatsManager.subscriptionAgreement}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Offline statistics</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="searchPanel">
+                <f:facet name="header">Search statistics</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel>Start date</h:outputLabel>
+                        <p:calendar value="#{subOfflineStatsManager.filterStartTime}" navigator="true" pattern="dd/MM/yyyy HH:mm:ss">
+                        </p:calendar>
+
+                        <h:outputLabel>End date</h:outputLabel>
+                        <p:calendar value="#{subOfflineStatsManager.filterEndTime}" navigator="true" pattern="dd/MM/yyyy HH:mm:ss">
+                        </p:calendar>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel>Framed Ip Address</h:outputLabel>
+                        <h:inputText value="#{subOfflineStatsManager.filterFrameIpAddress}">
+                        </h:inputText>
+                        <h:outputLabel>Username</h:outputLabel>
+                        <h:inputText value="#{subOfflineStatsManager.filterUsername}">
+                        </h:inputText>
+                        <h:outputLabel>Termination cause</h:outputLabel>
+                        <h:inputText value="#{subOfflineStatsManager.filterTeminationCause}">
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#{subOfflineStatsManager.reset}" value="Reset" update="messages subDataTable searchPanel"/>
+                <p:commandButton action="#{subOfflineStatsManager.search}" value="Search" update="messages subDataTable offlineDataTable" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Offline Users', 'READ')}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="statsTable" id="subDataTable" value="#{subOfflineStatsManager.offlineStatsList}" var="st" paginator="true" rows="15"
+                             rowKey="#{st.id}" lazy="true" rendered="#{subOfflineStatsManager.findProviderByAgreement(subOfflineStatsManager.subscriptionAgreement) eq subOfflineStatsManager.azertelecomProviderId}">
+                    <f:facet name="header">Offline statistics</f:facet>
+                    <p:column headerText="Username">
+                        <h:outputText value="#{st.user}"/>
+                    </p:column>
+                    <p:column headerText="Down (MB)">
+                        <h:outputText value="#{st.down}">
+                            <f:convertNumber maxFractionDigits="2" pattern="###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Up (MB)">
+                        <h:outputText value="#{st.up}">
+                            <f:convertNumber pattern="###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Start">
+                        <h:outputText value="#{st.startTime}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Stop">
+                        <h:outputText value="#{st.endTime}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Termination Cause">
+                        <h:outputText value="#{st.terminationCause}"/>
+                    </p:column>
+                    <p:column headerText="Session duration">
+                        <h:outputText value="#{st.sessionDuration}"/>
+                    </p:column>
+                    <p:column headerText="Calling Station ID">
+                        <h:outputText value="#{st.callingStationID}"/>
+                    </p:column>
+                    <p:column headerText="Framed IP Address">
+                        <h:outputText value="#{st.framedAddress}"/>
+                    </p:column>
+                    <p:column headerText="NAS IP Address">
+                        <h:outputText value="#{st.nasIpAddress}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <h:outputText value="Total down: #{subOfflineStatsManager.totalDown} MB" style="margin-left: 15px; margin-right: 15px;">
+                        </h:outputText>
+                        <h:outputText value="Total up: #{subOfflineStatsManager.totalUp} MB">
+                        </h:outputText>
+                    </f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="statsTable" id="offlineDataTable" value="#{subOfflineStatsManager.citynetOfflineStatsList}" var="st" paginator="true" rows="15"
+                             rowKey="#{st.id}" rendered="#{subOfflineStatsManager.findProviderByAgreement(subOfflineStatsManager.subscriptionAgreement) eq subOfflineStatsManager.citynetProviderId}">
+                    <f:facet name="header">Offline statistics</f:facet>
+                    <p:column headerText="Username">
+                        <h:outputText value="#{st.user}"/>
+                    </p:column>
+                    <p:column headerText="Down (MB)">
+                        <h:outputText value="#{st.down}">
+                            <f:convertNumber maxFractionDigits="2" pattern="###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Up (MB)">
+                        <h:outputText value="#{st.up}">
+                            <f:convertNumber pattern="###.##"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Start">
+                        <h:outputText value="#{st.startTime}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Stop">
+                        <h:outputText value="#{st.endTime}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Termination Cause">
+                        <h:outputText value="#{st.terminationCause}"/>
+                    </p:column>
+                    <p:column headerText="Session duration">
+                        <h:outputText value="#{st.sessionDuration}"/>
+                    </p:column>
+                    <p:column headerText="Calling Station ID">
+                        <h:outputText value="#{st.callingStationID}"/>
+                    </p:column>
+                    <p:column headerText="Framed IP Address">
+                        <h:outputText value="#{st.framedAddress}"/>
+                    </p:column>
+                    <p:column headerText="NAS IP Address">
+                        <h:outputText value="#{st.nasIpAddress}"/>
+                    </p:column>
+                    <p:column headerText="Service">
+                        <h:outputText value="#{st.service}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <h:outputText value="Total down: #{subOfflineStatsManager.totalDown} MB" style="margin-left: 15px; margin-right: 15px;">
+                        </h:outputText>
+                        <h:outputText value="Total up: #{subOfflineStatsManager.totalUp} MB">
+                        </h:outputText>
+                    </f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscription" action="#{subOfflineStatsManager.redirect()}"/>
+                </p:submenu>
+            </p:menu>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">View corporate subscribers</ui:define>
+			<ui:define name="content">
+				<h:form>
+                                     <p:dataTable id="subDataTable" value="#{subscriber.subscribers}" var="sub" paginator="true" rows="15" 
+                                                 filteredValue="#{subscriber.filteredSubscribers}"
+                                                 selection="#{subscriber.selected}" selectionMode="single" rowKey="#{sub.id}" lazy="true" widgetVar="paymentsTable">
+                                                <f:facet name="header">Subscribers</f:facet>
+                                                <p:column headerText="ID" filterBy="#{sub.subscriber.id}">#{sub.subscriber.id}</p:column>
+						<p:column headerText="Company" filterBy="#{sub.companyName}" filterMatchMode="contains">#{sub.companyName}</p:column>						
+						<p:column headerText="ComName" filterBy="#{sub.firstName} #{sub.middleName} #{sub.surname}" filterMatchMode="contains">
+						<h:outputText value="#{sub.firstName} #{sub.middleName} #{sub.surname}"/>
+						</p:column>
+						<p:column headerText="City" filterBy="#{sub.city}" filterMatchMode="contains">#{sub.city}</p:column>
+						<p:column headerText="street" filterBy="#{sub.street}" filterMatchMode="contains">#{sub.street}</p:column>
+						<p:column headerText="Building" filterBy="#{sub.building}" filterMatchMode="contains">#{sub.building}</p:column>
+						<p:column headerText="Apartment" filterBy="#{sub.apartment}" filterMatchMode="contains">#{sub.apartment}</p:column>
+						<f:facet name="footer">
+                        <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+						<p:commandButton process="subDataTable" value="View" action="#{subscriber.show()}"></p:commandButton>
+                        <p:button value="Add"  outcome="/pages/subscriber/corp/create_subscriber_corp.xhtml"/>
+                        </f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

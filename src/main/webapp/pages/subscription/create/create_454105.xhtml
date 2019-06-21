@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <!--
+        Replace path to template, title, header and body
+        with actual data.
+    -->
+    <f:metadata>
+        <f:viewParam name="subscriber" value="#{subscriptionManager.subscriberID}"/>
+        <f:event type="preRenderView" listener="#{subscriptionManager.onCreateLoad()}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Subscription</ui:define>
+        <ui:define name="content">
+            <h:form id="sbnForm" onkeypress="if (event.keyCode === 13)
+                        return false;">
+                <p:growl id="messages"/>
+                <p:accordionPanel cache="false" activeIndex="0,1,2,3,4" id="accordPanel">
+                    <p:tab title="Settings">
+                        <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                     rowClasses="odd-row,even-row" style="margin-bottom: 15px;"
+                                     styleClass="large-lbl"
+                                     >
+                            <f:facet name="header">
+                                <h:outputText value="Subscription information"/>
+                            </f:facet>
+
+                            <h:outputLabel value="Sevice provider"/>
+                            <h:outputLabel value="CityNet"/>
+
+                            <h:outputLabel value="Subscriber"></h:outputLabel>
+                            <h:outputLabel>#{subscriptionManager.selectedSubscriber.details.firstName} #{subscriptionManager.selectedSubscriber.details.surname}</h:outputLabel>
+
+                            <h:outputLabel value="Language"/>
+                            <p:selectOneMenu value="#{subscriptionManager.language}">
+                                <f:selectItems value="#{subscriptionManager.languageList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Service" for="serviceName" styleClass="required"></h:outputLabel>
+                            <p:selectOneMenu value="#{subscriptionManager.serviceId}" id="serviceName" required="true"
+                                             requiredMessage="Service is required">
+                                <p:ajax event="change" listener="#{subscriptionManager.onServiceSelect}" update="@form"/>
+                                <f:selectItem itemLabel="Select service" noSelectionOption="true"/>
+                                <f:selectItems value="#{subscriptionManager.serviceSelectList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Billing Model"/>
+                            <p:selectOneMenu value="#{subscriptionManager.billingModel}"
+                                             converter="#{billingModelConverter}">
+                                <f:selectItems value="#{subscriptionManager.billingModelList}" var="md"
+                                               itemLabel="#{md.name}" itemValue="#{md}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Is Available on ecare system" for="isAvailableEcare"/>
+                            <h:selectBooleanCheckbox id="isAvailableEcare"
+                                                     value="#{subscriptionManager.details.availableEcare}"
+                                                     disabled="#{empty subscriptionManager.service}"/>
+
+                            <h:outputLabel value="Name"/>
+                            <h:inputText value="#{subscriptionManager.name}"/>
+
+                            <h:outputLabel value="Surname"/>
+                            <h:inputText value="#{subscriptionManager.surname}"/>
+
+                            <h:outputLabel value="Description"/>
+                            <h:inputText value="#{subscriptionManager.desc}"/>
+
+                            <h:outputLabel value="Payment Type" />
+                            <p:selectOneMenu value="#{subscriptionManager.subscription.paymentType}">
+                                <f:selectItems value="#{subscriptionManager.paymentTypes}"  />
+                            </p:selectOneMenu>
+                            
+                        </h:panelGrid>
+
+                        <h:panelGrid id="sbnDetails" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                     rowClasses="odd-row,even-row" style="margin-bottom: 15px;"
+                                     styleClass="large-lbl">
+
+                            <f:facet name="header">
+                                <h:outputText value="Subscription Details"/>
+                            </f:facet>
+
+                            <h:outputLabel value="City"/>
+                            <h:inputText value="#{subscriptionManager.details.city}"/>
+
+                            <h:outputLabel value="ATS" styleClass="required"/>
+                            <p:selectOneMenu value="#{subscriptionManager.details.ats}" id="atsSelect" required="true"
+                                             requiredMessage="ATS is required">
+                                <p:ajax event="change" listener="#{subscriptionManager.onAtsSelect}"
+                                        update="streetSelect minipopTable"/>
+                                <p:ajax event="change" listener="#{subscriptionManager.onAddDetails}"
+                                        update="agreementGenerated"/>
+                                <f:selectItem itemLabel="--Select ATS--" noSelectionOption="true"/>
+                                <f:selectItems value="#{subscriptionManager.atsSelectList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Street" styleClass="required"/>
+                            <p:selectOneMenu value="#{subscriptionManager.details.street}" id="streetSelect"
+                                             required="true"
+                                             requiredMessage="Street is required">
+                                <p:ajax event="change" listener="#{subscriptionManager.onAddDetails}"
+                                        update="agreementGenerated"/>
+                                <f:selectItem itemLabel="Select Street" noSelectionOption="true"/>
+                                <f:selectItems value="#{subscriptionManager.streetSelectList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Building" styleClass="required"/>
+                            <h:inputText value="#{subscriptionManager.details.building}">
+                                <p:ajax event="change" listener="#{subscriptionManager.onAddDetails}"
+                                        update="agreementGenerated"/>
+                            </h:inputText>
+
+                            <h:outputLabel value="Apartment" styleClass="required"/>
+                            <h:inputText value="#{subscriptionManager.details.apartment}">
+                                <p:ajax event="change" listener="#{subscriptionManager.onAddDetails}"
+                                        update="agreementGenerated"/>
+                            </h:inputText>
+
+                            <h:outputLabel value="Entrance"/>
+                            <h:inputText value="#{subscriptionManager.details.entrance}">
+                            </h:inputText>
+
+                            <h:outputLabel value="Floor"/>
+                            <h:inputText value="#{subscriptionManager.details.floor}">
+                            </h:inputText>
+
+                        </h:panelGrid>
+
+                        <h:panelGrid id="sbnAgreement" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                     rowClasses="odd-row,even-row" style="margin-bottom: 15px;"
+                                     styleClass="large-lbl">
+                            <h:outputLabel value="Agreement No." styleClass="required"/>
+                            <h:inputText id="agreementGenerated" value="#{subscriptionManager.subscription.agreement}"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="discountGrid" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                     rowClasses="odd-row" style="margin-bottom: 15px;"
+                                     styleClass="large-lbl" rendered="#{uISecurityManager.hasPermission('SubscriptionDiscount', 'INSERT')}">
+                            <f:facet name="header">
+                                <h:outputText value="Discount category"/>
+                            </f:facet>
+
+                            <h:outputLabel value="Discount"/>
+                            <h:selectBooleanCheckbox id="discountEnabled" value="#{subscriptionManager.subscription.discountEnabled}"
+                                disabled="#{subscriptionManager.subscription.taxFreeEnabled}">
+                                <p:ajax event="change" update="@form"/>
+                            </h:selectBooleanCheckbox>
+
+                            <h:outputLabel value="Tax Free"/>
+                            <h:selectBooleanCheckbox id="taxFree" value="#{subscriptionManager.subscription.taxFreeEnabled}"
+                                disabled="#{subscriptionManager.subscription.discountEnabled}">
+                                <p:ajax event="change" process="@this"  update="tax-input"/>
+                            </h:selectBooleanCheckbox>
+
+                            <h:outputLabel value="Discount Percentage (0-100)"/>
+                            <h:inputText id="tax-input" value="#{subscriptionManager.subscription.discountPercentage}"
+                                    disabled="#{not (subscriptionManager.subscription.discountEnabled or subscriptionManager.subscription.taxFreeEnabled)}"/>
+                        </h:panelGrid>
+
+                    </p:tab>
+                    <p:tab title="Installation fee" id="installFeeRateTab"
+                           rendered="#{not empty subscriptionManager.service}">
+                        <p:panelGrid  columns="2">
+                            <h:outputLabel value="Installation Fee" />
+                            <h:inputText value="#{subscriptionManager.installFee}" required="true" requiredMessage="Installation Fee must be provided" />
+                        </p:panelGrid>
+                    </p:tab>
+                    <p:tab title="Stock">
+                        <p:outputPanel id="minipopPanel">
+                            <p:panelGrid id="minipopGrid" columns="5" style="margin-bottom: 10px;">
+                                <f:facet name="header">Search for minipops</f:facet>
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Category"/>
+                                        <h:selectOneMenu id="category" value="#{subscriptionManager.minipopCategory}"
+                                                         style="width: 100px;">
+                                            <f:ajax listener="#{subscriptionManager.searchMinipops}"
+                                                    render="minipopTable"/>
+                                            <f:selectItem noSelectionOption="true" itemLabel="Select Categoty" itemValue="#{null}"/>
+                                            <f:selectItems value="#{subscriptionManager.minipopCategoryList}"/>
+                                        </h:selectOneMenu>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Mac addresss"/>
+                                        <h:inputText id="macAddress" value="#{subscriptionManager.miniPopMacAddress}"
+                                                     style="width: 215px;">
+                                            <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="IP"/>
+                                        <h:inputText id="chIp" value="#{subscriptionManager.ip}"
+                                                     style="width: 215px;">
+                                            <f:ajax listener="#{subscriptionManager.searchMinipops}"
+                                                    render="minipopTable"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Switch"/>
+                                        <h:inputText id="switchId" value="#{subscriptionManager.switchID}"
+                                                     style="width: 215px;">
+                                            <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="Addresss"/>
+                                        <h:inputText id="mpAddress" value="#{subscriptionManager.minipPopAddress}"
+                                                     style="width: 215px;">
+                                            <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                        </h:inputText>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+                            </p:panelGrid>
+
+                            <p:dataTable value="#{subscriptionManager.minipopLazyDataModel}" var="mp" paginator="true"
+                                         rows="15" filteredValue="#{subscriptionManager.filteredMinipopList}"
+                                         selection="#{subscriptionManager.selectedMiniPop}" selectionMode="single"
+                                         lazy="true" rowKey="#{mp.id}" id="minipopTable"
+                                         >
+                                <f:facet name="header">Minipops</f:facet>
+                                <p:column headerText="Id" styleClass="id">#{mp.id}</p:column>
+                                <p:column headerText="Category">#{mp.category}</p:column>
+                                <p:column headerText="Device status" style="width: 80px;">
+                                    #{mp.deviceStatus}
+                                </p:column>
+                                <p:column headerText="Address">#{mp.address}</p:column>
+                                <p:column headerText="House">#{mp.housesAsText}</p:column>
+                                <p:column headerText="Switch" style="width: 100px;">#{mp.switch_id}</p:column>
+                                <p:column headerText="Mac Address" style="width: 100px;">#{mp.mac}</p:column>
+                                <p:column headerText="Master vlan" styleClass="id">#{mp.masterVlan}</p:column>
+                                <p:column headerText="Init vlan" styleClass="id">#{mp.subVlan}</p:column>
+                                <p:column headerText="Ports number" styleClass="id">#{mp.numberOfPorts}</p:column>
+                                <p:column headerText="Next port" styleClass="id">
+                                    <h:inputText value="#{mp.nextAvailablePortHintAsNumber}" style="width: 20px;">
+                                    </h:inputText>
+                                </p:column>
+                            </p:dataTable>
+                        </p:outputPanel>
+                    </p:tab>
+
+                    <p:tab title="#{subscriptionManager.vasTabName}" id="defVasTab"
+                           rendered="#{not empty subscriptionManager.service and not empty subscriptionManager.service.defaultVasList}">
+                        <p:outputPanel id="defaultVASPanel">
+                            <p:outputPanel rendered="#{not empty subscriptionManager.service and not empty subscriptionManager.service.defaultVasList
+                                                       and not empty subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE')}">
+                                <h:panelGrid columns="2" cellpadding="5"
+                                             styleClass="large-lbl">
+                                    <f:facet
+                                        name="header">#{subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').name}</f:facet>
+                                </h:panelGrid>
+
+                                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input"
+                                             rendered="#{subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').chargeableItem eq 'msisdn'}">
+                                    <f:facet name="header">Search for MSISDN</f:facet>
+                                    <p:outputPanel id="msisdnPane">
+                                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                                     rowClasses="odd-row,even-row" columns="2">
+                                            <h:outputLabel>MSISDN</h:outputLabel>
+                                            <h:inputText id="imsi" value="#{subscriptionManager.msisdnValue}">
+                                                <f:ajax listener="#{subscriptionManager.searchMsisdn}"
+                                                        render="msisdnTable"/>
+                                            </h:inputText>
+
+                                            <h:outputLabel value="Commercial category"/>
+                                            <p:selectOneMenu value="#{subscriptionManager.comCatID}">
+                                                <f:ajax event="change" listener="#{subscriptionManager.searchMsisdn}"
+                                                        render="msisdnTable"/>
+                                                <f:selectItem itemLabel="Select category" noSelectionOption="true"/>
+                                                <f:selectItems value="#{subscriptionManager.comCatList}"/>
+                                            </p:selectOneMenu>
+                                        </p:panelGrid>
+                                    </p:outputPanel>
+                                    <p:outputPanel>
+                                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                                     rowClasses="odd-row,even-row" columns="2">
+                                            <h:outputLabel value="Status"/>
+                                            <p:selectOneMenu value="#{msisdnManager.status}">
+                                                <f:selectItems value="#{msisdnManager.statusList}"/>
+                                            </p:selectOneMenu>
+
+                                            <h:outputLabel value="Category"/>
+                                            <p:selectOneMenu value="#{subscriptionManager.category}">
+                                                <f:ajax event="change" listener="#{subscriptionManager.searchMsisdn}"
+                                                        render="msisdnTable"/>
+                                                <f:selectItem noSelectionOption="true" itemLabel="Select a category"
+                                                              itemValue=""/>
+                                                <f:selectItems value="#{subscriptionManager.categoryList}"/>
+                                            </p:selectOneMenu>
+                                        </p:panelGrid>
+                                    </p:outputPanel>
+                                </p:panelGrid>
+
+                                <h:panelGrid columns="1"
+                                             rendered="#{subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').chargeableItem eq 'msisdn'}">
+                                    <p:dataTable widgetVar="paymentsTable" id="msisdnTable"
+                                                 value="#{subscriptionManager.msisdnList}" var="imsi" paginator="true"
+                                                 rows="15"
+                                                 selection="#{subscriptionManager.selectedMsisdn}" selectionMode="single"
+                                                 lazy="true" rowKey="#{imsi.id}">
+                                        <p:ajax event="rowSelect" listener="#{subscriptionManager.onMsisdnSelect}"
+                                                update=":sbnForm:accordPanel:setPanel"/>
+                                        <f:facet name="header">Available MSISDN</f:facet>
+                                        <p:column headerText="Id" styleClass="id">#{imsi.id}</p:column>
+                                        <p:column headerText="MSISDN">#{not empty imsi.value ? imsi.value : ''}</p:column>
+                                        <p:column
+                                            headerText="Commercial category">#{not empty imsi.commercialCategory ? imsi.commercialCategory.name : ''}</p:column>
+                                        <p:column headerText="Category">#{imsi.category}</p:column>
+                                        <p:column headerText="Price">#{imsi.priceForView}</p:column>
+                                        <p:column headerText="Status">#{imsi.status}</p:column>
+                                        <p:column
+                                            headerText="Provider">#{not empty imsi.provider ? imsi.provider.name : ''}</p:column>
+                                        <p:column headerText="User">#{imsi.user.userName}</p:column>
+                                        <f:facet name="footer">
+                                            Total: #{subscriptionManager.msisdnList.rowCount}</f:facet>
+                                    </p:dataTable>
+                                </h:panelGrid>
+
+                                <p:panelGrid columns="2" id="setPanel" style="margin-bottom: 10px;">
+                                    <h:outputLabel value="Type" styleClass="required"/>
+                                    <h:selectOneMenu value="#{subscriptionManager.vasSettingID}"
+                                                     rendered="#{empty subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').chargeableItem}">
+                                        <f:ajax event="change" listener="#{subscriptionManager.onVasSettingSelect}"
+                                                render="setPanel"/>
+                                        <f:selectItem noSelectionOption="true" itemLabel="Select type"/>
+                                        <f:selectItems value="#{subscriptionManager.vasSettingsValuesSelectItem}"/>
+                                    </h:selectOneMenu>
+                                    <h:selectOneMenu value="#{subscriptionManager.vasSettingID}"
+                                                     rendered="#{not empty subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').chargeableItem}"
+                                                     disabled="true">
+                                        <f:ajax event="change" listener="#{subscriptionManager.onVasSettingSelect}"
+                                                render="setPanel"/>
+                                        <f:selectItems value="#{subscriptionManager.vasSettingsValuesSelectItem}"/>
+                                    </h:selectOneMenu>
+
+                                    <h:outputLabel value="Price" styleClass="required"/>
+                                    <h:inputText value="#{subscriptionManager.vasSettingValue}"/>
+
+                                    <h:outputLabel value="Length/Count" styleClass="required"/>
+                                    <h:inputText value="#{subscriptionManager.vasSettingLength}"
+                                                 disabled="#{subscriptionManager.service.getDefaultVasByType('ONETIME_VARIABLE_CHARGE').chargeableItem eq 'msisdn'}"/>
+
+                                    <f:facet name="footer">
+                                        <p:commandButton value="Add" icon="ui-icon-disk"
+                                                         actionListener="#{subscriptionManager.addSetting}"
+                                                         update="settings setPanel :sbnForm:messages"/>
+                                        <p:commandButton value="Delete" icon="ui-icon-trash"
+                                                         actionListener="#{subscriptionManager.removeSetting}"
+                                                         update="settings setPanel :sbnForm:messages"/>
+                                        <p:commandButton actionListener="#{subscriptionManager.resetSettings}" value="Reset"
+                                                         icon="ui-icon-refresh"
+                                                         update="settings setPanel :sbnForm:messages"/>
+                                    </f:facet>
+                                </p:panelGrid>
+
+                                <p:dataTable value="#{subscriptionManager.subscriptionVAS.settings}" var="set"
+                                             selection="#{subscriptionManager.selectedVASSetting}" selectionMode="single"
+                                             id="settings"
+                                             rowKey="#{set.name}" rows="50">
+                                    <f:facet name="header">Settings</f:facet>
+                                    <p:column headerText="Type">#{set.name}</p:column>
+                                    <p:column headerText="Price">#{set.value}</p:column>
+                                    <p:column headerText="Length/Count">#{set.length}</p:column>
+                                    <p:column headerText="Subtotal">#{set.totalForView}</p:column>
+                                    <f:facet name="footer">
+                                        <h:outputText value="Total: #{subscriptionManager.cableCharge} AZN"/>
+                                    </f:facet>
+                                </p:dataTable>
+
+                            </p:outputPanel>
+                        </p:outputPanel>
+                    </p:tab>
+
+
+                    <p:tab title="Notifications">
+                        <h:panelGrid columns="1" id="notifGrid">
+                            <f:facet name="header">Notification settings</f:facet>
+
+                            <p:dataTable value="#{subscriptionManager.notificationSettings}" var="row" rows="100"
+                                         rowKey="#{row.id}">
+                                <p:column headerText="Event">
+                                    <h:outputText value="#{row.event}"/>
+                                </p:column>
+                                <p:column headerText="Notifications">
+                                    <p:selectManyCheckbox value="#{row.selectedChannelList}">
+                                        <f:selectItems value="#{row.channelList}" var="ch" itemValue="#{ch.code}"
+                                                       itemLabel="#{ch}"/>
+                                    </p:selectManyCheckbox>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                    </p:tab>
+                </p:accordionPanel>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton id="createCitynetBtn" action="#{subscriptionManager.createCitynet()}" value="Save" update="messages"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'INSERT')}"/>
+                </h:panelGrid>
+
+                <p:blockUI block="@form" trigger="createCitynetBtn" widgetVar="blockui">
+                    <h:outputLabel style="font-weight: bold; font-size: 12px !important;" value="Creating, please wait..."/><br /><br />
+                    <p:graphicImage value="/resources/img/loading.gif"/>
+                </p:blockUI>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Accounting Category</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:messages/>
+                <h:panelGrid rowClasses="odd-row, even-row" columnClasses="lbl-column, data-column" columns="2">
+                    <f:facet name="header">Create accounting category</f:facet>
+                    <h:outputLabel for="catName" value="Name"/>
+                    <h:inputText id="catName" value="#{accCategoryManager.category.name}"/>
+
+                    <h:outputLabel for="accCatType" value="Type"/>
+                    <h:selectOneMenu id="accCatType" value="#{accCategoryManager.category.type}">
+                        <f:selectItem noSelectionOption="true" itemLabel="Select type"/>
+                        <f:selectItems value="#{accCategoryManager.accCatList}"/>
+                    </h:selectOneMenu>
+
+                    <h:outputLabel for="accTaxCat" value="Taxation category"/>
+                    <h:selectOneMenu id="accTaxCat" value="#{accCategoryManager.taxCatID}">
+                        <f:selectItem noSelectionOption="true" itemLabel="Select category type"/>
+                        <f:selectItems value="#{accCategoryManager.taxCatList}"/>
+                    </h:selectOneMenu>                
+
+                    <h:outputLabel for="catDesc" value="Description"/>
+                    <h:inputText id="catDesc" value="#{accCategoryManager.category.dsc}"/>                
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <h:commandButton value="Reset" action="#" type="reset"/>
+                    <h:commandButton value="Save" action="#{accCategoryManager.create()}"/> 
+                </h:panelGrid>                
+            </h:form>    
+        </ui:define>
+    </ui:composition>
+</html>
+

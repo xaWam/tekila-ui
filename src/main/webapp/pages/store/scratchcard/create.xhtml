@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <!--
+        Replace path to template, title, header and body
+        with actual data.
+    -->
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create scratch card</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages"/>
+
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                    <f:facet name="header">Scratch card creation</f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>Amount</h:outputLabel>
+                            <h:inputText value="#{scratchCardManager.amount}"  required="true"  requiredMessage="Amount need to be filled"/>
+
+                            <h:outputLabel>Count</h:outputLabel>
+                            <h:inputText value="#{scratchCardManager.count}"  required="true" requiredMessage="Count need to be filled"/>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+
+                            <h:outputLabel>From date</h:outputLabel>
+                            <p:calendar value="#{scratchCardManager.validFrom}" pattern="dd/MM/yyyy" navigator="true" pagedate="01/01/2016"/>
+
+                            <h:outputLabel>To date</h:outputLabel>
+                            <p:calendar value="#{scratchCardManager.validTo}" pattern="dd/MM/yyyy" navigator="true" pagedate="01/01/2017"/>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#{scratchCardManager.reset()}" value="Reset" update="@form"/>
+                    <p:commandButton id="createCard" action="#{scratchCardManager.createScratchCard()}" value="Create" update="@form" 
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Scratch card', 'INSERT')}"/>
+                </h:panelGrid>
+
+                <p:blockUI block="@form" trigger="createCard" widgetVar="blockui">
+                    <h:outputLabel style="font-weight: bold; font-size: 12px !important;" value="Creating, please wait..."/><br /><br />
+                    <p:graphicImage value="/resources/img/loading.gif"/>
+                </p:blockUI>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

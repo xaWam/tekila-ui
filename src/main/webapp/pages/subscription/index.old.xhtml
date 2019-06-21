@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Subscriptions</ui:define>
+			<ui:define name="content">
+				<h:form id="profileForm">
+                                    <p:dataTable id="subDataTable" value="#{subscriptionManager.subscriptionLazyTableModel}" var="sbn" paginator="true" rows="10" 
+                                                 filteredValue="#{subscriptionManager.filteredSubscriptionList}"
+                                                 selection="#{subscriptionManager.selected}" selectionMode="single" rowKey="#{sbn.id}" lazy="true">
+						<f:facet name="header">Subscriptions</f:facet>
+                                                <p:column headerText="Service" filterBy="#{sbn.service.name}">							
+							#{sbn.service.name}							
+						</p:column>                                                
+                                                <p:column headerText="Subscriber name" filterBy="#{sbn.subscriber.details.middleName}">
+                                                    <h:outputText value="#{sbn.subscriber.details.firstName}"/>
+                                                </p:column>						
+                                                <p:column headerText="Subscriber middle name" filterBy="#{sbn.subscriber.details.middleName}">
+                                                    <h:outputText value="#{sbn.subscriber.details.middleName}"/>
+                                                </p:column>
+                                                <p:column headerText="Subscriber last name" filterBy="#{sbn.subscriber.details.surname}">
+                                                    <h:outputText value="#{sbn.subscriber.details.surname}"/>
+                                                </p:column>
+						<f:facet name="footer">
+                                                    <p:commandButton process="subDataTable" value="View" action="#{subscriptionManager.show()}"></p:commandButton>						
+                                                    Total: #{fn:length(subcriptionManager.subscriptionList)}</f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

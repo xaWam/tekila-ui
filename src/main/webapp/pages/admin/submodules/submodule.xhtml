@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+    <f:metadata>
+        <f:viewParam name="submodule" value="#{subModuleManager.subModuleID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Submodule</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages"/>
+                <h:panelGrid rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column" columns="2" style="margin-bottom: 10px;">
+                    <f:facet name="header">Submodules</f:facet>
+                    <h:outputLabel>Name</h:outputLabel>
+                    <h:inputText value="#{subModuleManager.subModule.name}"/>
+
+                    <h:outputLabel value="Module" rendered="#{not empty subModuleManager.subModuleID}"/>
+                    <h:outputText value="#{subModuleManager.subModule.module.name}" rendered="#{not empty subModuleManager.subModuleID}"/>
+
+                </h:panelGrid>
+
+                <p:dataTable id="pathTable" selection="#{subModuleManager.selectedPathEntry}" selectionMode="single"
+                             value="#{subModuleManager.pathMap}" var="path" rowKey="#{path.key}">
+                    <f:facet name="header">Paths &amp; Permissions</f:facet>
+                    <p:ajax event="rowSelect" listener="#{subModuleManager.onRowSelect}" update="@form"/>
+                    <p:column headerText="Path">
+                        <h:outputText value="#{path.key}"/>
+                    </p:column>
+                    <p:column headerText="Privilege">
+                        <h:outputText value="#{path.value}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="3" style="margin-bottom: 10px;">
+                    <h:outputLabel value="Path"/>
+                    <h:inputText id="path" value="#{subModuleManager.path}" style="width: 400px;"/>
+                    <p:selectOneMenu id="pathPriv" value="#{subModuleManager.privilege}">
+                        <f:selectItem itemLabel="Select privilege" noSelectionOption="true"/>
+                        <f:selectItems value="#{subModuleManager.privilegeSelectList}"/>
+                    </p:selectOneMenu>
+                    <f:facet name="footer">
+                        <p:commandButton value="Save" icon="ui-icon-disk" actionListener="#{subModuleManager.addPrivilege}" update="pathTable path pathPriv messages"/>
+                        <p:commandButton value="Delete" icon="ui-icon-trash" actionListener="#{subModuleManager.removePrivilege}"  update="pathTable path pathPriv messages"/>
+                        <p:commandButton actionListener="#{subModuleManager.resetPrivilege}" value="Reset" icon="ui-icon-refresh" update="path pathPriv pathTable messages"/>
+                    </f:facet>
+                </h:panelGrid>
+
+                <p:dataTable value="#{subModuleManager.moduleList}" selection="#{subModuleManager.module}" selectionMode="single" var="md" paginator="true" rows="15" rowKey="#{md.id}">
+                    <f:facet name="header">Modules</f:facet>
+                    <p:column headerText="Id">#{md.id}</p:column>
+                    <p:column headerText="Name">#{md.name}</p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2">
+                    <f:facet name="footer">
+                        <p:spacer height="10"/>
+                        <p:button value="Cancel" outcome="/pages/admin/submodules/index.xhtml"/>
+                        <p:commandButton value="Save" action="#{subModuleManager.save}" update="@form"/>
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

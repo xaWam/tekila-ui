@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Resources</ui:define>
+			<ui:define name="content">
+				<h:form id="rateForm">
+                                    <p:dataTable widgetVar="paymentsTable" id="subDataTable" value="#{resourceManager.resourceList}" var="res" paginator="true" rows="15" filteredValue="#{resourceManager.filteredResources}"
+                                        selection="#{resourceManager.selected}" selectionMode="single" rowKey="#{res.id}">
+                                       <f:facet name="header">Resources</f:facet>
+                                        <p:column headerText="Name">
+                                            <h:outputText id="resName" value="#{res.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Expires">
+                                            <p:outputLabel value="#{res.expireAsDate}" id="resExpire">							
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                            </p:outputLabel>                                          
+                                        </p:column>
+                                        
+                                        <p:column id="resActiveFrom" headerText="Active from" >
+                                            <h:outputText value="#{res.activeFromAsDate}">
+                                                <f:convertDateTime pattern="HH:mm:ss"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        
+                                        <p:column id="resActiveTill" headerText="Active till">
+                                            <h:outputText value="#{res.activeTillAsDate}">
+                                                <f:convertDateTime pattern="HH:mm:ss"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        
+					<f:facet name="footer">
+                                            <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                                            <p:commandButton action="#{resourceManager.show()}" value="View"></p:commandButton>
+                        <p:button value="Add" outcome="/pages/resource/create.xhtml"/>
+
+                        Total: #{fn:length(resourceManager.resourceList)}</f:facet>
+                                    </p:dataTable>			
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriptionManager.subscriberID}"/>
+    <f:event type="preRenderView" listener="#{subscriptionManager.onCreateLoad()}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Subscription</ui:define>
+    <ui:define name="content">
+        <h:form id="sbnForm" onkeypress="if (event.keyCode === 13) return false;">
+            <p:growl id="messages"/>
+            <p:accordionPanel cache="false" activeIndex="0,1,2,3,4" id="accordPanel">
+                <p:tab title="Settings">
+                    <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row" style="margin-bottom: 15px;"
+                    >
+                        <f:facet name="header">
+                            <h:outputText value="Subscription information"/>
+                        </f:facet>
+
+                        <h:outputLabel value="Sevice provider"/>
+                        <h:outputLabel value="Qutu Azertelecom"/>
+
+                        <h:outputLabel value="Subscriber"></h:outputLabel>
+                        <h:outputLabel>#{subscriptionManager.selectedSubscriber.details.firstName} #{subscriptionManager.selectedSubscriber.details.surname}</h:outputLabel>
+
+
+                        <h:outputLabel value="Service" for="serviceName" styleClass="required"></h:outputLabel>
+                        <p:selectOneMenu value="#{subscriptionManager.serviceId}" id="serviceName" required="true"
+                                         requiredMessage="Service is required">
+                            <p:ajax event="change" listener="#{subscriptionManager.onServiceSelect}" update="@form"/>
+                            <f:selectItem itemLabel="Select service" noSelectionOption="true"/>
+                            <f:selectItems value="#{subscriptionManager.serviceSelectList}"/>
+                        </p:selectOneMenu>
+
+
+                        <h:outputLabel value="Name"/>
+                        <h:inputText value="#{subscriptionManager.name}"/>
+
+                        <h:outputLabel value="Surname"/>
+                        <h:inputText value="#{subscriptionManager.surname}"/>
+
+                        <h:outputLabel value="Description"/>
+                        <h:inputText value="#{subscriptionManager.desc}"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid id="sbnDetails" columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                                 rowClasses="odd-row,even-row" style="margin-bottom: 15px;">
+                        <f:facet name="header">Subscription details</f:facet>
+                        <h:outputLabel value="City"/>
+                        <h:inputText value="#{subscriptionManager.details.city}"/>
+
+                        <h:outputLabel value="ATS"/>
+                        <h:inputText value="#{subscriptionManager.details.ats}"/>
+
+                        <h:outputLabel value="Street"/>
+                        <h:inputText value="#{subscriptionManager.details.street}"/>
+
+                        <h:outputLabel value="Building"/>
+                        <h:inputText value="#{subscriptionManager.details.building}"/>
+
+                        <h:outputLabel value="Apartment"/>
+                        <h:inputText value="#{subscriptionManager.details.apartment}"/>
+
+                        <h:outputLabel value="MSISDN" styleClass="required"/>
+                        <h:inputText value="#{subscriptionManager.msisdn}">
+                            <p:ajax event="change" listener="#{subscriptionManager.onAddDetailsConvergent}"
+                                    update="agreementGenerated"/>
+                        </h:inputText>
+
+                        <h:outputLabel value="Agreement No." styleClass="required"></h:outputLabel>
+                        <h:inputText id="agreementGenerated"
+                                     value="#{subscriptionManager.subscription.agreement}"/>
+
+                    </h:panelGrid>
+
+                </p:tab>
+
+
+                <p:tab title="Stock">
+                    <p:outputPanel id="minipopPanel">
+                        <p:panelGrid id="minipopGrid" columns="5" style="margin-bottom: 10px;">
+                            <f:facet name="header">Search for minipops</f:facet>
+                            <p:outputPanel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Category"/>
+                                    <h:selectOneMenu id="category" value="#{subscriptionManager.minipopCategory}"
+                                                     style="width: 100px;">
+                                        <f:ajax listener="#{subscriptionManager.searchMinipops}"
+                                                render="minipopTable"/>
+                                        <f:selectItem noSelectionOption="true" itemLabel="Select Categoty"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{subscriptionManager.minipopCategoryList}"/>
+                                    </h:selectOneMenu>
+                                </h:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Mac addresss"/>
+                                    <h:inputText id="macAddress" value="#{subscriptionManager.miniPopMacAddress}"
+                                                 style="width: 215px;">
+                                        <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                    </h:inputText>
+                                </h:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="IP"/>
+                                    <h:inputText id="chIp" value="#{subscriptionManager.ip}"
+                                                 style="width: 215px;">
+                                        <f:ajax listener="#{subscriptionManager.searchMinipops}"
+                                                render="minipopTable"/>
+                                    </h:inputText>
+                                </h:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Switch"/>
+                                    <h:inputText id="switchId" value="#{subscriptionManager.switchID}"
+                                                 style="width: 215px;">
+                                        <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                    </h:inputText>
+                                </h:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Addresss"/>
+                                    <h:inputText id="mpAddress" value="#{subscriptionManager.minipPopAddress}"
+                                                 style="width: 215px;">
+                                        <f:ajax listener="#{subscriptionManager.searchMinipops}" render="minipopTable"/>
+                                    </h:inputText>
+                                </h:panelGrid>
+                            </p:outputPanel>
+                        </p:panelGrid>
+
+                        <p:dataTable value="#{subscriptionManager.minipopLazyDataModel}" var="mp" paginator="true"
+                                     rows="15" filteredValue="#{subscriptionManager.filteredMinipopList}"
+                                     selection="#{subscriptionManager.selectedMiniPop}" selectionMode="single"
+                                     lazy="true" rowKey="#{mp.id}" id="minipopTable"
+                        >
+                            <f:facet name="header">Minipops</f:facet>
+                            <p:column headerText="Id" styleClass="id">#{mp.id}</p:column>
+                            <p:column headerText="Category">#{mp.category}</p:column>
+                            <p:column headerText="Device status" style="width: 80px;">
+                                #{mp.deviceStatus}
+                            </p:column>
+                            <p:column headerText="Address">#{mp.address}</p:column>
+                            <p:column headerText="House">#{mp.housesAsText}</p:column>
+                            <p:column headerText="Switch" style="width: 100px;">#{mp.switch_id}</p:column>
+                            <p:column headerText="Mac Address" style="width: 100px;">#{mp.mac}</p:column>
+                            <p:column headerText="Master vlan" styleClass="id">#{mp.masterVlan}</p:column>
+                            <p:column headerText="Init vlan" styleClass="id">#{mp.subVlan}</p:column>
+                            <p:column headerText="Ports number" styleClass="id">#{mp.numberOfPorts}</p:column>
+                            <p:column headerText="Next port" styleClass="id">
+                                <h:inputText value="#{mp.nextAvailablePortHintAsNumber}" style="width: 20px;">
+                                </h:inputText>
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:tab>
+
+                <p:tab title="Equipment"
+                       rendered="#{not empty subscriptionManager.service and subscriptionManager.service.allowEquipment}">
+                    <p:outputPanel id="eqWrapperPanel">
+                        <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="eqGrid"
+                                     rendered="#{subscriptionManager.useStockEquipment and not uISecurityManager.hasPermission('Own stock','READ')}"
+                        >
+                            <f:facet name="header">Search for equipment</f:facet>
+                            <p:outputPanel id="eqPanel">
+                                <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                             rowClasses="odd-row,even-row" columns="2">
+
+                                    <h:outputLabel>Part Number</h:outputLabel>
+                                    <h:inputText id="partnum" value="#{subscriptionManager.partNumber}">
+                                        <f:ajax listener="#{subscriptionManager.search}" render="eqTable"/>
+                                    </h:inputText>
+
+                                    <h:outputLabel>Model</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.modelName}">
+                                        <f:ajax listener="#{subscriptionManager.search}" render="eqTable"/>
+                                    </h:inputText>
+
+                                    <h:outputLabel>Type</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.typeName}">
+                                        <f:ajax listener="#{subscriptionManager.search}" render="eqTable"/>
+                                    </h:inputText>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                             rowClasses="odd-row,even-row" columns="2">
+                                    <h:outputLabel>Brand</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.brandName}">
+                                        <f:ajax listener="#{subscriptionManager.search}" render="eqTable"/>
+                                    </h:inputText>
+                                    <h:outputLabel>Mac Address</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.macAddress}">
+                                        <f:ajax listener="#{subscriptionManager.search}" render="eqTable"/>
+                                    </h:inputText>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                        </p:panelGrid>
+
+                        <h:panelGrid columns="1" id="eqTableGrid"
+                                     rendered="#{subscriptionManager.useStockEquipment and not uISecurityManager.hasPermission('Own stock','READ')}">
+                            <p:dataTable widgetVar="paymentsTable" id="eqTable"
+                                         value="#{subscriptionManager.equipmentList}" var="equip" paginator="true"
+                                         rows="15" filteredValue="#{subscriptionManager.filteredEquipmentList}"
+                                         selection="#{subscriptionManager.selectedEquipment}" selectionMode="single"
+                                         lazy="true" rowKey="#{equip.id}"
+                            >
+                                <f:facet name="header">Available equipment</f:facet>
+                                <p:column headerText="Id" styleClass="id">#{equip.id}</p:column>
+                                <p:column headerText="Provider">#{equip.provider.name}</p:column>
+                                <p:column headerText="Part number">#{equip.partNumber}</p:column>
+                                <p:column headerText="Model">#{equip.model.name}</p:column>
+                                <p:column headerText="Brand">#{equip.brand.name}</p:column>
+                                <p:column headerText="Type">#{equip.type.name}</p:column>
+                                <p:column headerText="Mac Address">#{equip.macAddress}</p:column>
+                                <p:column headerText="Price">#{equip.price.nominalForView}</p:column>
+                                <p:column headerText="Discount">#{equip.price.discountForView}%</p:column>
+                                <p:column headerText="Status">#{equip.status}</p:column>
+                                <f:facet name="footer">
+                                    Total: #{subscriptionManager.equipmentList.rowCount}</f:facet>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator
+                                rendered="#{subscriptionManager.useStockEquipment and not uISecurityManager.hasPermission('Own stock','READ')}"/>
+                    </p:outputPanel>
+
+                    <p:outputPanel id="eqWrapperPanel_dealer">
+                        <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input"
+                                     id="eqGrid_dealer"
+                                     rendered="#{subscriptionManager.useStockEquipment and uISecurityManager.hasPermission('Own stock','READ')}"
+                        >
+                            <f:facet name="header">Search for equipment</f:facet>
+                            <p:outputPanel id="eqPanel_dealer">
+                                <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                             rowClasses="odd-row,even-row" columns="2">
+
+                                    <h:outputLabel>Part Number</h:outputLabel>
+                                    <h:inputText id="partnum_dealer"
+                                                 value="#{subscriptionManager.parameterDealerEquipmentPartnumber}">
+                                        <f:ajax listener="#{subscriptionManager.searchDealerEquipment}"
+                                                render="eqTable_dealer"/>
+                                    </h:inputText>
+
+                                    <h:outputLabel>Model</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.modelName}">
+                                        <f:ajax listener="#{subscriptionManager.searchDealerEquipment}"
+                                                render="eqTable_dealer"/>
+                                    </h:inputText>
+
+                                    <h:outputLabel>Type</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.typeName}">
+                                        <f:ajax listener="#{subscriptionManager.searchDealerEquipment}"
+                                                render="eqTable_dealer"/>
+                                    </h:inputText>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                            <p:outputPanel>
+                                <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                             rowClasses="odd-row,even-row" columns="2">
+                                    <h:outputLabel>Brand</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.brandName}">
+                                        <f:ajax listener="#{subscriptionManager.searchDealerEquipment}"
+                                                render="eqTable_dealer"/>
+                                    </h:inputText>
+                                    <h:outputLabel>Mac Address</h:outputLabel>
+                                    <h:inputText value="#{subscriptionManager.macAddress}">
+                                        <f:ajax listener="#{subscriptionManager.searchDealerEquipment}"
+                                                render="eqTable_dealer"/>
+                                    </h:inputText>
+                                </p:panelGrid>
+                            </p:outputPanel>
+                        </p:panelGrid>
+
+                        <h:panelGrid columns="1" id="eqTableGrid_dealer"
+                                     rendered="#{subscriptionManager.useStockEquipment and uISecurityManager.hasPermission('Own stock','READ')}">
+                            <p:dataTable widgetVar="paymentsTable" id="eqTable_dealer"
+                                         value="#{subscriptionManager.dealerEquipment}" var="equip" paginator="true"
+                                         rows="15" filteredValue="#{subscriptionManager.filteredEquipmentList}"
+                                         selection="#{subscriptionManager.selectedEquipment}" selectionMode="single"
+                                         lazy="true" rowKey="#{equip.id}"
+                            >
+                                <f:facet name="header">Available equipment</f:facet>
+                                <p:column headerText="Id" styleClass="id">#{equip.id}</p:column>
+                                <p:column headerText="Provider">#{equip.provider.name}</p:column>
+                                <p:column headerText="Part number">#{equip.partNumber}</p:column>
+                                <p:column headerText="Model">#{equip.model.name}</p:column>
+                                <p:column headerText="Brand">#{equip.brand.name}</p:column>
+                                <p:column headerText="Type">#{equip.type.name}</p:column>
+                                <p:column headerText="Mac Address">#{equip.macAddress}</p:column>
+                                <p:column headerText="Price">#{equip.price.nominalForView}</p:column>
+                                <p:column headerText="Discount">#{equip.price.discountForView}%</p:column>
+                                <p:column headerText="Status">#{equip.status}</p:column>
+                                <f:facet name="footer">
+                                    Total: #{subscriptionManager.dealerEquipment.size()}</f:facet>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <p:separator
+                                rendered="#{subscriptionManager.useStockEquipment and uISecurityManager.hasPermission('Own stock','READ')}"/>
+                    </p:outputPanel>
+                </p:tab>
+
+            </p:accordionPanel>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="createAzerBtn" action="#{subscriptionManager.createQutuNarhome}" value="Save"
+                                 update="messages"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'INSERT')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="createAzerBtn" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;" value="Creating, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

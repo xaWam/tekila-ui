@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Resource #{resourceManager.selected.name} - View/Edit</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">						
+                                            <f:facet name="header">
+                                                <h:outputText value="Resource #{resourceManager.selected.name}"/>
+                                            </f:facet>
+                                            <h:outputLabel for="resName" value="Name"/>					
+                                            <p:inplace>
+                                                <h:inputText id="resName" value="#{resourceManager.selected.name}"/>
+                                            </p:inplace>                                            
+					</h:panelGrid>
+                                    
+                                        <h:panelGrid columns="1" id="profileRatesPanel">
+                                            <f:facet name="header"><h:outputText value="Buckets"/></f:facet>
+                                            <p:dataTable value="#{resourceManager.selected.bucketList}" var="bucket" id="rateTable">
+                                                <p:column headerText="Type">#{bucket.type}</p:column>
+                                                <p:column headerText="Capacity">#{bucket.capacity}</p:column>                                                
+                                                <p:column headerText="Delete">
+                                                    <p:commandLink value="Delete" action="#{resourceManager.removeBucket(bucket)}" update="rateTable"/>                                                        
+                                                </p:column>
+                                            </p:dataTable>
+					</h:panelGrid>
+                                        <p:spacer height="10"/>
+                                        <h:panelGrid>
+                                            <f:facet name="header">Add resource</f:facet>
+                                            <h:selectManyMenu value="#{resourceManager.resourceBucketIdsList}">
+                                                <f:selectItems value="#{resourceManager.bucketSelectList}"></f:selectItems>
+                                            </h:selectManyMenu>
+                                            <p:commandButton value="Add" action="#{resourceManager.addBucket()}" update="rateTable"/>
+                                        </h:panelGrid>
+                                    
+					<h:panelGrid columns="2">
+						<h:commandButton action="/pages/resource/index" value="Cancel"/>
+                                                <h:commandButton action="#{resourceManager.save()}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

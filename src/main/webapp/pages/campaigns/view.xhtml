@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="campaign" value="#{campaignManager.campaignId}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Campaign #{campaignManager.selected.name} - View/Edit</ui:define>
+
+    <ui:define name="content">
+        <h:form id="campaignViewForm" onkeypress="return event.keyCode != 13;">
+            <p:growl id="errMessages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Count/Bonus Count information"/>
+                </f:facet>
+
+                <h:outputLabel value="Bonus count"/>
+                <p:inplace id="bonusCountHolder">
+                    <p:inputText id="bonusCount" value="#{campaignManager.selected.bonusCount}" required="true" label="text"/>
+                </p:inplace>
+
+                <h:outputLabel value="Count"/>
+                <p:inplace id="countHolder">
+                    <p:inputText id="count" value="#{campaignManager.selected.count}" required="true" label="text"/>
+                </p:inplace>
+
+
+                <h:outputLabel value="Lifecycle count"/>
+                <p:inplace id="lifecycleCountHolder">
+                    <p:inputText id="lifecycleCount" value="#{campaignManager.selected.lifeCycleCount}" required="true" label="text"/>
+                </p:inplace>
+
+                <h:outputText value="Bonus Date"/>
+                <p:calendar id="bonusDate" value="#{campaignManager.selectedBonusDate}" />
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Campaign Name/Description"/>
+                </f:facet>
+
+                <h:outputLabel value="Campaign Name"/>
+                <p:inplace id="campaignNameHolder" editor="true" emptyLabel="Click here to enter campaign name">
+                    <p:inputText id="campaignName" value="#{campaignManager.selected.name}"/>
+                </p:inplace>
+
+
+                <h:outputLabel value="Campaign Description"/>
+                <p:inplace id="descriptionHolder" editor="true" emptyLabel="Click here to enter campaign description">
+                    <p:inputText id="description" value="#{campaignManager.selected.desc}"/>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Specific parameters"/>
+                </f:facet>
+
+                <h:outputText value="IsCompound"/>
+                <p:inplace id="isCompoundHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.compound}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.compound}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsAutomatic"/>
+                <p:inplace id="automaticHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.automatic}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.automatic}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsCancelInvoice"/>
+                <p:inplace id="cancelInvoiceHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.cancelInvoice}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.cancelInvoice}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsActivateOnDemand"/>
+                <p:inplace id="activateOnDemandHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.activateOnDemand}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.activateOnDemand}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsActivateOnManualPayment"/>
+                <p:inplace id="activateOnManualPaymentHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.activateOnManualPaymentOnly}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.activateOnManualPaymentOnly}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsVasOnly"/>
+                <p:inplace id="vasOnlyHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.vasOnly}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.vasOnly}"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputText value="IsAvailableOnCreation"/>
+                <p:inplace id="availableOnCreationHolder">
+                    <f:facet name="output">
+                        <h:outputText value="#{campaignManager.selected.availableOnCreation}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectBooleanCheckbox value="#{campaignManager.selected.availableOnCreation}"/>
+                    </f:facet>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Campaign Target"/>
+                </f:facet>
+
+                <h:outputText value="Campaign Target"/>
+                <p:inplace id="campaignTargetHolder" label="Targets" effectSpeed="fast" event="dblclick">
+                    <h:selectOneMenu value="#{campaignManager.selected.target}">
+                        <f:selectItems value="#{campaignManager.targetList}"/>
+                    </h:selectOneMenu>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Campaign Provider"/>
+                </f:facet>
+
+                <h:outputText value="Campaign Provider"/>
+                <h:selectOneMenu value="#{campaignManager.selectedProviderId}">
+                    <f:selectItems value="#{campaignManager.providersForView}"/>
+                </h:selectOneMenu>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Expiration Date"/>
+                </f:facet>
+
+                <h:outputText value="Expiration Date"/>
+                <p:calendar id="popup" value="#{campaignManager.selectedExpirationDate}" />
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Equipment Discount"/>
+                </f:facet>
+
+                <h:outputText value="Equipment Discount"/>
+                <p:inplace id="discountIdHolder" emptyLabel="Click here to enter equipment discount">
+                    <p:inputText id="discountId" value="#{campaignManager.selected.equipmentDiscount}" label="text">
+                        <f:convertNumber minFractionDigits="2"/>
+                    </p:inputText>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Campaign Status"/>
+                </f:facet>
+
+                <h:outputText value="Campaign Status"/>
+                <p:inplace id="campaignStatusHolder">
+                    <h:selectOneMenu value="#{campaignManager.selected.status}">
+                        <f:selectItems value="#{campaignManager.statuses}"/>
+                    </h:selectOneMenu>
+                </p:inplace>
+            </h:panelGrid>
+
+            <p:separator/>
+            <p:spacer height="75"/>
+
+
+
+            <p:panelGrid columns="1" id="searchService">
+                <f:facet name="header">Search for Service</f:facet>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Service Name"/>
+                        <h:inputText value="#{campaignManager.searchedServiceName}" style="width: 415px;">
+                            <f:ajax listener="#{campaignManager.onServiceSearch}" execute="@this" render="serviceTable"/>
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:dataTable var="service" value="#{campaignManager.serviceLazyModel}" paginator="true" rows="10"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{campaignManager.selectedService}" id="serviceTable" lazy="true">
+                    <p:ajax event="rowSelect" listener="#{campaignManager.onServiceRowSelect}" process="@this" update=":campaignViewForm:selectedServiceTable"/>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{service.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{service.name}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dataTable var="selectedService" value="#{campaignManager.selectedServices}" id="selectedServiceTable">
+                    <f:facet name="header">
+                        List of selected services for this campaign
+                    </f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{selectedService.service.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{selectedService.service.name}"/>
+                    </p:column>
+                    <p:column headerText="bonus limit for service">
+                        <h:inputText value="#{selectedService.bonus}"/>
+                    </p:column>
+                    <p:column style="width:20px;">
+                        <f:facet name="header">
+                            <h:outputText value=""/>
+                        </f:facet>
+                        <p:commandButton icon="ui-icon-close" title="remove service"
+                                         actionListener="#{campaignManager.removeSelectedService(selectedService)}"
+                                         update="selectedServiceTable"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panelGrid>
+
+
+            <p:separator/>
+            <p:spacer height="75"/>
+
+
+
+
+            <p:panelGrid columns="1" id="searchVas">
+                <f:facet name="header">Search for Value Added Service</f:facet>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Vas Name"/>
+                        <h:inputText value="#{campaignManager.searchedVasName}" style="width: 415px;">
+                            <f:ajax listener="#{campaignManager.onVASSearch}" execute="@this" render="vasTable"/>
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:dataTable var="vas" value="#{campaignManager.vasLazyModel}" paginator="true" rows="10"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{campaignManager.selectedVas}" id="vasTable" lazy="true">
+                    <p:ajax event="rowSelect" listener="#{campaignManager.onVasRowSelect}" process="@this" update=":campaignViewForm:selectedVasTable"/>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{vas.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{vas.name}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dataTable var="selectedVas" value="#{campaignManager.selectedVasList}" id="selectedVasTable">
+                    <f:facet name="header">
+                        List of selected value added services for this campaign
+                    </f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{selectedVas.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{selectedVas.name}"/>
+                    </p:column>
+                    <p:column style="width:20px;">
+                        <f:facet name="header">
+                            <h:outputText value=""/>
+                        </f:facet>
+                        <p:commandButton icon="ui-icon-close" title="remove vas"
+                                         actionListener="#{campaignManager.removeSelectedVas(selectedVas)}"
+                                         update="selectedVasTable"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panelGrid>
+
+
+
+            <p:separator/>
+            <p:spacer height="75"/>
+
+
+            <p:panelGrid columns="1" id="searchExtraList">
+                <f:facet name="header">Search for Campaign Extra List</f:facet>
+                <p:outputPanel>
+                    <p:panelGrid columns="2">
+                        <h:outputLabel value="Campaign Name"/>
+                        <h:inputText value="#{campaignManager.searchedCampaignName}" style="width: 415px;">
+                            <f:ajax listener="#{campaignManager.onCampaignSearch}" execute="@this" render="campaignTable"/>
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:dataTable var="campaign" value="#{campaignManager.campaignLazyModel}" paginator="true" rows="10"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             rowsPerPageTemplate="5,10,15" selectionMode="single" selection="#{campaignManager.selectedCampaign}" id="campaignTable" lazy="true">
+                    <p:ajax event="rowSelect" listener="#{campaignManager.onCampaignRowSelect}" process="@this" update=":campaignViewForm:selectedCampaignTable"/>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{campaign.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{campaign.name}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dataTable var="selectedCampaign" value="#{campaignManager.selectedCampaigns}" id="selectedCampaignTable">
+                    <f:facet name="header">
+                        List of selected child campaigns for this campaign
+                    </f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{selectedCampaign.id}"/>
+                    </p:column>
+                    <p:column headerText="name">
+                        <h:outputText value="#{selectedCampaign.name}"/>
+                    </p:column>
+                </p:dataTable>
+            </p:panelGrid>
+
+            <!--this is for preventing POST requests when hitting enter on the input texts-->
+            <h:commandButton value="DummyInterceptor" action="null" actionListener="null" disabled="true" styleClass="zeroSize"/>
+
+            <h:panelGrid columns="2">
+                <h:commandButton action="#" value="Reset" type="reset"/>
+                <h:commandButton action="#{campaignManager.update}" value="Update"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation" styleClass="disable-scroll">
+                    <p:menuitem value="Campaigns" action="#{campaignManager.goToCampaignListPage()}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

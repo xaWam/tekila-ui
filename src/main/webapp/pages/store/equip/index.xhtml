@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Equipment</ui:define>
+        <ui:define name="content">
+            <h:form id="eqForm">
+                <p:growl id="messages"/>
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                    <f:facet name="header">Search for equipment</f:facet>
+                    <p:outputPanel id="eqPanel">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel value="Provider"/>
+                            <p:selectOneMenu value="#{equipmentManager.providerID}">
+                                <f:selectItem noSelectionOption="true" itemLabel="Select a provider"/>
+                                <f:selectItems value="#{equipmentManager.providerSelectList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Status"/>
+                            <p:selectOneMenu value="#{equipmentManager.status}">
+                                <f:selectItems value="#{equipmentManager.equipmentStatusList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel>Part Number (from)</h:outputLabel>
+                            <h:inputText id="partnum" value="#{equipmentManager.partNumber}"/>
+
+                            <h:outputLabel>Part Number (to)</h:outputLabel>
+                            <h:inputText id="partnum_to" value="#{equipmentManager.partNumberTo}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel>Model</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.model}">
+                            </h:inputText>
+
+                            <h:outputLabel>Type</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.type}">
+                            </h:inputText>
+                            <h:outputLabel>Brand</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.brand}">
+                            </h:inputText>
+                            <h:outputLabel>Mac Address</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.macAddress}">
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{equipmentManager.search}" value="Search" update="messages eqTable"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Equipment', 'READ')}"/>
+                </h:panelGrid>
+
+                <h:panelGrid columns="1">
+                    <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{equipmentManager.equipmentList}" var="equip" paginator="true" rows="15" filteredValue="#{equipmentManager.filteredEquipmentList}"
+                                 selection="#{equipmentManager.selected}" selectionMode="single" lazy="true" rowKey="#{equip.id}">
+                        <f:facet name="header">Available equipment</f:facet>
+                        <p:column headerText="Id" styleClass="id">#{equip.id}</p:column>
+                        <p:column headerText="Provider">#{equip.provider.name}</p:column>
+                        <p:column headerText="Part number">#{equip.partNumber}</p:column>
+                        <p:column headerText="Model">#{equip.model.name}</p:column>
+                        <p:column headerText="Brand">#{equip.brand.name}</p:column>
+                        <p:column headerText="Type">#{equip.type.name}</p:column>
+                        <p:column headerText="Mac Address">#{equip.macAddress}</p:column>
+                        <p:column headerText="Price">#{equip.price.nominalForView}</p:column>
+                        <p:column headerText="Discount">#{equip.price.discountForView}%</p:column>
+                        <p:column headerText="Status">#{equip.status}</p:column>
+                        <f:facet name="footer">
+                            <p:commandButton value="Transfer" onclick="PF('campDialog').show(); return false;"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor stores', 'INSERT')
+                                             and uISecurityManager.securityManager.checkUIPermissions('Equipment', 'UPDATE')}"/>
+                            <p:commandButton value="View" action="#{equipmentManager.show}" update=":eqForm:messages"/>
+                            <p:button value="Import" outcome="/pages/store/equip/import.xhtml" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Equipment', 'INSERT')}"/>
+                            Total: #{equipmentManager.equipmentList.rowCount}</f:facet>
+                    </p:dataTable>
+                </h:panelGrid>
+
+                <p:dialog id="campDialog" dynamic="true" widgetVar="campDialog" closeOnEscape="true" closable="true" maximizable="false" width="840" showEffect="explode">
+                    <p:ajax event="close" listener="#{equipmentManager.onEquipmentTransferDialogClosed}" update="campList"/>
+                    <p:panelGrid columns="1" id="campPanel_0">
+                        <f:facet name="header">Transfer details</f:facet>
+                        <p:outputPanel>
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="Price for equipment" styleClass="required"/>
+                                <h:inputText value="#{equipmentManager.transferPrice}" style="width: 415px;" required="true"
+                                        requiredMessage="Price is required">
+                                </h:inputText>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+                    <p:separator/>
+
+                    <p:panelGrid columns="1" id="campPanel">
+                        <f:facet name="header">Search for Distributors</f:facet>
+                        <p:outputPanel>
+                            <p:panelGrid columns="2">
+                                <h:outputLabel value="Name"/>
+                                <h:inputText value="#{equipmentManager.distributorStoreName}" style="width: 415px;">
+                                </h:inputText>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+
+                    <p:panelGrid columns="2">
+                        <p:commandButton actionListener="#{equipmentManager.onDistributorSearch}" value="Search" update="campList"/>
+                        <p:commandButton value="Reset" actionListener="#{equipmentManager.resetDistributorList}" update="campPanel campList"/>
+                    </p:panelGrid>
+
+                    <p:dataTable value="#{equipmentManager.distributorStoreList}" selection="#{equipmentManager.selectedDistributorStore}" selectionMode="single"
+                                 var="ds" rowKey="#{ds.id}" rows="100" paginator="true" id="campList" lazy="true">
+                        <f:facet name="header">Available distributor stores</f:facet>
+                        <p:column headerText="Id" styleClass="id">#{ds.id}</p:column>
+                        <p:column headerText="Date">
+                            <h:outputText value="#{ds.creationDate.toDate()}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Name">#{ds.name}</p:column>
+                        <p:column headerText="Distributor">#{ds.owner.name}</p:column>
+                        <p:column headerText="Item count">#{ds.equipmentList.size()}</p:column>
+                        <p:column headerText="Description">#{ds.desc}</p:column>
+                    </p:dataTable>
+
+                    <h:panelGrid columns="2">
+                        <p:commandButton action="#{equipmentManager.transfer}" id="campDialogSaveBtn" value="Save"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor stores', 'INSERT')
+                                         and uISecurityManager.securityManager.checkUIPermissions('Equipment', 'UPDATE')}"
+                                         update=":eqForm:messages"/>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

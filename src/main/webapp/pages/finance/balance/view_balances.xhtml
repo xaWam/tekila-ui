@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Subscriptiions</ui:define>
+    <ui:define name="content">
+        <h:form id="rateForm">
+            <p:messages id="messages"/>
+            <p:dataTable id="sbnList" value="#{subscriber.selected.subscriber.subscriptions}" var="sn"
+                         selection="#{subscriber.selectedSubscription}" selectionMode="single" rowKey="#{sn.id}">
+                <f:facet name="header">Subscriptions</f:facet>
+                <p:column headerText="ID">#{sn.id}</p:column>
+                <p:column headerText="Agreement">#{sn.agreement}</p:column>
+                <p:column headerText="Tariff plan">#{sn.service.name}</p:column>
+                <p:column headerText="Status">#{sn.status}</p:column>
+                <p:column headerText="Balance">#{sn.balance.realBalanceForView}</p:column>
+                <p:column headerText="Created on">
+                    <h:outputText value="#{sn.creationDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Activated on">
+                    <h:outputText value="#{sn.activationDateAsDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Expires on">
+                    <h:outputText value="#{sn.expiresAsDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Expires (w G.P.)">
+                    <h:outputText value="#{sn.expirationDateWithGracePeriodAsDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Billed UpTo">
+                    <h:outputText value="#{sn.billedUpToDateAsDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Last status change on">
+                    <h:outputText value="#{sn.lastStatusChangeAsDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+            <p:commandButton value="Transfer" onclick="PF('transferDialog').show()"
+                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'UPDATE')}"/>
+
+            <p:dialog id="transferDialogComp" widgetVar="transferDialog" closable="true" closeOnEscape="true"
+                      showEffect="explode" maximizable="false" width="840">
+                <p:messages id="balanceMsg"/>
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="balanceSearch">
+                    <f:facet name="header">Search for subscription</f:facet>
+                    <p:outputPanel id="balanceSearch_1">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                     columns="2">
+                            <h:outputLabel value="Id"/>
+                            <h:inputText id="sbnId" value="#{subscriber.sbID}"/>
+
+                            <h:outputLabel value="Contract"/>
+                            <h:inputText id="sbnContract" value="#{subscriber.sbnContract}"/>
+
+                            <h:outputLabel value="Service"/>
+                            <h:inputText id="sbnService" value="#{subscriber.sbnService}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel id="balanceSearch_2">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                     columns="2">
+                            <h:outputLabel>Subscriber name</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberName}">
+                            </h:inputText>
+
+                            <h:outputLabel>Subscriber middlename</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberMiddleName}">
+                            </h:inputText>
+
+                            <h:outputLabel>Subscriber surname</h:outputLabel>
+                            <h:inputText value="#{subscriber.subscriberSurname}">
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton actionListener="#{subscriber.clearFilters}" value="Clear"
+                                     update=":rateForm:balanceMsg :rateForm:balanceTableComp :rateForm:balanceSearch"/>
+                    <p:commandButton action="#{subscriber.searchSbn}" value="Search" update=":rateForm:balanceTableComp"
+                                     rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'UPDATE')}"/>
+                </h:panelGrid>
+
+                <p:dataTable id="balanceTableComp" widgetVar="balanceTable" value="#{subscriber.subscriptionList}"
+                             selection="#{subscriber.targetSubscription}" selectionMode="single" var="sbn"
+                             paginator="true" rows="10" rowKey="#{sbn.id}" lazy="true">
+                    <f:facet name="header">Select subscription to transfer payment to</f:facet>
+                    <p:column headerText="Id">#{sbn.id}</p:column>
+                    <p:column headerText="Contract">#{sbn.agreement}</p:column>
+                    <p:column headerText="Service">#{sbn.service.name}</p:column>
+                    <p:column headerText="Subscriber name">#{sbn.subscriber.details.firstName}</p:column>
+                    <p:column headerText="Subscriber surname">#{sbn.subscriber.details.surname}</p:column>
+                    <p:column headerText="Subscriber moddilename">#{sbn.subscriber.details.middleName}</p:column>
+                    <p:column headerText="Real balance">#{sbn.balance.realBalanceForView}</p:column>
+                    <p:column headerText="Status">#{sbn.status}</p:column>
+                </p:dataTable>
+
+                <p:inputText id="transferAmount" value="#{subscriber.transferAmount}" style="width: 150px"/>
+                <p:watermark for="transferAmount" value="Amount. Leave ampty if all" id="transferWatermark"/>
+                <br/>
+                <p:inputText id="transferDesc" value="#{subscriber.transferDesc}" style="width: 150px"
+                             styleClass="required"/>
+                <p:watermark for="transferDesc" value="Description" id="transferDescWatermark"/>
+                <br/>
+
+
+                <p:commandButton value="Transfer" action="#{subscriber.transferBalance}" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'UPDATE')}">
+                    <p:confirm header="Confirm operation" message="Do you really want to perform this operation?"
+                               icon="ui-icon-alert"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" closeOnEscape="true">
+                    <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                    <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                </p:confirmDialog>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscriber" action="#{subscriber.returnToSubscriber()}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

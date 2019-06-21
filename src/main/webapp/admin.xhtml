@@ -1,0 +1,689 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+        Replace path to template, title, header and body
+        with actual data.
+-->
+<f:metadata>
+    <f:viewParam name="keyword" value="#{searchManager.keyword}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Tekila : Billing</ui:define>
+    <ui:define name="content">
+        <h:form id="adminForm" styleClass="main-search-form">
+            <p:growl id="messages" severity="error" escape="false"/>
+            <h:panelGrid width="100%" columns="1">
+                <f:facet name="header">Search</f:facet>
+            </h:panelGrid>
+            <p:tabView styleClass="tab">
+                <p:ajax event="tabChange" listener="#{searchManager.onTabChange}" update="@form"/>
+                <p:tab title="Subscription" id="subscription">
+
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2">
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+                                <p:outputLabel value="Agreement No."/>
+                                <p:outputPanel>
+                                    <p:panelGrid rowClasses="odd-row,even-row" columns="2">
+                                        <p:inputText id="agreement" value="#{searchManager.agreement}"/>
+                                        <p:selectBooleanCheckbox id="exactSearch" value="#{searchManager.exactSearch}"/>
+                                    </p:panelGrid>
+                                </p:outputPanel>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+
+                                <h:outputLabel value="Status"/>
+                                <p:selectOneMenu value="#{searchManager.status}">
+                                    <f:selectItem noSelectionOption="true" itemLabel="None"/>
+                                    <f:selectItems value="#{searchManager.statuses}"/>
+                                </p:selectOneMenu>
+
+                                <h:outputLabel value="Provider"/>
+                                <p:selectOneMenu value="#{searchManager.provider}">
+                                    <f:selectItem noSelectionOption="true" itemLabel="None"/>
+                                    <f:selectItems value="#{searchManager.providers}"/>
+                                </p:selectOneMenu>
+
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+
+
+                    <p:separator/>
+
+                    <p:accordionPanel activeIndex="null">
+                        <p:tab title="Advanced Search">
+
+                            <p:panelGrid rowClasses="odd-row,even-row" columns="2">
+                                <p:outputPanel>
+                                    <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                                 rowClasses="odd-row,even-row" columns="2">
+                                        <p:outputLabel value="Identifier"/>
+                                        <p:inputText id="identifier" value="#{searchManager.identifier}"/>
+
+                                        <h:outputLabel value="Name"/>
+                                        <p:inputText id="firstname" value="#{searchManager.subscriberFirstName}"/>
+
+                                        <h:outputLabel value="Contact # (mobile)"/>
+                                        <p:inputText id="phone_mob" value="#{searchManager.phone_mobile}"/>
+
+                                        <p:outputLabel value="Registration / Tax ID"/>
+                                        <p:inputText id="taxId" value="#{searchManager.taxID}"/>
+
+                                        <h:outputLabel value="Creation date"/>
+                                        <p:calendar value="#{searchManager.entryDate}" navigator="true"
+                                                    pagedate="01/08/2014" pattern="dd/MM/yyyy"/>
+
+                                        <h:outputLabel value="Company name"/>
+                                        <p:inputText id="company" value="#{searchManager.companyName}"/>
+
+                                        <h:outputLabel value="Middle Name"/>
+                                        <p:inputText id="middlename" value="#{searchManager.subscriberMiddleName}"/>
+
+                                        <h:outputLabel value="Surname"/>
+                                        <p:inputText id="lastname" value="#{searchManager.subscriberLastName}"/>
+
+                                        <h:outputLabel value="Place of Birth"/>
+                                        <p:inputText id="cityOfBirth" value="#{searchManager.cityOfBirth}"/>
+
+                                        <h:outputLabel value="Date of Birth"/>
+                                        <p:calendar value="#{searchManager.dateOfBirth}" navigator="true"
+                                                    pagedate="01/01/1980" pattern="dd/MM/yyyy"/>
+
+                                        <h:outputLabel value="City"/>
+                                        <p:inputText id="city" value="#{searchManager.city}"/>
+
+                                        <h:outputLabel value="Street"/>
+                                        <p:inputText id="street" value="#{searchManager.street}"/>
+
+                                    </p:panelGrid>
+                                </p:outputPanel>
+                                <p:outputPanel>
+                                    <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                                 rowClasses="odd-row,even-row" columns="2">
+
+                                        <h:outputLabel value="FTTB User Name"/>
+                                        <p:inputText id="userName" value="#{searchManager.userName}"/>
+
+                                        <h:outputLabel value="Passport number"/>
+                                        <p:inputText id="pass_num" value="#{searchManager.passport_number}"/>
+
+                                        <h:outputLabel value="ATS #"/>
+                                        <p:inputText id="AST" value="#{searchManager.ats}"/>
+
+                                        <h:outputLabel value="Building"/>
+                                        <p:inputText id="Building" value="#{searchManager.building}"/>
+
+                                        <h:outputLabel value="Apartment"/>
+                                        <p:inputText id="apt" value="#{searchManager.apartment}"/>
+
+                                        <h:outputLabel value="Citizenship"/>
+                                        <p:inputText id="citizenship" value="#{searchManager.citizenship}"/>
+
+                                        <h:outputLabel value="Passport series"/>
+                                        <p:inputText id="pass_series" value="#{searchManager.passport_series}"/>
+
+                                        <h:outputLabel value="Country of issue"/>
+                                        <p:inputText id="issue_country" value="#{searchManager.country}"/>
+
+                                        <h:outputLabel value="Email"/>
+                                        <p:inputText id="email" value="#{searchManager.email}"/>
+
+                                        <h:outputLabel value="Contact # (mobile 2)"/>
+                                        <p:inputText id="phone_alt" value="#{searchManager.phone_alt}"/>
+
+                                        <h:outputLabel value="Contact # (landline)"/>
+                                        <p:inputText id="phone_land" value="#{searchManager.phone_landline}"/>
+                                    </p:panelGrid>
+                                </p:outputPanel>
+                            </p:panelGrid>
+
+                        </p:tab>
+                    </p:accordionPanel>
+                </p:tab>
+
+                <p:tab title="Subscriber" id="subscriber">
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2" id="subscriberPanel">
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+                                <h:outputLabel value="Subscriber ID"/>
+                                <p:inputText value="#{searchManager.subscriberId}"/>
+
+                                <h:outputLabel value="Passport Number"/>
+                                <p:inputText value="#{searchManager.passportNumber}"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+                                <h:outputLabel value="Name"/>
+                                <p:inputText value="#{searchManager.subscriberName}"/>
+
+                                <h:outputLabel value="Surname"/>
+                                <p:inputText value="#{searchManager.subscriberSurname}"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+                </p:tab>
+
+                <p:tab title="Finance" id="payment">
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2" id="financePanel">
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                         rowClasses="odd-row,even-row" columns="2">
+                                <h:outputLabel value="Type"/>
+                                <p:selectOneRadio value="#{searchManager.financeType}">
+                                    <f:ajax event="change" render="financePanel"/>
+                                    <f:selectItem itemValue="Payment" itemLabel="Payment"/>
+                                    <f:selectItem itemValue="Invoice" itemLabel="Invoice"/>
+                                    <f:selectItem itemValue="Scratch card" itemLabel="Scratch card"/>
+                                </p:selectOneRadio>
+                                <h:outputLabel value="Cheque / Document No."
+                                               rendered="#{searchManager.financeType eq 'Payment'}"/>
+                                <p:inputText value="#{searchManager.cheque}"
+                                             rendered="#{searchManager.financeType eq 'Payment'}"/>
+                                <h:outputLabel value="Invoice Id" rendered="#{searchManager.financeType eq 'Invoice'}"/>
+                                <p:inputText value="#{searchManager.invoiceID}"
+                                             rendered="#{searchManager.financeType eq 'Invoice'}"/>
+                                <h:outputLabel value="RRN" rendered="#{searchManager.financeType eq 'Payment'}"/>
+                                <p:inputText value="#{searchManager.rrn}"
+                                             rendered="#{searchManager.financeType eq 'Payment'}"/>
+                                <h:outputLabel value="Serial"
+                                               rendered="#{searchManager.financeType eq 'Scratch card'}"/>
+                                <p:inputText value="#{searchManager.serial}"
+                                             rendered="#{searchManager.financeType eq 'Scratch card'}"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+                </p:tab>
+
+                <p:tab title="Stock" id="stock">
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2" id="stockPanel">
+                        <h:outputLabel value="Type"/>
+                        <p:selectOneRadio value="#{searchManager.stockType}">
+                            <f:selectItems value="#{searchManager.stockTypeSelectList}"/>
+                            <f:ajax event="change" listener="#{searchManager.onStockTypeChange}" render="stockPanel"/>
+                        </p:selectOneRadio>
+
+                        <h:outputLabel value="IP address" rendered="#{searchManager.stockType eq 'IP'}"/>
+                        <p:inputText value="#{searchManager.IP}" rendered="#{searchManager.stockType eq 'IP'}"/>
+
+                        <h:outputLabel value="Partnumber" rendered="#{searchManager.stockType eq 'Equipment'}"/>
+                        <p:inputText value="#{searchManager.partNumber}"
+                                     rendered="#{searchManager.stockType eq 'Equipment'}"/>
+
+                        <h:outputLabel value="Mac address" rendered="#{searchManager.stockType eq 'Minipop'}"/>
+                        <p:inputText widgetVar="macAddress" value="#{searchManager.macAddress}"
+                                     rendered="#{searchManager.stockType eq 'Minipop'}"/>
+
+                        <h:outputLabel value="Address" rendered="#{searchManager.stockType eq 'Minipop'}"/>
+                        <p:inputText widgetVar="address" value="#{searchManager.miniPopAddress}"
+                                     rendered="#{searchManager.stockType eq 'Minipop'}"/>
+
+                        <h:outputLabel value="Switch Name" rendered="#{searchManager.stockType eq 'Minipop'}"/>
+                        <p:inputText value="#{searchManager.switchName}"
+                                     rendered="#{searchManager.stockType eq 'Minipop'}"/>
+                    </p:panelGrid>
+                </p:tab>
+            </p:tabView>
+            <p:panelGrid columns="2" style="border: none;">
+                <p:commandButton value="Search" id="sbnSearchBtn" actionListener="#{searchManager.search}"
+                                 update="@form"/>
+                <p:commandButton value="Reset" actionListener="#{searchManager.clearForm}" update="@form"/>
+            </p:panelGrid>
+            <p:separator/>
+
+            <p:blockUI block="@form" trigger="sbnSearchBtn" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Searching, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+
+            <p:panelGrid columns="1" styleClass="w100">
+
+
+
+
+
+
+                <p:dataTable id="subscriptions" value="#{searchManager.subscriptionList}" var="sbn" rowKey="#{sbn.id}"
+                             selection="#{searchManager.selectedSubscriptionItem}" selectionMode="single"
+                             rendered="#{not empty searchManager.subscriptionList and searchManager.tabTitle eq 'Subscription'}"
+                             paginator="true" lazy="true" rows="15" tableStyle="table-layout:auto;width:100%;">
+
+
+                    <f:facet name="header">Subscriptions
+                        <p:commandLink id="toggler1" type="button" value="Columns" style="float:right;text-decoration: none"/>
+                        <p:columnToggler  datasource="subscriptions" trigger="toggler1"/>
+                    </f:facet>
+
+
+                    <p:column  headerText="Agreement">
+                        <h:outputText value="#{sbn.agreement}"/>
+                    </p:column>
+                    <p:column  headerText="Identifier">
+                        <h:outputText value="#{sbn.identifier}"/>
+                    </p:column>
+                    <p:column  headerText="Subscriber">
+                        <h:outputText
+                                value="#{sbn.subscriber.details.firstName} #{sbn.subscriber.details.surname} #{sbn.subscriber.details.middleName}"
+                                rendered="#{sbn.subscriber.details.type eq 'INDV'}"/>
+                        <h:outputText value="#{sbn.subscriber.details.companyName}"
+                                      rendered="#{sbn.subscriber.details.type eq 'CORP'}"/>
+                    </p:column>
+                    <p:column  headerText="Service">
+                        <h:outputText value="#{sbn.service.name}"/>
+                    </p:column>
+                    <p:column  headerText="Status">
+                        <h:outputText value="#{sbn.status}"/>
+                    </p:column>
+                    <p:column  headerText="Balance">
+                        <h:outputText value="#{sbn.balanceAsText}"/>
+                    </p:column>
+                    <p:column  headerText="Expires">
+                        <h:outputText value="#{sbn.expirationDateWithGracePeriod.toDate()}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column  headerText="Provider">
+                        <h:outputText value="#{sbn.service.provider.name}"/>
+                    </p:column>
+                    <p:column  headerText="Username">
+                        <h:outputText value="#{sbn.findRadiusUserName(sbn)}"/>
+                    </p:column>
+                    <p:column  headerText="Model">
+                        <h:outputText value="#{sbn.billingModel.name}"/>
+                    </p:column>
+                    <p:column  headerText="VAS">
+                        <h:outputText value="#{sbn.sbnVASAsText}"/>
+                    </p:column>
+                    <p:column  headerText="Campaign">
+                        <h:outputText value="#{sbn.activeCampaignsStr}"/>
+                    </p:column>
+
+
+
+
+                    <f:facet name="footer">
+                        <p:outputPanel id="viewButton" rendered="#{searchManager.renderViewButton}">
+                            <h:commandLink action="#{searchManager.view}"
+                                           style="font-weight: bold; font-size: 10px !important;" target="_blank"
+                                           value="Subscription"/>
+                            <p:spacer width="10"/>
+                            <h:commandLink action="#{searchManager.viewSubscriber}"
+                                           style="font-weight: bold; font-size: 10px !important;" target="_blank"
+                                           value="Subscriber"/>
+                            <p:spacer width="10"/>
+                            <h:outputText value="Total: #{searchManager.subscriptionList.rowCount}"/>
+                        </p:outputPanel>
+                    </f:facet>
+
+
+                </p:dataTable>
+
+
+
+                <p:contextMenu for="subscriptions" style="width: 90px"
+                               rendered="#{searchManager.renderViewButton and not empty searchManager.subscriptionList and searchManager.tabTitle eq 'Subscription'}">
+                    <p:menuitem value="Subscription" target="_blank" icon="ui-icon-document"
+                                action="#{searchManager.view}"/>
+                    <p:menuitem value="Subscriber" target="_blank" icon="ui-icon-person"
+                                action="#{searchManager.viewSubscriber}"/>
+                </p:contextMenu>
+
+                <h:commandLink rendered="#{searchManager.subscriptionList.rowCount le 1000 and uISecurityManager.hasPermission('SubscriptionListExport', 'READ')}">
+                    <h:graphicImage value="/resources/img/icons/excel.png" width="24"/>
+                    <p:dataExporter type="xls" target="subscriptions" fileName="subscriptions"/>
+                </h:commandLink>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <p:dataTable id="subscribers" value="#{searchManager.subscriberList}" var="sub" rowKey="#{sub.id}"
+                             selectionMode="single"
+                             rendered="#{not empty searchManager.subscriberList and searchManager.tabTitle eq 'Subscriber'}"
+                             paginator="true" lazy="true" rows="15">
+                    <p:ajax event="rowSelect" listener="#{searchManager.onRowSelect}"/>
+                    <f:facet name="header">Subscribers
+                        <p:commandLink id="toggler2" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="subscribers" trigger="toggler2"/>
+                    </f:facet>
+
+                    <p:column headerText="Id">#{sub.id}</p:column>
+                    <p:column headerText="Name">#{sub.details.firstName}</p:column>
+                    <p:column headerText="Surname">#{sub.details.surname}</p:column>
+                    <p:column headerText="Midname">#{sub.details.middleName}</p:column>
+                    <p:column headerText="Passport Number">#{sub.details.passportNumber}</p:column>
+                    <p:column headerText="City">#{sub.details.city}</p:column>
+                    <p:column headerText="Street">#{sub.details.street}</p:column>
+                    <p:column headerText="Mobile">#{sub.details.phoneMobile}</p:column>
+                    <p:column headerText="Email">#{sub.details.email}</p:column>
+
+
+                    <f:facet name="footer">
+                        <p:outputPanel id="viewDetailButton">
+                            <p:commandButton value="Details" action="#{searchManager.viewSubscriberDetails}"
+                                             rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscriber', 'READ')}"/>
+                            <p:spacer width="10"/>
+                            <h:outputText value="Total: #{searchManager.subscriberList.rowCount}"/>
+                        </p:outputPanel>
+                    </f:facet>
+                </p:dataTable>
+
+
+                <p:dataTable id="PaymentsTable" value="#{searchManager.paymentData}" var="pmt"
+                             selection="#{searchManager.selectedPayment}"
+                             lazy="true" paginator="true" rowKey="#{pmt.id}" rows="15" selectionMode="single"
+                             rendered="#{not empty searchManager.paymentData and searchManager.tabTitle eq 'Finance'}">
+
+                    <f:facet name="header">Payments
+                        <p:commandLink id="toggler3" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="PaymentsTable" trigger="toggler3"/>
+                    </f:facet>
+
+                    <p:column headerText="Id">#{pmt.id}</p:column>
+                    <p:column headerText="Cheque">
+                        <h:outputText value="#{not empty pmt.chequeID ? pmt.chequeID : ''}"/>
+                    </p:column>
+                    <p:column headerText="RRN">
+                        <h:outputText value="#{not empty pmt.rrn ? pmt.rrn : ''}"/>
+                    </p:column>
+                    <p:column headerText="Agreement">#{pmt.contract}</p:column>
+                    <p:column headerText="Amount">#{pmt.amount}</p:column>
+                    <p:column headerText="Status">
+                        <h:graphicImage title="Void" rendered="#{pmt.status eq -1}"
+                                        value="/resources/img/icons/cancel.png"/>
+                        <h:graphicImage title="Regular" rendered="#{pmt.status eq 0}"
+                                        value="/resources/img/icons/check.png"/>
+                    </p:column>
+                    <p:column headerText="Service">
+                        <h:outputText value="#{pmt.account ne null ? pmt.account.service.name : ''}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{pmt.fd ne null ? pmt.fd : pmt.timestamp.time}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:outputPanel id="viewButtonPmt">
+                            <p:commandButton action="#{searchManager.viewPayment}" value="View" update="@form"
+                                             style="margin-right: 10px;"/>
+                            <h:outputText value="Total: #{searchManager.paymentData.rowCount}"/>
+                        </p:outputPanel>
+                    </f:facet>
+                </p:dataTable>
+
+                <p:contextMenu for="PaymentsTable" style="width: 60px"
+                               rendered="#{searchManager.renderViewButton and not empty searchManager.paymentData and searchManager.tabTitle eq 'Finance'}">
+                    <p:menuitem value="View" icon="ui-icon-folder-open" action="#{searchManager.viewPayment}"/>
+                </p:contextMenu>
+
+
+                <p:dataTable id="sessionTable" value="#{searchManager.sessionList}" var="ss"
+                             selection="#{searchManager.selectedSession}"
+                             lazy="true" paginator="true" rowKey="#{ss.id}" rows="15" selectionMode="single"
+                             rendered="#{not empty searchManager.sessionList and searchManager.tabTitle eq 'Finance'}">
+
+                    <f:facet name="header">Scratch card details
+                        <p:commandLink id="toggler4" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="sessionTable" trigger="toggler4"/>
+                    </f:facet>
+
+                    <p:column headerText="Id">#{ss.id}</p:column>
+                    <p:column headerText="Agreement">#{ss.subscription.agreement}</p:column>
+                    <p:column headerText="Amount">#{ss.scratchCard.amount}</p:column>
+                    <p:column headerText="Status">
+                        <h:graphicImage title="Void" rendered="#{ss.wrongAttempt eq 1}"
+                                        value="/resources/img/icons/cancel.png"/>
+                        <h:graphicImage title="Regular" rendered="#{ss.wrongAttempt eq 0}"
+                                        value="/resources/img/icons/check.png"/>
+                    </p:column>
+                    <p:column headerText="Service">
+                        <h:outputText value="#{ss.subscription.service ne null ? ss.subscription.service.name : ''}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{ss.lastUpdateDateAsDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:outputPanel id="viewButtonSession">
+                            <h:outputText value="Total: #{searchManager.sessionList.rowCount}"/>
+                        </p:outputPanel>
+                    </f:facet>
+                </p:dataTable>
+
+
+                <p:dataTable id="InvoiceTable" value="#{searchManager.invoiceList}" var="inv" rowKey="#{inv.id}"
+                             rows="15"
+                             lazy="true" paginator="true"
+                             rendered="#{not empty searchManager.invoiceList and searchManager.tabTitle eq 'Finance'}"
+                             selection="#{searchManager.selectedInvoice}" selectionMode="single"
+                >
+                    <f:facet name="header">Invoices
+                        <p:commandLink id="toggler5" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="InvoiceTable" trigger="toggler5"/>
+                    </f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{inv.id}"/>
+                    </p:column>
+                    <p:column
+                            headerText="Subscriber name">#{inv.subscriber.details.firstName} #{inv.subscriber.details.surname} #{inv.subscriber.details.middleName}</p:column>
+                    <p:column headerText="Subscriber address">
+                        <h:outputText rendered="#{not empty inv.subscriber.details.city}"
+                                      value="#{inv.subscriber.details.city}"/>
+                        <h:outputText rendered="#{not empty inv.subscriber.details.street}"
+                                      value=",  #{inv.subscriber.details.street}"/>
+                        <h:outputText rendered="#{not empty inv.subscriber.details.building}"
+                                      value=", #{inv.subscriber.details.building}"/>
+                        <h:outputText rendered="#{not empty inv.subscriber.details.apartment}"
+                                      value=", apt. #{inv.subscriber.details.apartment}"/>
+                    </p:column>
+                    <p:column headerText="Phones">
+                        <h:outputText rendered="#{not empty inv.subscriber.details.phoneMobile}"
+                                      value="#{inv.subscriber.details.phoneMobile}"/>
+                        <h:outputText rendered="#{not empty inv.subscriber.details.phoneMobileAlt}"
+                                      value=", #{inv.subscriber.details.phoneMobileAlt}"/>
+                        <h:outputText rendered="#{not empty inv.subscriber.details.phoneLandline}"
+                                      value=", #{inv.subscriber.details.phoneLandline}"/>
+                    </p:column>
+                    <p:column headerText="Creation date">
+                        <h:outputText value="#{inv.creationDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Closing Balance">
+                        <h:outputText value="#{inv.balanceForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Total">
+                        <h:outputText value="#{inv.sumChargedForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Sum Paid">
+                        <h:outputText value="#{inv.sumPaidForView}">
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="State">
+                        <h:outputText value="#{inv.state}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton action="#{searchManager.viewInvoice}" value="View"/>
+                        <p:spacer width="10"/>
+                        <h:outputText value="Total: #{searchManager.invoiceList.rowCount}"/>
+                    </f:facet>
+                </p:dataTable>
+
+                <p:contextMenu for="InvoiceTable" style="width: 60px"
+                               rendered="#{searchManager.renderViewButton and not empty searchManager.invoiceList and searchManager.tabTitle eq 'Finance'}">
+                    <p:menuitem value="View" icon="ui-icon-folder-open" action="#{searchManager.viewInvoice}"/>
+                </p:contextMenu>
+
+
+                <p:dataTable id="StockTable" value="#{searchManager.subscriptionData}" var="sbn" rowKey="#{sbn.id}"
+                             rows="15"
+                             lazy="true" paginator="true"
+                             rendered="#{not empty searchManager.subscriptionData and searchManager.tabTitle eq 'Stock'}"
+                             selection="#{searchManager.selectedSubscription}" selectionMode="single"
+                >
+
+                    <f:facet name="header">Stock
+                        <p:commandLink id="toggler6" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="StockTable" trigger="toggler6"/>
+                    </f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{sbn.id}"/>
+                    </p:column>
+                    <p:column headerText="Equipment"
+                              rendered="#{not empty searchManager.partNumber and searchManager.stockType eq 'Equipment'}">
+                        <h:outputText value="#{sbn.getSettingByType('TV_EQUIPMENT').value}"/>
+                    </p:column>
+                    <p:column headerText="Provider"
+                              rendered="#{not empty searchManager.partNumber and searchManager.stockType eq 'Equipment'}">
+                        <h:outputText value="#{sbn.getSettingByType('TV_EQUIPMENT').properties.provider.name}"/>
+                    </p:column>
+                    <p:column headerText="Minipop port" rendered="#{not empty searchManager.selectedMiniPop}">
+                        <h:outputText value="#{sbn.getSettingByType('BROADBAND_SWITCH_PORT').value}"/>
+                    </p:column>
+                    <p:column headerText="Minipop mac address" rendered="#{not empty searchManager.selectedMiniPop}">
+                        <h:outputText value="#{searchManager.selectedMiniPop.mac}"/>
+                    </p:column>
+                    <p:column headerText="Minipop switch ID" rendered="#{not empty searchManager.selectedMiniPop}">
+                        <h:outputText value="#{searchManager.selectedMiniPop.switch_id}"/>
+                    </p:column>
+                    <p:column headerText="Minipop address" rendered="#{not empty searchManager.selectedMiniPop}">
+                        <h:outputText value="#{searchManager.selectedMiniPop.address}"/>
+                    </p:column>
+                    <p:column headerText="Device status" rendered="#{not empty searchManager.selectedMiniPop}">
+                        <h:outputText value="#{searchManager.selectedMiniPop.deviceStatus}"/>
+                    </p:column>
+                    <p:column headerText="Static IP"
+                              rendered="#{not empty searchManager.IP and searchManager.stockType eq 'IP'}">
+                        <h:outputText value="#{sbn.getIP(searchManager.IP)}"/>
+                    </p:column>
+
+                    <p:column headerText="Agreement">#{sbn.agreement}</p:column>
+                    <p:column
+                            headerText="Subscriber name">#{sbn.subscriber.details.firstName} #{sbn.subscriber.details.surname} #{sbn.subscriber.details.middleName}</p:column>
+                    <p:column headerText="Tariff plan">#{sbn.service.name}</p:column>
+                    <p:column headerText="Sbn Status">#{sbn.status}</p:column>
+                    <p:column headerText="Subscriber address">
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.city}"
+                                      value="#{sbn.subscriber.details.city}"/>
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.street}"
+                                      value=",  #{sbn.subscriber.details.street}"/>
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.building}"
+                                      value=", #{sbn.subscriber.details.building}"/>
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.apartment}"
+                                      value=", apt. #{sbn.subscriber.details.apartment}"/>
+                    </p:column>
+                    <p:column headerText="Phones">
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.phoneMobile}"
+                                      value="#{sbn.subscriber.details.phoneMobile}"/>
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.phoneMobileAlt}"
+                                      value=", #{sbn.subscriber.details.phoneMobileAlt}"/>
+                        <h:outputText rendered="#{not empty sbn.subscriber.details.phoneLandline}"
+                                      value=", #{sbn.subscriber.details.phoneLandline}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton action="#{searchManager.viewEquipmentOwner}" value="View"/>
+                        <p:spacer width="10"/>
+                        <h:outputText value="Total: #{searchManager.subscriptionData.rowCount}"/> <!---->
+                    </f:facet>
+                </p:dataTable>
+
+                <p:contextMenu for="StockTable" style="width: 60px"
+                               rendered="#{searchManager.renderViewButton and not empty searchManager.subscriptionData and searchManager.tabTitle eq 'Stock'}">
+                    <p:menuitem value="View" icon="ui-icon-folder-open" action="#{searchManager.viewEquipmentOwner}"/>
+                </p:contextMenu>
+
+            </p:panelGrid>
+
+
+            <p:dialog widgetVar="minipopDialog" id="mpDialog" closable="true"
+                      visible="#{not empty searchManager.miniPopData and searchManager.tabTitle eq 'Stock'}"
+                      closeOnEscape="true" showEffect="explode" maximizable="false" width="1000">
+                <p:dataTable id="minipopsTable" value="#{searchManager.miniPopData}"
+                             selection="#{searchManager.selectedMiniPop}"
+                             selectionMode="single" var="mp" rowKey="#{mp.id}" rows="4" lazy="true" paginator="true">
+                    <f:facet name="header">Minipops</f:facet>
+                    <p:column headerText="Id" styleClass="id">
+                        <h:outputText value="#{mp.id}"/>
+                    </p:column>
+                    <p:column headerText="Device status">
+                        #{mp.deviceStatus}
+                    </p:column>
+                    <p:column headerText="MAC">
+                        <h:outputText value="#{mp.mac}"/>
+                    </p:column>
+                    <p:column headerText="Switch">
+                        <h:outputText value="#{mp.switch_id}"/>
+                    </p:column>
+                    <p:column headerText="Address">
+                        <h:outputText value="#{mp.address}"/>
+                    </p:column>
+                    <p:column headerText="Ports numbers">
+                        #{mp.numberOfPorts}
+                    </p:column>
+                    <p:column headerText="Ports available">
+                        #{mp.availablePortsAsText}
+                    </p:column>
+                    <p:column headerText="Ports reserved">
+                        #{mp.reservedPortsAsText}
+                    </p:column>
+                </p:dataTable>
+                <p:commandButton value="Search" action="#{searchManager.showSubscriptionsOnMinipop}" update="@form"/>
+
+                <p:contextMenu for="minipopsTable" style="width: 60px"
+                               rendered="#{searchManager.renderViewButton and not empty searchManager.miniPopData and searchManager.tabTitle eq 'Stock'}">
+                    <p:menuitem value="Search" icon="ui-icon-folder-open"
+                                action="#{searchManager.showSubscriptionsOnMinipop}" update="@form"/>
+                </p:contextMenu>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+    <ui:define name="east" rendered="false"/>
+</ui:composition>
+
+</html>

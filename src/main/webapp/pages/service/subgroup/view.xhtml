@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+          
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Service #{serviceManager.selected.name} - View/Edit</ui:define>
+			<ui:define name="content">
+				<h:form id="profileForm">
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+                                                    <h:outputText value="Service #{serviceManager.selected.name}" />
+						</f:facet>
+						<h:outputLabel value="Name" for="profileName"/>
+						<p:inplace event="dblclick">
+                                                    <h:inputText value="#{serviceManager.selected.name}" id="profileName"/>
+						</p:inplace>
+                                              <h:outputLabel value="Provider" for="serviceProviderSelect"/>
+
+                                                <p:inplace id="serviceProviderSelect" event="dblclick">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{serviceManager.selected.provider.name}"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <h:selectOneMenu value="#{serviceManager.providerIdForView}">
+                                                            <f:selectItems value="#{serviceManager.providerListForView}"/>
+                                                     </h:selectOneMenu>
+                                                    </f:facet>
+                                                </p:inplace>
+                     
+                                                <h:outputLabel value="Bill by Lifecycle?" for="serviceLifeCycle"/>
+                                                <p:inplace event="dblclick" id="serviceLifeCycle">
+                                                    <h:selectBooleanCheckbox value="#{serviceManager.selected.isBillByLifeCycle}"/>
+                                                </p:inplace>
+                                                <p:outputLabel value="Installation fee"></p:outputLabel>
+                                                <p:inplace event="dblclick" id="serviceInstallFee">
+                                                    <p:inputText value="#{serviceManager.selected.installationFee}"/>
+                                                </p:inplace>
+                                                <h:outputLabel value="Profile" for="serviceProfileSelect"/>
+                                                <p:inplace id="serviceProfileSelect" event="dblclick">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{serviceManager.selected.servicePriceInDouble}"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                    <h:selectOneMenu value="#{serviceManager.profileIdForView}">
+                                                        <f:selectItems value="#{serviceManager.profileListForView}"/>
+                                                     </h:selectOneMenu>
+                                                    </f:facet>
+                                                </p:inplace>
+                                        </h:panelGrid>
+                                        
+
+                                                                                 
+                                    <p:spacer height="10"/>
+                  
+                                    <h:panelGrid id="settingsGrid" columns="1">
+                                        <p:dataTable value="#{serviceManager.selected.settings}" var="set" rowKey="#{set.id}">
+                                            <f:facet name="header">
+                                                Settings
+                                            </f:facet>
+                                            <p:column headerText="Name">
+                                                <h:outputText value="#{set.title}"/>
+                                            </p:column>
+                                            <p:column headerText="Description">
+                                                <h:outputText value="#{set.dsc}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </h:panelGrid>    
+                                         
+                                    <p:spacer height="10"/>
+
+                                        <h:panelGrid columns="1" id="profileResourcesPanel">
+                                            <f:facet name="header"><h:outputText value="Resources"/></f:facet>
+                                            <p:dataTable value="#{serviceManager.selected.resourceList}" var="res" id="resTable">
+                                                <p:column headerText="Name">#{res.name}</p:column>
+                                                <p:column headerText="Expires">
+                                                    <h:outputText value="#{res.expireAsDate}">
+                                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Active from">
+                                                    <h:outputText value="#{res.activeFromAsDate}">
+                                                        <f:convertDateTime pattern="HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                 <p:column headerText="Active till">
+                                                     <h:outputText value="#{res.activeTillAsDate}">
+                                                        <f:convertDateTime pattern="HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Description">#{res.dsc}</p:column>
+                                                <p:column headerText="Operations">
+                                                    <p:commandLink value="Delete" action="#{serviceManager.removeResource(res)}" update="resTable"/>                                                        
+                                                </p:column>
+                                            </p:dataTable>
+					</h:panelGrid>                                        
+                                        <p:spacer height="10"/>
+                                        <h:panelGrid>
+                                            <f:facet name="header">Add resource</f:facet>
+                                            <h:selectManyMenu value="#{serviceManager.resourceIdList}">
+                                                <f:selectItems value="#{serviceManager.resourceSelectList}"/>
+                                            </h:selectManyMenu>
+                                            <p:commandButton value="Add" action="#{serviceManager.addResources()}" update="resTable"/>
+                                        </h:panelGrid>			    
+
+                                        <h:panelGrid columns="1" id="profileResourceBucketsPanel">
+                                            <f:facet name="header"><h:outputText value="Resource Buckets"/></f:facet>
+                                            <p:dataTable value="#{serviceManager.resourceBucketList}" var="buck" id="resBucketsTable">
+                                                <p:column headerText="Type">#{buck.type}</p:column>
+                                                <p:column headerText="Capacity">
+                                                    <h:outputText value="#{buck.capacity}"/>
+                                                </p:column>
+                                                <p:column headerText="Description">
+                                                    <h:outputText value="#{buck.dsc}"/>                                                                                                            
+                                                </p:column>                                                                                                                                                                                        
+                                            </p:dataTable>
+					</h:panelGrid>                                      
+                                        
+					<h:panelGrid columns="2">
+						<h:commandButton action="/pages/service/index" value="Cancel"/>
+                                                <h:commandButton action="#{serviceManager.save()}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

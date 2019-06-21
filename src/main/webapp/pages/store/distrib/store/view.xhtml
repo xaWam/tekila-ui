@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="store" value="#{distributorStoreManager.storeID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Distributor store #{distributorStoreManager.selectedSalesPartnerStore.name}</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Distributor store information" />
+                </f:facet>
+                <h:outputLabel value="Distributor name" for="name" styleClass="required"/>
+                <h:outputText value="#{distributorStoreManager.selectedSalesPartnerStore.owner.name}"/>
+
+                <h:outputLabel value="Store name" for="name" styleClass="required"/>
+
+                <p:inplace>
+                    <h:inputText id="name" value="#{distributorStoreManager.selectedSalesPartnerStore.name}" required="true" label="Name" requiredMessage="Name need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Description"/>
+                <p:inplace>
+                    <h:inputText id="desc" value="#{distributorStoreManager.selectedSalesPartnerStore.desc}"/>
+                </p:inplace>
+            </h:panelGrid>
+            <p:separator/>
+
+            <p:outputPanel id="eqWrapperPanel_1">
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="eqGrid_1">
+                <f:facet name="header">Search for dealers</f:facet>
+                <p:outputPanel id="eqPanel_0">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                          <h:outputLabel value="Partnumber (from)"/>
+                        <h:inputText value="#{distributorStoreManager.parameterPartNumberFrom}" id="partnumberFrom">
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel id="eqPanel_1">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Partnumber (to)"/>
+                        <h:inputText value="#{distributorStoreManager.parameterPartNumberTo}" id="partnumberTo">
+
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#{distributorStoreManager.searchDistributorStore}" value="Search" update="distrEqTable"/>
+                <p:commandButton action="#{distributorStoreManager.resetDistributorStore}" value="Reset" update="distrEqTable partnumberFrom partnumberTo"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="distrEqTable" id="distrEqTable" value="#{distributorStoreManager.distributorStoreEquipment}"
+                             var="equip" paginator="true" rows="15" filteredValue="#{distributorStoreManager.filteredEquipmentList}"
+                             selection="#{distributorStoreManager.selectedEquipment}" selectionMode="single" rowKey="#{equip.id}"
+                        binding="#{distributorStoreManager.storeTable}">
+                    <f:facet name="header">Equipment in the store</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{equip.id}</p:column>
+                    <p:column headerText="Provider">#{equip.provider.name}</p:column>
+                    <p:column headerText="Part number">#{equip.partNumber}</p:column>
+                    <p:column headerText="Model">#{equip.model.name}</p:column>
+                    <p:column headerText="Brand">#{equip.brand.name}</p:column>
+                    <p:column headerText="Type">#{equip.type.name}</p:column>
+                    <p:column headerText="Mac Address">#{equip.macAddress}</p:column>
+                    <p:column headerText="Price">#{equip.price.nominalForView}</p:column>
+                    <p:column headerText="Discount">#{equip.price.discountForView}%</p:column>
+                    <p:column headerText="Status">#{equip.status}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Transfer" action="#{distributorStoreManager.transfer()}"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor stores', 'INSERT')
+                                             and uISecurityManager.securityManager.checkUIPermissions('Equipment', 'UPDATE')}" update=":eqForm:messages"/>
+                        <p:button value="Import" outcome="/pages/store/equip/import.xhtml"
+                                  rendered="#{uISecurityManager.securityManager.checkUIPermissions('Equipment', 'INSERT')}"/>
+                        Total: #{distributorStoreManager.distributorStoreEquipment.size()}</f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+            </p:outputPanel>
+
+            <p:separator/>
+            <p:outputPanel id="eqWrapperPanel">
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="eqGrid">
+                <f:facet name="header">Search for dealers</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Dealer name"/>
+                        <h:inputText value="#{distributorStoreManager.parameterDealerName}">
+                        </h:inputText>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+            </p:panelGrid>
+            <h:panelGrid columns="2">
+                <p:commandButton action="#{distributorStoreManager.searchDealers}" value="Search" update="distrTable"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+            <p:dataTable widgetVar="distrTable" id="distrTable" value="#{distributorStoreManager.dealerStoreList}"
+                         var="ds" paginator="true" rows="15"
+                         filteredValue="#{distributorStoreManager.filteredDealerStoreList}"
+                         selection="#{distributorStoreManager.selectedDealerStore}" selectionMode="single"
+                         lazy="true" rowKey="#{ds.id}" binding="#{distributorStoreManager.dealerStoreTable}"
+                         style="margin-top: 10px;">
+                <f:facet name="header">Dealer stores</f:facet>
+                <p:column headerText="Id" styleClass="id">#{ds.id}</p:column>
+                <p:column headerText="Name">#{ds.name}</p:column>
+                <p:column headerText="Distributor">#{ds.owner.name}</p:column>
+                <p:column headerText="Items count">#{ds.equipmentList.size()}</p:column>
+                <p:column headerText="Description">#{ds.desc}</p:column>
+                <f:facet name="footer">
+                    Total: #{distributorStoreManager.dealerStoreList.rowCount}
+                </f:facet>
+            </p:dataTable>
+        </h:panelGrid>
+            <p:separator/>
+        </p:outputPanel>
+
+        <h:panelGrid columns="2">
+            <p:commandButton action="#{distributorManager.goToIndex}" value="Cancel" />
+            <p:commandButton action="#{distributorManager.save}" value="Save" update=":eqForm:messages"/>
+        </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

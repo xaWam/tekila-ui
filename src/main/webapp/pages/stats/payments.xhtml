@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Payments</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages" severity="info,warn,error,fatal" showDetail="true"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Payments report</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2" styleClass="payment-report-filters">
+                        <h:outputLabel value="From date"/>
+                        <p:calendar value="#{paymentReportManager.fromDate}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true" pagedate="01/01/2015"/>
+
+                        <h:outputLabel>User</h:outputLabel>
+                        <h:outputText value="#{paymentReportManager.userName}" rendered="#{uISecurityManager.hasPermission('OwnPaymentReport', 'READ')}"/>
+                        <p:autoComplete value="#{paymentReportManager.userName}" completeMethod="#{paymentReportManager.searchForUserName}"
+                                        minQueryLength="0" maxResults="25"/>
+
+                        <h:outputLabel>Show void?</h:outputLabel>
+                        <p:selectBooleanButton value="#{paymentReportManager.showVoidPayments}" onLabel="On" offLabel="Off"/>
+
+                        <p:outputLabel>Please select provider</p:outputLabel>
+                        <p:selectOneMenu value="#{paymentReportManager.selectedProviderId}">
+                            <f:selectItem itemLabel="None" itemValue="-1"/>
+                            <f:selectItems value="#{paymentReportManager.providerList}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="To date"/>
+                        <p:calendar value="#{paymentReportManager.toDate}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true" pagedate="#{paymentReportManager.defaultTtToDate}"/>
+
+                        <h:outputLabel rendered="#{uISecurityManager.hasPermission('PaymentReport', 'READ')}">Partner</h:outputLabel>
+                        <p:selectOneMenu value="#{paymentReportManager.externalUserName}" rendered="#{uISecurityManager.hasPermission('PaymentReport', 'READ')}">
+                            <f:selectItem itemValue="-1" itemLabel="Select a partner" noSelectionOption="true"/>
+                            <f:selectItems value="#{paymentReportManager.extUserNameList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel rendered="#{uISecurityManager.hasPermission('PaymentReport', 'READ')}">Payment Method</h:outputLabel>
+                        <p:selectOneMenu value="#{paymentReportManager.method}" rendered="#{uISecurityManager.hasPermission('PaymentReport', 'READ')}">
+                            <f:selectItem itemValue="-1" itemLabel="Select method" noSelectionOption="true"/>
+                            <f:selectItems value="#{paymentReportManager.methodList}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel>Show test data?</h:outputLabel>
+                        <p:selectBooleanButton value="#{paymentReportManager.showTests}" onLabel="On" offLabel="Off"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{paymentReportManager.search}"
+                                 value="Search" update="messages eqTable reportDialog"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('PaymentReport', 'READ') or uISecurityManager.securityManager.checkUIPermissions('OwnPaymentReport', 'READ')}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{paymentReportManager.paymentData}" var="pmt" paginator="true" rows="15"
+                             selection="#{paymentReportManager.selectedPayment}" selectionMode="single" lazy="true" rowKey="#{pmt.id}"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}">
+                    <f:facet name="{Exporters}">
+                        <h:commandLink>
+                            <h:graphicImage value="/resources/img/icons/excel.png"/>
+                            <p:dataExporter type="xls" target="eqTable" fileName="#{paymentReportManager.fileName}"/>
+                        </h:commandLink>
+
+                        <h:commandLink>
+                            <h:graphicImage value="/resources/img/icons/pdf.png"/>
+                            <p:dataExporter type="pdf" target="eqTable" fileName="#{paymentReportManager.fileName}"/>
+                        </h:commandLink>
+
+                        <!--<h:commandLink>
+                            <h:graphicImage value="/resources/img/icons/xml.png"/>
+                            <p:dataExporter type="xml" target="eqTable" fileName="#{paymentReportManager.fileName}"/>
+                        </h:commandLink>-->
+                    </f:facet>
+                    <f:facet name="header">Payments</f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{pmt.id}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{pmt.fd ne null ? pmt.fd : pmt.timestamp.time}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Cheque No.">
+                        <h:outputText value="#{pmt.chequeID}"/>
+                    </p:column>
+                    <p:column headerText="RRN">
+                        <h:outputText value="#{pmt.rrn}"/>
+                    </p:column>
+                    <p:column headerText="Agreement">
+                        <h:outputText value="#{pmt.contract}"/>
+                    </p:column>
+                    <p:column headerText="Name">
+                        <h:outputText rendered="#{pmt.account.subscriber.details.type.typeName eq 'Individual'}"
+                                      value="#{pmt.account.subscriber.details.firstName}
+                                          #{pmt.account.subscriber.details.middleName}
+                                          #{pmt.account.subscriber.details.surname}"
+                                      id="subName"/>
+                        <h:outputText rendered="#{pmt.account.subscriber.details.type.typeName eq 'Corporate'}"
+                                      value="#{pmt.account.subscriber.details.companyName}"
+                                      id="compName"/>
+                    </p:column>
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{pmt.amount}"/>
+                    </p:column>
+                    <p:column headerText="Status">
+                        <h:graphicImage title="Void" rendered="#{pmt.status eq -1}" value="/resources/img/icons/cancel.png"/>
+                        <h:graphicImage title="Regular" rendered="#{pmt.status eq 0}" value="/resources/img/icons/check.png"/>
+                    </p:column>
+                    <p:column headerText="Service">
+                        <h:outputText value="#{pmt.account ne null ? pmt.account.service.name : ''}"/>
+                    </p:column>
+                    <p:column headerText="Method">
+                        <h:outputText value="#{pmt.methodForUI ne null ? pmt.methodForUI : ''}"/>
+                    </p:column>
+                    <p:column headerText="Purpose">
+                        <h:outputText value="#{pmt.purpose}"/>
+                    </p:column>
+                    <p:column headerText="Source">
+                        <h:outputText value="#{pmt.extUser ne null ? pmt.extUser.username : ''}"/>
+                    </p:column>
+                    <p:column headerText="User">
+                        <h:outputText value="#{pmt.user ne null ? pmt.user.userName : ''}"/>
+                    </p:column>
+                    <p:column headerText="Desc">
+                        <h:outputText value="#{pmt.dsc}"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{paymentReportManager.show}" update="@form" rendered="#{uISecurityManager.securityManager.checkUIPermissions('PaymentReport', 'READ') or uISecurityManager.securityManager.checkUIPermissions('OwnPaymentReport', 'READ')}"/>
+                        <p:menuButton value="Export to.." rendered="#{uISecurityManager.securityManager.checkUIPermissions('PaymentReport', 'READ') or uISecurityManager.securityManager.checkUIPermissions('OwnPaymentReport', 'READ')}">
+                            <p:menuitem value="Excel" actionListener="#{paymentReportManager.exportToExcel}" update="@form" styleClass="export-xlsx"/>
+                            <p:menuitem value="PDF" actionListener="#{paymentReportManager.exportToPdf}" update="@form" styleClass="export-pdf"/>
+                        </p:menuButton>
+                        <p:commandButton value="Email" type="button" onclick="PF('emailReporter').show();"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('PaymentEmailReport', 'READ')}"/>
+                        <!--<p:commandButton value="Email" type="button" onclick="PF('emailReporter').show();"/>-->
+                        <h:outputText value="Number of payments: #{paymentReportManager.paymentData.rowCount}" style="margin-left: 15px; margin-right: 15px;"/>
+                        <h:outputText value="Total: #{paymentReportManager.total} AZN"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:dialog header="Report search results to email" widgetVar="emailReporter" minHeight="40" width="350" id="reportDialog">
+                <h:panelGrid columns="2" columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row">
+                    <h:outputLabel value="From date"/>
+                    <p:calendar value="#{paymentReportManager.fromDate}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true" pagedate="01/01/2015" readonly="true"
+                                disabled="true"/>
+
+                    <h:outputLabel value="To date"/>
+                    <p:calendar value="#{paymentReportManager.toDate}" pattern="dd/MM/yyyy HH:mm:ss" navigator="true" pagedate="#{paymentReportManager.defaultTtToDate}"
+                        readonly="true" disabled="true"/>
+
+                    <h:outputLabel value="Selected Provider"/>
+                    <h:outputLabel value="#{paymentReportManager.selectedProviderName}"/>
+
+                    <h:outputLabel value="External Username"/>
+                    <h:outputLabel value="#{paymentReportManager.externalUserNameView}"/>
+
+                    <h:outputLabel value="Email"/>
+                    <p:inputText readonly="true" value="#{paymentReportManager.email}"/>
+                    <!--<f:facet name="footer">
+                        <p:commandButton value="Send" update="growl" actionListener="#{userLoginView.login}"
+                                         oncomplete="handleLoginRequest(xhr, status, args)" />
+                    </f:facet>-->
+                </h:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton value="Send" update="messages"
+                                     action="#{paymentReportManager.sendEmail}"
+                                     oncomplete="PF('emailReporter').hide();"/>
+                </h:panelGrid>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

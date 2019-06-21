@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Distributors</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search for dealers</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Name"/>
+                        <h:inputText value="#{dealerManager.nameParameter}"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{dealerManager.search()}" value="Search" update="messages eqTable" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor', 'READ')}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{dealerManager.partnerList}"
+                             var="ds" paginator="true" rows="15"
+                             filteredValue="#{dealerManager.fitleredPartnerList}"
+                             selection="#{dealerManager.selectedPartner}" selectionMode="single"
+                             lazy="true" rowKey="#{ds.id}" binding="#{dealerManager.distributorsTable}">
+                    <f:facet name="header">Dealers</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{ds.id}</p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{ds.creationDate.toDate()}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Name">#{ds.name}</p:column>
+                    <p:column headerText="Description">#{ds.desc}</p:column>
+                    <p:column headerText="Distributor">#{ds.principal.name}</p:column>
+                    <p:column headerText="Username">#{ds.partnerUser.userName}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                        <p:commandButton value="View" action="#{dealerManager.show}" update=":eqForm:messages"/>
+                        <p:button value="Add" outcome="/pages/store/dealer/create.xhtml?faces-redirect=true" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Dealer', 'INSERT')}"/>
+                        Total: #{dealerManager.partnerList.rowCount}</f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+          
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Subscription #{subscriptionManager.selected.agreement} - View/Edit</ui:define>
+			<ui:define name="content">
+								
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+                                                    <h:outputText value="Subscription #{subscriptionManager.selected.agreement}" />
+						</f:facet>
+						<h:outputLabel value="Service" for="profileName"/>						
+                                                <h:outputText value="#{subscriptionManager.selected.service.name}" id="profileName"/>                                            
+                                        </h:panelGrid>
+      					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                            <f:facet name="header">Balance</f:facet>
+                                            <h:outputLabel value="Real" for="realBalance"/>
+                                            <h:outputText value="#{subscriptionManager.selected.balance.realBalance}" id="realBalance"/>
+                                            <h:outputLabel value="Promo balance" for="promoBalance"/>
+                                            <h:outputText value="#{subscriptionManager.selected.balance.promoBalance}" id="promoBalance"/>
+                                        </h:panelGrid>
+
+      					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                                            <f:facet name="header"><h:outputText value="Subscriber"/></f:facet>
+                                            <h:outputLabel value="Name" for="subName"/>
+                                            <h:outputText value="#{subscriptionManager.selected.subscriber.details.firstName} 
+                                                          #{subscriptionManager.selected.subscriber.details.middleName} 
+                                                          #{subscriptionManager.selected.subscriber.details.surname}" 
+                                                          id="subName"/>
+                                            
+                                            <h:outputLabel value="Address" for="subAddress"/>
+                                            <h:outputText value="#{subscriptionManager.selected.subscriber.details.street}
+                                                          #{subscriptionManager.selected.subscriber.details.building},
+                                                          apt. #{subscriptionManager.selected.subscriber.details.apartment}" id="subAddress"/>
+					</h:panelGrid>
+                                        <p:spacer height="10"/>
+                                        					                                    
+					<h:panelGrid columns="2">
+                                            <h:form>
+                                                <h:commandLink  action="#{subscriptionManager.returnToList}" value="Return to Subscriptions List"/>                                                                    
+                                            </h:form>
+                                            <form action="http://10.13.166.19/addticket" method="post" target="_blank">
+                                                <input type="hidden" name="user" value="bo"/>
+                                                <input type="hidden" name="key" value="40f98e4e7ee3ded6936e7a89940346023569568f32510cac953cffea6e4a44db"/>
+                                                <input type="hidden" name="contract_id" value="agr"/>
+                                                <input type="submit" value="Create TT"/>
+                                            </form>
+					</h:panelGrid>
+				
+                        </ui:define>
+	</ui:composition>
+
+</html>

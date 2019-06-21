@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+<f:metadata>
+    <f:viewParam name="user" value="#{userManager.userID}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">
+        <h:outputText rendered="#{empty userManager.userID}" value="Create user"/>
+        <h:outputText rendered="#{not empty userManager.userID}" value="Edit user #{userManager.user.userName}"/>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="groupForm">
+            <p:growl id="messages"/>
+            <h:panelGrid id="inputPanel" rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column"
+                         columns="2">
+                <f:facet name="header">
+                    <h:outputText rendered="#{empty userManager.userID}" value="Create user"/>
+                    <h:outputText rendered="#{not empty userManager.userID}"
+                                  value="Edit user #{userManager.user.userName}"/>
+                </f:facet>
+                <h:outputLabel styleClass="required">Username</h:outputLabel>
+                <h:inputText value="#{userManager.user.userName}" required="true" requiredMessage="Name is required"/>
+
+                <h:outputLabel styleClass="required">Email</h:outputLabel>
+                <h:inputText value="#{userManager.user.email}" required="true" requiredMessage="Email is required"/>
+
+                <h:outputLabel styleClass="required">Firstname</h:outputLabel>
+                <h:inputText value="#{userManager.user.firstName}" required="true"
+                             requiredMessage="Firstname is required"/>
+
+                <h:outputLabel styleClass="required">Surname</h:outputLabel>
+                <h:inputText value="#{userManager.user.surname}" required="true" requiredMessage="Surname is required"/>
+
+                <h:outputLabel>Description</h:outputLabel>
+                <h:inputText value="#{userManager.user.dsc}"/>
+
+                <h:outputLabel value="Regenerate password?" rendered="#{not empty userManager.userID}"/>
+                <h:selectBooleanCheckbox value="#{userManager.isRegeneratePassword}"
+                                         rendered="#{not empty userManager.userID}">
+                    <f:ajax render=":groupForm:inputPanel" execute="@this"/>
+                </h:selectBooleanCheckbox>
+
+                <h:outputLabel rendered="#{!userManager.isRegeneratePassword}">New Password</h:outputLabel>
+                <h:inputText rendered="#{!userManager.isRegeneratePassword}" value="#{userManager.newPassword}"/>
+            </h:panelGrid>
+
+            <p:dataTable value="#{userManager.groupList}" selection="#{userManager.user.group}"
+                         var="gr" rowKey="#{gr.id}" rows="100" paginator="true" lazy="true" selectionMode="single">
+                <f:facet name="header">Groups</f:facet>
+                <p:column headerText="Id" styleClass="id">#{gr.id}</p:column>
+                <p:column headerText="Name">#{gr.groupName}</p:column>
+                <p:column headerText="Roles">#{gr.rolesForView}</p:column>
+                <p:column headerText="Description">#{gr.dsc}</p:column>
+            </p:dataTable>
+            <h:panelGrid columns="2">
+                <f:facet name="footer">
+                    <p:spacer height="10"/>
+                    <p:button value="Cancel" outcome="/pages/admin/users/index.xhtml"/>
+                    <p:commandButton value="Save" action="#{userManager.save}" update=":groupForm:messages"/>
+                </f:facet>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

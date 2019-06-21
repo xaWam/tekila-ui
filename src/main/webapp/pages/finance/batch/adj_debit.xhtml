@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Batch Adjustment from Balance</ui:define>
+        <ui:define name="content">
+            <h:form enctype="multipart/form-data">
+                <p:growl id="messages" showDetail="true" />
+                <p:panel header="Batch payment">
+                    <p:fileUpload value="#{batchManager.file}" mode="simple"/>
+
+                    <h:panelGrid columns="2" style="margin-top: 10px;">
+                        <h:outputLabel value="Description"/>
+                        <h:inputText value="#{batchManager.desc}"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" style="margin-top: 10px;">
+                        <p:commandButton value="Upload" action="#{batchManager.uploadDebitAdjustmentFile}" update="messages" ajax="false"/>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
+

@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="transaction" value="#{accTransManager.accountingTransactionId}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Accouting Transaction #{accTransManager.selected.id}</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:growl id="messages"/>
+            <h:panelGrid columnClasses="lbl-column, data-column" rowClasses="odd-row,even-row" columns="2">
+                <f:facet name="header">Accouting Transaction #{accTransManager.selected.id}</f:facet>
+                <h:outputLabel value="Id"/>
+                <h:outputText value="#{accTransManager.selected.id}"/>
+
+                 <h:outputLabel value="Date"/>
+                <h:outputText value="#{accTransManager.selected.timestamp.time}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="User"/>
+                <h:outputText value="#{accTransManager.selected.user.userName}"/>
+
+                <h:outputLabel value="Type"/>
+                    <h:outputText value="#{accTransManager.selected.type}"/>
+
+                <h:outputLabel value="Desc"/>
+                <h:outputText value="#{accTransManager.selected.dsc}"/>
+            </h:panelGrid>
+            <p:spacer height="10"/>
+            <p:panelGrid columns="1">
+                <p:dataTable value="#{accTransManager.selected.operations}" var="oper" selection="#{accTransManager.selectedOperation}" selectionMode="single" rowKey="#{oper.id}" paginator="true">
+                    <f:facet name="header">Operations</f:facet>
+                    <p:column headerText="Id">#{oper.id}</p:column>
+                    <p:column headerText="Category">#{oper.category.name}</p:column>
+                    <p:column headerText="Type">#{oper.transaction.type}</p:column>
+                    <p:column headerText="Amount">#{oper.transaction.amountAsDouble}</p:column>
+                    <p:column headerText="Balance before">#{oper.transaction.startBalanceAsDouble}</p:column>
+                    <p:column headerText="Balance after">#{oper.transaction.endBalanceAsDouble}</p:column>
+                    <p:column headerText="Subscription">#{oper.subscription.agreement}</p:column>
+                    <p:column headerText="Tariff plan">#{oper.subscription.service.name}</p:column>
+                    <p:column headerText="Bank">#{oper.bank.name}</p:column>
+                    <p:column headerText="Description">#{oper.dsc}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="View" action="#{accTransManager.redirectToSubscription}" />
+                    </f:facet>
+                </p:dataTable>
+            </p:panelGrid>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Transactions" outcome="/pages/finance/acc_trans/index.xhtml"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

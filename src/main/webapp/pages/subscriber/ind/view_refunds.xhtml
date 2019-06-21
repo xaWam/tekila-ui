@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+        <f:metadata>
+            <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+        </f:metadata>
+         
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Refunds</ui:define>
+			<ui:define name="content">
+                            <h:form> 
+                                <p:dataTable rows="15" lazy="true" value="#{subscriber.refundLazyModel}" var="ch" rowKey="#{ch.id}" paginator="true">
+                                    <f:facet name="header">Refunds for #{subscriber.chargedSubscriber.details.firstName} #{subscriber.chargedSubscriber.details.middleName} #{subscriber.chargedSubscriber.details.firstName}</f:facet>
+                                    <p:column headerText="Date">
+                                        <h:outputText value="#{ch.dateTimeAsDate}">
+                                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                        </h:outputText>
+                                    </p:column>                                    
+                                    <p:column headerText="Amount"><h:outputText value="#{ch.amountForView}">
+                                            <f:convertNumber minFractionDigits="2" maxFractionDigits="4"/>
+                                        </h:outputText></p:column>                                    
+                                    <p:column headerText="Service">#{ch.service.name}</p:column>
+                                    <p:column headerText="Description">#{ch.dsc}</p:column>
+                                </p:dataTable>
+                            </h:form>
+                        </ui:define>
+                        <ui:define name="east">
+                            <h:form>
+                                <p:menu>
+                                    <p:submenu label="Navigation">
+                                        <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"/>
+                                        <p:menuitem value="Refund" outcome="/pages/subscriber/ind/refund.xhtml?subscriber=#{subscriber.subscriberId}"  rendered="#{uISecurityManager.securityManager.checkUIPermissions('Refubnd', 'INSERT')}"/>
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
+                        </ui:define>
+	</ui:composition>
+
+</html>

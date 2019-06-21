@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Services</ui:define>
+    <ui:define name="content">
+
+        <h:form>
+            <p:dataTable widgetVar="paymentsTable" id="subDataTable" value="#{serviceManager.serviceList}" var="srv"
+                         paginator="true" rows="15" filteredValue="#{serviceManager.filteredServiceList}"
+                         selection="#{serviceManager.selected}" selectionMode="single" rowKey="#{srv.id}">
+                <f:facet name="header">Services</f:facet>
+                <p:column headerText="Id" filterBy="#{srv.id}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.id}"/>
+                </p:column>
+                <p:column headerText="Name" filterBy="#{srv.name}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.name}"/>
+                </p:column>
+                <p:column headerText="Provider" filterBy="#{srv.provider.name}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.provider.name}"/>
+                </p:column>
+                <p:column headerText="Group" filterBy="#{srv.group.name}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.group.name}"/>
+                </p:column>
+                <p:column headerText="Subgroup" filterBy="#{srv.subgroup.name}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.subgroup.name}"/>
+                </p:column>
+                <p:column headerText="Billed by Lifecycle?" filterBy="#{srv.isBillByLifeCycle}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{srv.isBillByLifeCycle}"/>
+                </p:column>
+                <p:column headerText="Type" filterBy="#{srv.serviceType}" filterMatchMode="contains">
+                    <h:outputText value="#{srv.serviceType}"/>
+                </p:column>
+                <p:column headerText="Service Price" filterBy="#{srv.installationFee}">
+                    <h:outputText value="#{srv.servicePriceInDouble}"/>
+                </p:column>
+                <f:facet name="footer">
+                    <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();"
+                                     update="@form"></p:commandButton>
+                    <p:commandButton process="subDataTable" value="View"
+                                     action="#{serviceManager.show()}"></p:commandButton>
+                    <p:button value="Add" outcome="/pages/service/createFromTemplate.xhtml"/>
+
+                    Total: #{fn:length(serviceManager.serviceList)}</f:facet>
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+</html>

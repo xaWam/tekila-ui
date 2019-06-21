@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    
+    <f:metadata>
+        <f:viewParam name="bank" value="#{bankManager.bankID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Bank #{bankManager.selectedBank.fullName}</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:messages/>
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                    <f:facet name="header">Bank #{bankManager.selectedBank.fullName}</f:facet>
+
+                    <h:outputLabel value="Id"/>
+                    <h:outputText value="#{bankManager.selectedBank.id}"/>
+
+                    <h:outputLabel value="Bank name" for="bankName"/>
+                    <p:inplace>
+                        <h:inputText id="bankName" value="#{bankManager.selectedBank.name}"/>
+                    </p:inplace>
+                    
+                    <h:outputLabel value="Bank account" for="bankAcc"/>
+                    <p:inplace>
+                        <h:inputText id="bankAcc" value="#{bankManager.selectedBank.account}"/>
+                    </p:inplace>
+                    
+                    <h:outputLabel value="BIC" for="bankBIC"/>
+                    <p:inplace>
+                        <h:inputText id="bankBIC" value="#{bankManager.selectedBank.bic}"/>
+                    </p:inplace>
+                    
+                    <h:outputLabel value="Currency List" for="currencyList"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{bankManager.selectedBank.currency.code}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{bankManager.currencyCode}" id="currencyList">
+                                <f:selectItems value="#{bankManager.selectedBankCurrencyList}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+                    
+                    <h:outputLabel for="bankList" value="Head office (if branch)"/>
+                    <p:inplace emptyLabel="None">
+                        <f:facet name="output">
+                            <h:outputText value="#{bankManager.selectedBank.parent ne null ? bankManager.selectedBank.parent.name : 'None'}" />
+                        </f:facet>
+                        <f:facet name="input">                    
+                            <h:selectOneMenu id="bankList" value="#{bankManager.parentID}" >
+                                <f:selectItem noSelectionOption="true" itemLabel="Select head office" />
+                                <f:selectItems value="#{bankManager.selectedBankParentList}"/>                        
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+                    <h:outputLabel value="Description" for="bankDsc"/>
+                    <p:inplace emptyLabel="None">
+                        <h:inputText value="#{bankManager.selectedBank.dsc}" id="bankDsc"/>
+                    </p:inplace>
+                </h:panelGrid>
+                <p:separator/>
+                <h:panelGrid columns="3">
+                    <p:commandButton value="Cancel" action="/pages/finance/banks/index.xhtml"/>                
+                    <p:commandButton value="Reset" type="reset" action="#"/>
+                    <p:commandButton value="Save" action="#{bankManager.update()}"/>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+    <f:viewParam name="subscription" value="#{subscriber.subscriptionId}"/>
+    <f:event type="preRenderView" listener="#{subscriber.onLoad()}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Cash payment</ui:define>
+    <ui:define name="content">
+        <p:messages/>
+        <h:form id="manualPaymentForm">
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">Cash payment</f:facet>
+                <h:outputLabel value="Cheque / Document No." for="cheque" styleClass="required"/>
+                <h:inputText id="cheque" value="#{subscriber.chequeNum}" required="true" requiredMessage="Cheque No. is required" />
+
+                <h:outputLabel value="Amount" for="amount" styleClass="required"/>
+                <h:panelGroup>
+                    <h:inputText id="amount" value="#{subscriber.manats}" title="Enter manats" required="true" requiredMessage="Amount is required"/>
+                </h:panelGroup>
+                <h:outputLabel value="Description" for="dsc"/>
+                <h:inputText id="dsc" value="#{subscriber.payment.dsc}"/>
+                <h:outputLabel value="PaymentMethod" for="paymethod"/>
+                <h:selectOneMenu id="paymethod" required="true" value="#{subscriber.selectedPaymentMethod}">
+                    <f:selectItems value="#{subscriber.paymentOptions}"/>
+                </h:selectOneMenu>
+                <h:outputLabel value="Select Bank" for="banklist"/>
+                <h:selectOneMenu id="banklist" required="true" value="#{subscriber.selectedBank}">
+                    <f:selectItem itemLabel="nobankselection" itemValue="nobankselection"/>
+                    <f:selectItems value="#{subscriber.bankList}"/>
+                </h:selectOneMenu>
+                <h:outputLabel value="Description for internal users" for="internalDsc"/>
+                <h:inputText id="internalDsc" value="#{subscriber.payment.internalDsc}"/>
+                <h:outputLabel value="Test Payment" rendered="#{uISecurityManager.securityManager.checkUIPermissions('TestPayment', 'INSERT')}"/>
+                <h:selectBooleanCheckbox value="#{subscriber.payment.testPayment}" rendered="#{uISecurityManager.securityManager.checkUIPermissions('TestPayment', 'INSERT')}"/>
+            </h:panelGrid>
+            <p:spacer height="10"/>
+            <p:dataTable id="subTable" value="#{subscriber.chargedSbnList}" var="sbn" selection="#{subscriber.selectedSubscription}" selectionMode="single" rowKey="#{sbn.id}">
+                <f:facet name="header">Subscriptions for #{subscriber.chargedSubscriber.details.firstName} #{subscriber.chargedSubscriber.details.middleName} #{subscriber.chargedSubscriber.details.surname}</f:facet>
+                <p:ajax event="rowSelect" listener="#{subscriber.selectSubscriptionForPayment}" update=":manualPaymentForm:campaignList :manualPaymentForm:campaignAddDate"/>
+                <p:column headerText="Service">#{sbn.service.name}</p:column>
+                <p:column headerText="Agreement No.">#{sbn.agreement}</p:column>
+                <p:column headerText="Master account">#{sbn.subscriber.masterAccount}</p:column>
+                <p:column headerText="Balance">#{sbn.balance.realBalanceForView}</p:column>
+                <p:column headerText="Status">#{sbn.status}</p:column>
+            </p:dataTable>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">Campaign selection</f:facet>
+                <h:outputLabel value="Select campaign to activate"/>
+                <h:selectOneMenu id="campaignList" value="#{subscriber.campaignId}">
+                    <f:selectItem itemLabel="None" itemValue="-1"/>
+                    <f:selectItems value="#{subscriber.addedCampaignList}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="Campaign Add Date"/>
+                <p:calendar id="campaignAddDate" value="#{subscriber.campaignAddDate}" pattern="dd/MM/yyyy HH:mm:ss"
+                            navigator="true" styleClass="small-calendar" disabled="#{empty subscriber.addedCampaignList}"/>
+            </h:panelGrid>
+            <h:panelGrid columns="2">
+                <p:commandButton value="Save" action="#{subscriber.addCashPayment}"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Payment', 'INSERT')}"
+                                 process="@all" update="@all">
+                    <p:confirm header="Confirmation" message="Are you sure?" icon="ui-icon-alert" />
+                </p:commandButton>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                </p:confirmDialog>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

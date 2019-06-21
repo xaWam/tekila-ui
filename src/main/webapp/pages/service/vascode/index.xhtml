@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">VAS Codes</ui:define>
+			<ui:define name="content">
+                            <p:messages/>
+				<h:form id="profileForm">
+                                    <p:dataTable id="subDataTable" value="#{vasCodeManager.vasCodeList}" var="cd" paginator="true" rows="15" 
+                                                 filteredValue="#{vasCodeManager.filteredVasCodeList}"
+                                                 rowKey="#{cd.id}" lazy="true" widgetVar="paymentsTable">
+						<f:facet name="header">VAS Codes</f:facet>
+                                                <p:column headerText="Provider">
+                                                    #{cd.provider.name}
+                                                </p:column>
+                                                <p:column headerText="Code" filterBy="#{cd.code}">							
+							#{cd.code}							
+						</p:column>
+                                                <p:column headerText="Type">
+                                                    #{cd.type}
+                                                </p:column>
+
+                                                <p:column headerText="Name" filterBy="#{cd.name}">							
+							#{cd.name}							
+						</p:column> 
+                                                <p:column headerText="Description" filterBy="#{cd.dsc}">							
+							#{cd.dsc}							
+						</p:column>                                                   
+						<f:facet name="footer">
+                                                    <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                            <p:button value="Add" outcome="/pages/service/vascode/create.xhtml"/>
+
+                        </f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+
+	</ui:composition>
+
+</html>

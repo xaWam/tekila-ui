@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Rate #{rateManager.selected.name} - View/Edit</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Rate"/>
+                </f:facet>
+                <h:outputLabel value="Rate" for="rateName"/>
+                <p:inplace event="dblclick">
+                    <h:inputText value="#{rateManager.selected.name}" id="rateName"/>
+                </p:inplace>
+
+                <h:outputLabel value="Use promo resources?" for="ratePromo"/>
+                <h:selectBooleanCheckbox value="#{rateManager.selected.usePromoResources}" id="ratePromo"/>
+
+                <h:outputLabel value="Price" for="ratePrice"/>
+                <p:inplace>
+                    <h:inputText value="#{rateManager.selected.priceEdit}" id="ratePrice"/>
+                </p:inplace>
+
+                <h:outputLabel value="Active from" for="rateActiveFrom"></h:outputLabel>
+                <p:inplace>
+                    <f:facet name="output">
+                        <h:outputText value="#{rateManager.selected.activeFromAsDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:calendar pattern="dd/MM/yyyy HH:mm:ss" navigator="true"
+                                    value="#{rateManager.selected.activeFromAsDate}" id="rateActiveFrom"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Active till" for="rateActiveTill"></h:outputLabel>
+                <p:inplace>
+                    <f:facet name="output">
+                        <h:outputText value="#{rateManager.selected.activeTillAsDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:calendar pattern="dd.MM.yyyy HH:mm:ss" navigator="true"
+                                    value="#{rateManager.selected.activeTillAsDate}" id="rateActiveTill"/>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Active" for="rateActive"/>
+                <h:outputText value="#{rateManager.selected.active}" id="rateActive"/>
+
+                <h:outputLabel value="Description"/>
+                <p:inplace>
+                    <h:inputText value="#{rateManager.selected.desc}"/>
+                </p:inplace>
+            </h:panelGrid>
+            <h:panelGrid columns="2">
+                <p:commandButton action="/pages/subscription/rate/index" value="Cancel"/>
+                <p:commandButton action="#{rateManager.update()}" value="Save"
+                                 onclick="confirm('Do you really want to save changes?')"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

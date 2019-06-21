@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Ats</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search for Ats</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Name</h:outputLabel>
+                        <h:inputText value="#{atsManager.atsName}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Ats Index</h:outputLabel>
+                        <h:inputText value="#{atsManager.atsIndex}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="searchAts" action="#{atsManager.search}" value="Search" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Ats', 'READ')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="searchAts" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Searching, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+            <p:dataTable id="atsTable" value="#{atsManager.atsList}"
+                         var="at" paginator="true" rows="15"
+
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+
+                         filteredValue="#{atsManager.atsFilteredList}" editable="true"
+                         selection="#{atsManager.selectedAts}" selectionMode="single" rowkey="#{at.id}" lazy="true">
+
+                <f:facet name="header">Ats</f:facet>
+
+                <p:ajax event="rowEdit" listener="#{atsManager.onRowEdit}"/>
+
+                <p:column style="width:16px">
+                    <p:rowToggler />
+                </p:column>
+
+                <p:column headerText="Id">#{at.id}</p:column>
+
+                <p:column headerText="Name">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{at.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{at.name}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Ats Index">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{at.atsIndex}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{at.atsIndex}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Coordinate">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{at.coor}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{at.coor}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Ats Status">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{at.status}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{at.status}" style="width:100%">
+                                <f:selectItems value="#{atsManager.atsStatusList}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column style="width:32px">
+                    <p:rowEditor/>
+                </p:column>
+
+                <p:ajax event="rowToggle" listener="#{midipopManager.onRowToggle}"/>
+
+                <p:rowExpansion>
+                    <p:panelGrid columns="2" columnClasses="label,value">
+
+                        <p:dataTable id="midipopTable" value="#{midipopManager.midipopList}"
+                                     var="midi" paginator="true" rows="15"
+
+                                     paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     rowsPerPageTemplate="5,10,15"
+
+                                     editable="true"
+                                     selection="#{midipopManager.selectedMidipop}" selectionMode="single"
+                                     rowkey="#{midi.id}"
+                                     lazy="true">
+
+                            <f:facet name="header">Midipop</f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{midipopManager.onRowEdit}"/>
+
+                            <p:column headerText="Ats">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.ats.name}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{midi.ats.name}" converter="#{atsConverter}">
+                                            <f:selectItems value="#{midipopManager.atsSelectList}"/>
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Vlan">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.vlan}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{midi.vlan}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Switch Ip">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.switchIp}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{midi.switchIp}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Switch port">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.switchPort}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{midi.switchPort}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Cable">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.cable}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{midi.cable}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Nodes">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{midi.nodes}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:inputText value="#{midi.nodes}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="Status">
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText
+                                            value="#{midi.status eq 1 ? 'Available' : 'Not available'}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{midipopManager.newStatus}" style="width:100%">
+                                            <f:selectItems value="#{midipopManager.statusList}"/>
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:panelGrid>
+                </p:rowExpansion>
+
+
+                <f:facet name="footer">
+                    <p:button value="Add" outcome="/pages/store/ats/create.xhtml"/>
+                    <p:spacer width="10"/>
+                    <h:outputText value="Total: #{atsManager.atsList.rowCount}"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

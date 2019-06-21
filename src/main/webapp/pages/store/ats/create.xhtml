@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Ats</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Create Ats</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel>Name</h:outputLabel>
+                        <h:inputText value="#{atsManager.atsName}">
+                        </h:inputText>
+
+                        <h:outputLabel>Ats Index</h:outputLabel>
+                        <h:inputText value="#{atsManager.atsIndex}">
+                        </h:inputText>
+
+                        <h:outputLabel>Ats Status</h:outputLabel>
+                        <h:selectOneMenu value="#{atsManager.atsStatus}">
+                            <f:selectItems value="#{atsManager.atsStatusList}"/>
+                        </h:selectOneMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+
+                        <h:outputLabel>Coordinate</h:outputLabel>
+                        <h:inputText value="#{atsManager.coor}">
+                        </h:inputText>
+
+                        <h:outputLabel>Billing day</h:outputLabel>
+                        <p:selectOneMenu id="selectOne" value="#{atsManager.dayOfBilling}">
+                            <f:selectItems value="#{atsManager.dayOfBillingList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="createAts" action="#{atsManager.create}" value="Create" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Ats', 'INSERT')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="createAts" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Creating, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

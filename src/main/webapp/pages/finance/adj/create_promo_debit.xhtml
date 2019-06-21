@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{adjustmentManager.subscriberID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Promo Debit Adjustment</ui:define>
+    <ui:define name="content">
+        <script type="text/javascript">
+            function resetAmount() {
+                $('#netAmount').text('');
+                $('#vatAmount').text('');
+                $('#taxCat').text('');
+            }
+        </script>
+        <h:form id="adjForm" prependId="false">
+            <p:messages/>
+            <h:panelGrid rowClasses="odd-row,even-row" columnClasses="lbl-column,data-column" columns="2">
+                <f:facet name="header">Create Promo Debit Adjustment</f:facet>
+
+                <h:outputLabel value="Category" styleClass="required"/>
+                <h:selectOneMenu value="#{adjustmentManager.accCatID}">
+                    <f:ajax event="change" listener="#{adjustmentManager.onTaxCategoryChange}" execute="taxCat" render="taxCat"/>
+                    <f:selectItem noSelectionOption="true" itemLabel="Select a category"/>
+                    <f:selectItems value="#{adjustmentManager.accoutingCategoryList}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel value="VAT Category" for="taxCat"/>
+                <h:outputText id="taxCat" value="#{adjustmentManager.taxCategory.name}"/>
+
+                <h:outputLabel for="transType" value="Operation" styleClass="required"/>
+                <h:outputText id="transType" value="#{adjustmentManager.debitType}"/>
+
+                <h:outputLabel value="Amount" styleClass="required"/>
+                <h:inputText id="manats" value="#{adjustmentManager.manats}">
+                    <f:ajax event="change" listener="#{adjustmentManager.onAmountChange}" execute="@form" render="netAmount vatAmount"/>
+                </h:inputText>
+                <h:outputLabel value="Net amount"/>
+                <h:outputText value="#{adjustmentManager.netAmount}" id="netAmount"/>
+                <h:outputLabel value="VAT amount"/>
+                <h:outputText value="#{adjustmentManager.vatAmount}" id="vatAmount"/>
+
+                <h:outputLabel value="Description"/>
+                <h:inputText value="#{adjustmentManager.dsc}" id="dsc"/>
+            </h:panelGrid>
+            <p:spacer height="10"/>
+            <p:dataTable value="#{adjustmentManager.subscriptionList}" var="sbn" filteredValue="#{adjustmentManager.filteredList}"
+                         selection="#{adjustmentManager.operation.subscription}" selectionMode="single" rowKey="#{sbn.id}" rows="15"
+                         paginator="true" lazy="true">
+                <f:facet name="header">Subscriptions</f:facet>
+                <p:column headerText="Id">#{sbn.id}</p:column>
+                <p:column headerText="Agreement">#{sbn.agreement}</p:column>
+                <p:column headerText="Service">#{sbn.service.name}</p:column>
+                <p:column headerText="Subscriber">#{sbn.subscriber.details.firstName} #{sbn.subscriber.details.middleName} #{sbn.subscriber.details.surname}</p:column>
+                <p:column headerText="Promo Balance">#{sbn.balance.promoBalanceForView}</p:column>
+                <p:column headerText="Status">#{sbn.status}</p:column>
+            </p:dataTable>
+            <h:panelGrid columns="3">
+                <p:commandButton value="Reset" type="reset" actionListener="#{adjustmentManager.onReset}" onclick="resetAmount()"/>
+                <p:button value="Cancel" outcome="/pages/subscriber/view.xhtml?subscriber=#{adjustmentManager.subscriberID}"/>
+                <p:commandButton value="Save" action="#{adjustmentManager.createPromoDebitAdjustmnet}" update="@form">
+                    <p:confirm header="Confirm credit adjustment" message="Do you really want to save adjustment?" icon="ui-icon-alert"/>
+                </p:commandButton>
+                <p:confirmDialog global="true" closeOnEscape="true">
+                    <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                    <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+                </p:confirmDialog>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Subscriber details" action="#{adjustmentManager.redirect()}"/>
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
+

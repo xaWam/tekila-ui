@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<f:metadata>
+        <f:viewParam name="equipment" value="#{equipmentManager.equipmentID}"/>
+	</f:metadata>
+
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View Equipment</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages"/>
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                    <f:facet name="header">Search for equipment</f:facet>
+                           <h:outputLabel value="Provider"/>
+                            <p:inplace>
+                                <f:facet name="output">
+                                    <h:outputText value="#{equipmentManager.selected.provider.name}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{equipmentManager.providerID}">
+                                        <f:selectItem noSelectionOption="true" itemLabel="Select a provider"/>
+                                        <f:selectItems value="#{equipmentManager.providerSelectList}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:inplace>
+
+                            <h:outputLabel value="Status"/>
+                            <p:inplace>
+                                <f:facet name="output">
+                                    <h:outputText value="#{equipmentManager.selected.status}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{equipmentManager.selected.status}">
+                                        <f:selectItems value="#{equipmentManager.equipmentStatusList}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:inplace>
+
+                            <h:outputLabel>Part Number</h:outputLabel>
+                            <h:inputText id="partnum" value="#{equipmentManager.selected.partNumber}">
+                            </h:inputText>
+
+                            <h:outputLabel>Model</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.selected.model.name}">
+                            </h:inputText>
+
+                            <h:outputLabel>Type</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.selected.type.name}">
+                            </h:inputText>
+                            <h:outputLabel>Brand</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.selected.brand.name}">
+                            </h:inputText>
+                            <h:outputLabel>Mac Address</h:outputLabel>
+                            <h:inputText value="#{equipmentManager.selected.macAddress}">
+                            </h:inputText>
+                </p:panelGrid>
+
+                  <h:panelGrid columns="2">
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{equipmentManager.edit}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Equipment', 'UPDATE')}"/>
+                </h:panelGrid>
+
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

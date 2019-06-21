@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin_two_panels.xhtml">
+			<ui:define name="pageTitle">Subscriptions</ui:define>
+			<ui:define name="content">
+				<h:form id="profileForm">
+                                    <p:dataTable id="subDataTable" value="#{subscriptionManager.subscriptionLazyTableModel}" var="sbn" paginator="true" rows="15" 
+                                                 filteredValue="#{subscriptionManager.filteredSubscriptionList}"
+                                                 selection="#{subscriptionManager.selected}" selectionMode="single" rowKey="#{sbn.id}" lazy="true" widgetVar="paymentsTable">
+						<f:facet name="header">Subscriptions</f:facet>
+                                                <p:column headerText="ID" filterBy="#{sbn.id}">
+                                                    #{sbn.id}
+                                                </p:column>
+                                                <p:column headerText="Agreement" filterBy="#{sbn.agreement}">
+                                                    #{sbn.agreement}
+                                                </p:column>                                                
+                                                <p:column headerText="Service" filterBy="#{sbn.service.name}">							
+							#{sbn.service.name}							
+						</p:column>
+                                                <p:column headerText="Created on">
+                                                    <h:outputText value="#{sbn.creationDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column> 
+                                                <p:column headerText="Activated on">
+                                                    <h:outputText value="#{sbn.activationDateAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>                                        
+                                                <p:column headerText="Expires on">
+                                                    <h:outputText value="#{sbn.expiresAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>  
+                                                <p:column headerText="Expires on (G.P.)">
+                                                    <h:outputText value="#{sbn.expirationDateWithGracePeriodAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>                                                 
+                                                <p:column headerText="BilledUpToDate">
+                                                    <h:outputText value="#{sbn.billedUpToDateAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>                                                  
+                                                <p:column headerText="Last payment">
+                                                    <h:outputText value="#{sbn.lastPaymentDateAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>                                                
+                                                <p:column headerText="Subscriber name" filterBy="#{sbn.subscriber.details.firstName}">
+                                                    <h:outputText value="#{sbn.subscriber.details.firstName}"/>
+                                                </p:column>						
+                                                <p:column headerText="Subscriber middle name" filterBy="#{sbn.subscriber.details.middleName}">
+                                                    <h:outputText value="#{sbn.subscriber.details.middleName}"/>
+                                                </p:column>
+                                                <p:column headerText="Subscriber last name" filterBy="#{sbn.subscriber.details.surname}">
+                                                    <h:outputText value="#{sbn.subscriber.details.surname}"/>
+                                                </p:column>
+                                                <p:column headerText="Status" filterBy="#{sbn.status}">
+                                                    <h:outputText value="#{sbn.status}"/>                                                    
+                                                </p:column>                                                
+						<f:facet name="footer">
+                            <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                            <p:commandButton process="subDataTable" value="View" action="#{subscriptionManager.show()}" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'READ')}"></p:commandButton>
+                            <p:button value="Add" outcome="/pages/subscription/create.xhtml" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'INSERT')}"/>
+                        </f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+
+	</ui:composition>
+
+</html>

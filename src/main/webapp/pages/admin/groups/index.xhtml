@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<ui:composition template="/template_admin_two_panels.xhtml">
+    <ui:define name="pageTitle">Groups</ui:define>
+    <ui:define name="content">
+        <h:form prependId="false">
+            <p:messages id="messages"/>
+            <p:dataTable value="#{groupManager.groupList}" var="gr" selection="#{groupManager.selected}" paginator="true"
+                         selectionMode="single" lazy="true" rows="15">
+                <f:facet name="header">Groups</f:facet>
+                <p:column headerText="Id" filterBy="#{gr.id}">#{gr.id}</p:column>
+                <p:column headerText="Name" filterBy="#{gr.groupName}">#{gr.groupName}</p:column>
+                <p:column headerText="Email" filterBy="#{gr.email}">#{gr.email}</p:column>
+                <f:facet name="footer">
+                    <p:commandButton value="View" action="#{groupManager.show}" update="@form"/>
+                    <p:button value="Add" outcome="/pages/admin/groups/group.xhtml"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

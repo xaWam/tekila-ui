@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="invoice" value="#{salesPartnerInvoceManager.invoiceID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View invoices</ui:define>
+    <ui:define name="content">
+        <h:form>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+
+                <f:facet name="header">Invoice</f:facet>
+                <h:outputLabel value="Id"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.id}"/>
+
+                <h:outputLabel value="Distributor"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.partner.name}"/>
+                <h:outputLabel value="Creation date"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.creationDate}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="Close date"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.closeDate.toDate()}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+
+                <h:outputLabel value="Closing Balance"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.balanceForView}"/>
+
+                <h:outputLabel value="Total"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.sumChargedForView}"/>
+
+                <h:outputLabel value="Sum Paid"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.sumPaidForView}"/>
+
+                <h:outputLabel value="State"/>
+                <h:outputText value="#{salesPartnerInvoceManager.invoice.state}"/>
+            </h:panelGrid>
+            <p:separator/>
+
+            <p:panelGrid columns="1">
+                <p:dataTable value="#{salesPartnerInvoceManager.invoice.charges}" var="ch"
+                             paginator="true" rows="15" rowKey="#{ch.id}" binding="#{salesPartnerInvoceManager.invoiceTable}">
+                    <f:facet name="header">Charges</f:facet>
+
+                    <p:column headerText="Id">
+                        <h:outputText value="#{ch.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Date">
+                        <h:outputText value="#{ch.lastUpdateDate.toDate()}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Amount">
+                        <h:outputText value="#{ch.amountForView}"/>
+                    </p:column>
+
+                    <p:column headerText="Description">#{ch.dsc}</p:column>
+                </p:dataTable>
+            </p:panelGrid>
+            <p:spacer height="10"/>
+
+            <!--
+            <p:panelGrid columns="1">
+                <p:dataTable value="#{subscriber.selectedInvoice.payments}" var="pmt"
+                             paginator="true" rows="15" rowKey="#{pmt.id}">
+                    <f:facet name="header">Payments</f:facet>
+                    <p:column headerText="Id">
+                        <h:outputText value="#{pmt.id}"/>
+                    </p:column>
+                    <p:column headerText="Date">
+                        <h:outputText value="#{pmt.fd ne null ? pmt.fd : pmt.timestamp.time}">
+                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Amount">#{pmt.amount}</p:column>
+                    <p:column headerText="Status">
+                        <h:graphicImage title="Void" rendered="#{pmt.status eq -1}" value="/resources/img/icons/cancel.png"/>
+                        <h:graphicImage title="Regular" rendered="#{pmt.status eq 0}" value="/resources/img/icons/check.png"/>
+                    </p:column>
+                    <p:column headerText="Service">
+                        <h:outputText value="#{pmt.account ne null ? pmt.account.service.name : ''}"/>
+                    </p:column>
+                    <p:column headerText="Method">
+                        <h:outputText value="#{pmt.methodForUI ne null ? pmt.methodForUI : ''}"/>
+                    </p:column>
+                    <p:column headerText="Source">
+                        <h:outputText value="#{pmt.extUser ne null ? pmt.extUser.username : ''}"/>
+                    </p:column>
+                    <p:column headerText="User">
+                        <h:outputText value="#{pmt.user ne null ? pmt.user.userName : ''}"/>
+                    </p:column>
+                    <p:column headerText="Desc">
+                        <h:outputText value="#{pmt.dsc}"/>
+                    </p:column>
+                    <f:facet name="footer"></f:facet>
+                </p:dataTable>
+            </p:panelGrid>
+            -->
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Distributor"
+                                action="#{salesPartnerInvoceManager.returnToDistributor}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor', 'READ')}"
+                            />
+                    <p:menuitem value="Invoices"
+                                action="#{salesPartnerInvoceManager.returnToInvoices}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor invoice', 'READ')}"
+                            />
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+        <ui:composition template="/template_admin.xhtml">
+            <ui:define name="pageTitle">Create IP Address Range</ui:define>
+            <ui:define name="content">
+                <h:form>
+                    <p:growl id="messages"/>
+                    <h:panelGrid rowClasses="odd-row,even-row"  columns="2" cellpadding="5" width="100%">
+                        <f:facet name="header">Create IP Address Range</f:facet>
+
+                        <h:outputLabel value="Nas"/>
+                        <p:selectOneMenu value="#{ipAddressManager.selectedNas}" converter="#{nasConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a nas"/>
+                            <f:selectItems value="#{ipAddressManager.nasSelectList}" var="nas" itemLabel="#{nas.name}" itemValue="#{nas}" />
+                        </p:selectOneMenu>
+
+                        <h:outputLabel styleClass="required">Starting address</h:outputLabel>
+                        <h:panelGroup>
+                            <h:inputText value="#{ipAddressManager.startAddress_octet_1}" size="3" maxlength="3" styleClass="octet" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.startAddress_octet_2}" size="3" maxlength="3" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.startAddress_octet_3}" size="3" maxlength="3" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.startAddress_octet_4}" size="3" maxlength="3" title="Values from 1 to 254"/>
+                        </h:panelGroup>
+                        <h:outputLabel styleClass="required">Ending address</h:outputLabel>
+                        <h:panelGroup>
+                            <h:inputText value="#{ipAddressManager.endAddress_octet_1}" size="3" maxlength="3" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.endAddress_octet_2}" size="3" maxlength="3" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.endAddress_octet_3}" size="3" maxlength="3" title="Values from 0 to 255"/>
+                            <p:spacer width="5"/>
+                            <h:inputText value="#{ipAddressManager.endAddress_octet_4}" size="3" maxlength="3" title="Values from 1 to 254"/>
+                        </h:panelGroup>
+                        <f:facet name="footer">
+                            <p:spacer height="15"/>
+                            <p:commandButton value="Save" action="#{ipAddressManager.create}" update="messages"/>
+                        </f:facet>
+                    </h:panelGrid>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="distributor" value="#{salesPartnerInvoceManager.salesPartnerID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Distributor Stores</ui:define>
+    <ui:define name="content">
+        <h:form id="eqForm">
+            <p:growl id="messages"/>
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Search distributor stores</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Distributor name"/>
+                        <h:inputText value="#{distributorStoreManager.partnerNameParameter}"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+                <p:outputPanel id="eqPanel_2">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                        <h:outputLabel value="Partnumber"/>
+                        <h:inputText value="#{distributorStoreManager.partNumberParameter}"/>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{distributorStoreManager.search()}" value="Search" update="messages eqTable" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor', 'READ')}"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{distributorStoreManager.partnerStoreList}"
+                             var="ds" paginator="true" rows="15"
+                             filteredValue="#{distributorStoreManager.filteredPartnerStoreList}"
+                             selection="#{distributorStoreManager.selectedSalesPartnerStore}" selectionMode="single"
+                             lazy="true" rowKey="#{ds.id}" binding="#{distributorStoreManager.storeTable}">
+                    <f:facet name="header">Distributor stores</f:facet>
+                    <p:column headerText="Id" styleClass="id">#{ds.id}</p:column>
+                    <p:column headerText="Name">#{ds.name}</p:column>
+                    <p:column headerText="Distributor">#{ds.owner.name}</p:column>
+                    <p:column headerText="Items count">#{ds.equipmentList.size()}</p:column>
+                    <p:column headerText="Description">#{ds.desc}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"/>
+                        <p:commandButton value="View" action="#{distributorStoreManager.show}" update=":eqForm:messages"/>
+                        <p:button value="Add" outcome="/pages/store/distrib/create.xhtml?faces-redirect=true" rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor Stores', 'INSERT')}"/>
+                        Total: #{distributorStoreManager.partnerStoreList.rowCount}</f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+        </h:form>
+        <ui:define name="east">
+            <h:form>
+                <p:menu>
+                    <p:submenu label="Navigation">
+                        <p:menuitem value="Distributor" action="#{salesPartnerInvoceManager.returnToDistributor}"/>
+                    </p:submenu>
+                </p:menu>
+            </h:form>
+        </ui:define>
+    </ui:define>
+</ui:composition>
+
+</html>

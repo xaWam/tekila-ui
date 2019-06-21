@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Online users</ui:define>
+			<ui:define name="content">
+                <h:form id="onlineForm">
+                    <p:growl id="messages"/>
+                    <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input" id="searchGrid">
+                        <f:facet name="header">Search for online users</f:facet>
+                        <p:outputPanel id="eqPanel">
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                                <h:outputLabel value="Username"/>
+                                <h:inputText id="username" value="#{statsManager.userName}"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                                <h:outputLabel>Calling Station ID</h:outputLabel>
+                                <h:inputText id="callingStation" value="#{statsManager.callingStationID}"/>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                        <p:outputPanel>
+                            <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                                <p:outputLabel>Please select provider</p:outputLabel>
+                                <p:selectOneMenu value="#{statsManager.selectedProvider}">
+                                    <f:selectItem itemLabel="None" itemValue="-1"/>
+                                    <f:selectItems value="#{statsManager.providerList}"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                        </p:outputPanel>
+                    </p:panelGrid>
+
+                    <h:panelGrid columns="2" style="margin-bottom: 10px;">
+                        <p:commandButton action="#{statsManager.clear()}" value="Reset" update="messages :onlineForm:searchGrid :onlineForm:subDataTable"/>
+                        <p:commandButton action="#{statsManager.search()}" value="Search" update="messages :onlineForm:subDataTable"
+                                         rendered="#{uISecurityManager.securityManager.checkUIPermissions('Online users', 'READ')}"/>
+                    </h:panelGrid>
+
+                    <p:dataTable widgetVar="statsTable" id="subDataTable" value="#{statsManager.onlineStats}" var="st" paginator="true" rows="15"
+                        selectionMode="single" rowKey="#{st.id}" lazy="true" selection="#{statsManager.selectedOnlineStats}">
+						<f:facet name="header">Online users</f:facet>						
+                        <p:column headerText="Username">
+                            <h:outputText value="#{st.user}"/>
+						</p:column>
+                        <p:column headerText="Down">
+                            <h:outputText value="#{st.down}"/>
+                        </p:column>
+                        <p:column headerText="Up">
+                            <h:outputText value="#{st.up}"/>
+                        </p:column>
+                        <p:column headerText="Start">
+                            <h:outputText value="#{st.startTime}">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Calling Station ID">
+                            <h:outputText value="#{st.callingStationID}"/>
+                        </p:column>
+                        <p:column headerText="Framed IP Address">
+                            <h:outputText value="#{st.framedAddress}"/>
+                        </p:column>
+                        <p:column headerText="NAS IP Address">
+                            <h:outputText value="#{st.nasIpAddress}"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <p:commandButton value="View" action="#{statsManager.navigateToSubscription}" update=":onlineForm:messages"/>
+                        </f:facet>
+					</p:dataTable>
+				</h:form>
+
+			</ui:define>
+	</ui:composition>
+
+</html>

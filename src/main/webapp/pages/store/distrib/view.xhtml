@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="distributor" value="#{distributorManager.partnerID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Distributor</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:growl id="messages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Distributor information" />
+                </f:facet>
+                <h:outputLabel value="Name" for="name" styleClass="required"/>
+
+                <p:inplace>
+                    <h:inputText id="name" value="#{distributorManager.selectedPartner.name}"  required="true" label="Name" requiredMessage="Name need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Description"/>
+                <p:inplace>
+                    <h:inputText id="desc" value="#{distributorManager.selectedPartner.desc}"/>
+                </p:inplace>
+            </h:panelGrid>
+            <p:separator/>
+
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#{distributorManager.goToIndex}" value="Cancel" />
+                <p:commandButton action="#{distributorManager.save}" value="Save" update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+    <ui:define name="east">
+        <h:form>
+            <p:menu>
+                <p:submenu label="Navigation">
+                    <p:menuitem value="Invoices"
+                                action="#{distributorManager.viewInvoices}"
+                                rendered="#{uISecurityManager.securityManager.checkUIPermissions('Distributor invoice', 'READ')}"
+                            />
+                </p:submenu>
+            </p:menu>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

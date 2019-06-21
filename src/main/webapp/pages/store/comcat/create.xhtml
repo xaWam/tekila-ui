@@ -1,0 +1,49 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<f:metadata>
+        <f:viewParam name="imsi" value="#{imsiManager.imsiID}"/>
+	</f:metadata>
+
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Commercial Category</ui:define>
+        <ui:define name="content">
+            <h:form styleClass="main-search-form">
+                <p:growl id="messages"/>
+                <h:panelGrid columnClasses="lbl-column, data-column" rowClasses="odd-row,even-row" columns="2">
+                    <f:facet name="header">Commercial category</f:facet>
+                    <h:outputLabel value="Name" styleClass="required"/>
+                    <h:inputText value="#{commercialCategoryManager.category.name}" required="true" requiredMessage="Name is required"/>
+
+                    <h:outputLabel value="Tax category" styleClass="required"/>
+                    <p:selectOneMenu value="#{commercialCategoryManager.taxCat}" required="true" requiredMessage="Tax category is required">
+                        <f:selectItem itemLabel="Select a category" noSelectionOption="true"/>
+                        <f:selectItems value="#{commercialCategoryManager.taxCategoryList}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Price" styleClass="required"/>
+                    <p:outputPanel>
+                        <h:inputText value="#{commercialCategoryManager.amountWholePart}" required="true" requiredMessage="Price is required"/>
+                        <h:outputText value="."/>
+                        <h:inputText value="#{commercialCategoryManager.amountDecimalPart}"/>
+                    </p:outputPanel>
+                </h:panelGrid>
+
+                <h:panelGrid columns="3">
+                    <p:button value="Cancel" outcome="/pages/store/comcat/index.xhtml"/>
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{commercialCategoryManager.create}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkUIPermissions('CommercialCategory', 'INSERT')}"/>
+                </h:panelGrid>
+
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

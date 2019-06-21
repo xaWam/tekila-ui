@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Value Added Service</ui:define>
+    <ui:define name="content">
+        <h:form id="vasForm">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="1">
+                <p:dataTable id="subDataTable" value="#{vasManager.codeList}" var="cd" paginator="true" rows="15"
+                             filteredValue="#{vasManager.filteredVasCodeList}" selection="#{vasManager.selectedVasCode}"
+                             selectionMode="single"
+                             rowKey="#{cd.id}" widgetVar="paymentsTable">
+                    <f:facet name="header">VAS Codes</f:facet>
+                    <p:ajax event="rowSelect" listener="#{vasManager.onRowSelect}" update="@form"/>
+
+                    <p:column headerText="Code" filterBy="#{cd.code}">
+                        #{cd.code}
+                    </p:column>
+                    <p:column headerText="Provider" filterBy="#{cd.provider.name}">
+                        #{cd.provider.name}
+                    </p:column>
+                    <p:column headerText="Type">#{cd.type}</p:column>
+                    <p:column headerText="Name" filterBy="#{cd.name}">
+                        #{cd.name}
+                    </p:column>
+                    <p:column headerText="Description" filterBy="#{cd.dsc}">
+                        #{cd.dsc}
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();"
+                                         update="@form"></p:commandButton>
+                    </f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:separator/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Value Added Service information"/>
+                </f:facet>
+                <h:outputLabel value="Name" for="serviceName" styleClass="required"></h:outputLabel>
+                <h:inputText id="serviceName" value="#{vasManager.vas.name}" required="true" label="Name"
+                             requiredMessage="Name need to be filled"/>
+
+                <h:outputLabel value="Active"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{vasManager.vas.active}"/>
+
+                <h:outputLabel for="taxCategory" value="Tax category" styleClass="required"/>
+                <h:selectOneMenu id="taxCategory" value="#{vasManager.taxCategoryID}" required="true"
+                                 requiredMessage="Provider is required">
+                    <f:selectItem itemLabel="Select category" noSelectionOption="true"/>
+                    <f:selectItems value="#{vasManager.taxCategoryList}"/>
+                </h:selectOneMenu>
+
+                <h:outputLabel for="servicePrice" value="Price"/>
+                <h:inputText id="servicePrice" value="#{vasManager.vasPrice}" required="true"
+                             requiredMessage="Vas Price must be provided" />
+
+                <h:outputLabel value="Maximum allowed"/>
+                <h:inputText value="#{vasManager.vas.maxNumber}"/>
+
+                <h:outputLabel value="Count"/>
+                <h:inputText value="#{vasManager.vas.count}"/>
+
+                <h:outputLabel value="Expression"/>
+                <h:inputText value="#{vasManager.vas.expression}"/>
+
+                <h:outputLabel value="Chargeable item"
+                               rendered="#{vasManager.selectedVasCode.type eq 'ONETIME_VARIABLE_CHARGE'}"/>
+                <p:selectOneMenu value="#{vasManager.vas.chargeableItem}"
+                                 rendered="#{vasManager.selectedVasCode.type eq 'ONETIME_VARIABLE_CHARGE'}">
+                    <f:selectItem itemLabel="Select item" noSelectionOption="true"/>
+                    <f:selectItems value="#{vasManager.chargeableItemList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Do Partial Charge ?"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{vasManager.vas.doPartialCharge}"/>
+
+                <h:outputLabel value="Is Credit Vas"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{vasManager.vas.credit}"/>
+            </h:panelGrid>
+
+            <p:outputPanel rendered="#{vasManager.selectedVasCode.type eq 'ONETIME_VARIABLE_CHARGE'}">
+                <p:dataTable value="#{vasManager.vas.settings}" var="set" selection="#{vasManager.selectedSetting}"
+                             selectionMode="single" rows="50" paginator="true" rowKey="#{set.name}"
+                             id="settings" style="margin-top: 10px; margin-bottom: 10px;">
+                    <f:facet name="header">Settings</f:facet>
+                    <p:ajax event="rowSelect" listener="#{vasManager.onSettingsRowSelect}" process="settings"
+                            update=":vasForm:setPanel"/>
+                    <p:column headerText="Name">#{set.name}</p:column>
+                    <p:column headerText="Value">#{set.dsc}</p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2" style="margin-bottom: 10px;" id="setPanel">
+                    <h:outputLabel value="Name"/>
+                    <h:inputText id="setName" value="#{vasManager.setting.name}" style="width: 400px;"/>
+                    <h:outputLabel value="Desc"/>
+                    <h:inputText id="setDsc" value="#{vasManager.setting.dsc}" style="width: 400px;"/>
+                </h:panelGrid>
+                <h:panelGrid>
+                    <p:commandButton value="Add" icon="ui-icon-disk" actionListener="#{vasManager.addSetting}"
+                                     update="settings setPanel"/>
+                    <p:commandButton value="Delete" icon="ui-icon-trash" actionListener="#{vasManager.deleteSetting}"
+                                     update="settings setPanel"/>
+                    <p:commandButton actionListener="#{vasManager.resetSetting}" value="Reset" icon="ui-icon-refresh"
+                                     update="settings setPanel resourcePanel"/>
+                </h:panelGrid>
+                <p:separator/>
+
+            </p:outputPanel>
+
+            <p:outputPanel id="resourcePanel" rendered="#{vasManager.showResources}">
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                             rowClasses="odd-row,even-row">
+                    <f:facet name="header">
+                        Resources
+                    </f:facet>
+
+                    <h:outputLabel value="Resource Type" styleClass="required"/>
+                    <h:selectOneMenu value="#{vasManager.bucketType}" required="true"
+                                     requiredMessage="Resource type is required" id="bucketType">
+                        <f:selectItem itemLabel="Select type" noSelectionOption="true"/>
+                        <f:selectItems value="#{vasManager.bucketTypes}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+            </p:outputPanel>
+            <h:panelGrid columns="3">
+                <p:button value="Cancel" outcome="/pages/service/vas/index.xhtml"/>
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{vasManager.create()}" value="Save" update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

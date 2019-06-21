@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+    <f:metadata>
+        <f:viewParam name="subscriber" value="#{subscriberArchiveManager.subscriberID}"/>
+    </f:metadata>
+	<ui:composition template="/template_admin_two_panels.xhtml">
+			<ui:define name="pageTitle">Subscriber Archive</ui:define>
+			<ui:define name="content">                             
+				<h:form>
+                    <p:growl id="messages"/>
+                    <p:dataTable value="#{subscriberArchiveManager.archivedData}" var="entry" selection="#{subscriberArchiveManager.selectedArchivedData}"
+                         selectionMode="single" lazy="true" paginator="true" rows="15">
+                        <f:facet name="header">Subscriber Archive</f:facet>
+                        <p:column headerText="Id" styleClass="id">#{entry.id}</p:column>
+                        <p:column headerText="Version">#{entry.objectVersion}</p:column>
+                        <p:column headerText="Archived date">
+                            <h:outputText value="#{entry.archivedAsDate}">
+                                <f:convertDateTime pattern="HH:mm:ss dd.MM.yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="User">
+                            #{entry.user.userName}
+                        </p:column>
+  						<f:facet name="footer">
+                            <p:commandButton value="View" action="#{subscriberArchiveManager.show}" update="@form"/>
+ 						</f:facet>
+					</p:dataTable>			
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

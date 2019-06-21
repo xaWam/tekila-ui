@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">View Subscriber (Invididual)</ui:define>
+			<ui:define name="content">
+				<h:form>
+                                        <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Billing settings" />
+						</f:facet>
+                                                <h:outputLabel value="Managed by Lifecycle?" for="lifecycle"/>
+                                                <p:inplace event="dblclick" effect="slide">
+                                                    <p:selectBooleanCheckbox id="lifecycle" value="#{subscriber.selected.subscriber.billedByLifeCycle}"/>                                                    
+                                                </p:inplace>
+                                                <h:outputLabel value="Lifecycle type" for="lifecycleType"/>
+
+                                                <p:inplace event="dblclick" effect="slide">
+                                                    <p:selectOneListbox id="lifecycleType" value="#{subscriber.selected.subscriber.lifeCycle}">
+                                                    <f:selectItems value="#{subscriber.lifeCycleTypeSelectItems}"/>
+                                                </p:selectOneListbox>                                                
+                                                </p:inplace>
+                                                 
+                                                <h:outputLabel value="Taxation category" for="taxCat"/>
+
+                                                <p:inplace event="dblclick" effect="slide">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{subscriber.selected.subscriber.taxCategory.name}"/>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                    <p:selectOneMenu id="taxCat" value="#{subscriber.selectedTaxCategory}">
+                                                        <f:selectItems value="#{subscriber.taxCategorySelectListForView}"/>
+                                                    </p:selectOneMenu>    
+                                                    </f:facet>
+                                                </p:inplace>
+                                        </h:panelGrid>
+					<p:separator></p:separator>	
+                                        
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="General information" />
+						</f:facet>
+                                                <h:outputLabel for="subCreate">Created on</h:outputLabel>
+                                                <h:outputText id="subCreate" value="#{subscriber.selected.entryDate}">
+                                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                </h:outputText>
+                                                <h:outputLabel for="subPayment">Last paid on</h:outputLabel>
+                                                <h:outputText id="subPayment" value="#{subscriber.selected.subscriber.lastPaymentDateAsDate}">
+                                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                </h:outputText>                                                
+						<h:outputLabel value="Gender" for="subGender" styleClass="required"/>
+						<p:inplace event="dblclick" effect="slide">
+						<p:selectOneRadio value="#{subscriber.selected.gender}" id="subGender">
+							<f:selectItems value="#{subscriber.genderSelectList}"/>
+						</p:selectOneRadio>			
+						</p:inplace>
+						<h:outputLabel value="Name" for="subName" styleClass="required"/>
+						<p:inplace event="dblclick" effect="slide" effectSpeed="fast">
+						<h:inputText id="subName" value="#{subscriber.selected.firstName}" required="true"/>
+						</p:inplace>
+						
+						<h:outputLabel value="Middle Name" for="subNameMiddle" styleClass="required"/>
+						<p:inplace event="dblclick">
+						<h:inputText id="subNameMiddle" value="#{subscriber.selected.middleName}" required="true"/> 
+						</p:inplace>
+						
+						<h:outputLabel value="Surname" for="subSurName" styleClass="required"/>
+						<p:inplace event="dblclick"><h:inputText id="subSurName" value="#{subscriber.selected.surname}" required="true"/></p:inplace>
+						
+						<h:outputLabel value="Date of Birth" for="subPlaceOfBirth" styleClass="required"/>
+						<p:inplace event="dblclick">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{subscriber.selected.dateOfBirth}">
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:calendar value="#{subscriber.selected.dateOfBirth}" navigator="true" pagedate="01/01/1980" pattern="dd/MM/yyyy" required="true">
+                                                        </p:calendar>
+                                                    </f:facet>
+                                                </p:inplace>
+						<h:outputLabel value="Place of Birth" for="subPlaceOfBirth"/>
+						<p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPlaceOfBirth" value="#{subscriber.selected.cityOfBirth}"/></p:inplace>
+						<h:outputLabel value="Citizenship" for="subCitizen"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subCitizen" value="#{subscriber.selected.citizenship}"/></p:inplace>
+					</h:panelGrid>
+					<h:inputHidden id="subType" value="#{subscriber.selected.type}"/>												
+					
+					<p:separator></p:separator>	
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="ID/Passport Information" />
+						</f:facet>											
+						<h:outputLabel value="Country of issue" for="subIssueCountry"></h:outputLabel>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subIssueCountry" value="#{subscriber.selected.country}"/></p:inplace>
+						<h:outputLabel value="Series" for="subSeries"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subSeries" value="#{subscriber.selected.passportSeries}"/></p:inplace>
+						<h:outputLabel value="Number" for="subPassNum"/>
+						<p:inplace emptyLabel="None" event="dblclick"><h:inputText id="subPassNum" value="#{subscriber.selected.passportNumber}"/></p:inplace>
+						<h:outputLabel value="Issued authority" for="subPassAuth"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText id="subPassAuth" value="#{subscriber.selected.passportAuthority}"/></p:inplace>
+						<h:outputLabel value="Date of Issue" for="subIssueDate"/>
+						<p:inplace emptyLabel="None"  event="dblclick">
+                                                    <f:facet name="output">
+                                                        <h:outputText value="#{subscriber.selected.passportIssueDate}">
+                                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                                        </h:outputText>
+                                                    </f:facet>
+                                                    <f:facet name="input">
+                                                        <p:calendar id="subIssueDate" value="#{subscriber.selected.passportIssueDate}" navigator="true" pagedate="01/01/1980" pattern="dd/MM/yyyy"></p:calendar>
+                                                    </f:facet>
+                                                </p:inplace>
+						<h:outputLabel value="Valid till (month/year)" for="subValidTill"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><p:inputMask id="subValidTill" mask="99/9999" value="#{subscriber.selected.passportValidTill}"></p:inputMask></p:inplace>
+						<h:outputLabel value="Email" for="subPassEmail"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.email}" id="subPassEmail"/></p:inplace>
+						<h:outputLabel value="Contact # (mobile)" for="subContact"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneMobile}" id="subContact"/></p:inplace>
+						<h:outputLabel value="Contact # (mobile 2)" for="subContact_2"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneMobileAlt}" id="subContact_2"/></p:inplace>
+						<h:outputLabel value="Contact # (landline)" for="subContact_3"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.phoneLandline}" id="subContact_3"/></p:inplace>						
+					</h:panelGrid>
+					<p:separator></p:separator>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputLabel value="Address (invoicing / billing)" />						
+						</f:facet>												
+						<h:outputLabel value="City" for="subInvCity"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.city}" id="subInvCity"/></p:inplace>
+						<h:outputLabel value="ATS #" for="subATS"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.ats}" id="subATS"/></p:inplace>
+						<h:outputLabel value="Street" for="subInvStreet"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.street}" id="subInvStreet"/></p:inplace>						
+						<h:outputLabel value="Building" for="subInvBuilding"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.building}" id="subInvBuilding"/></p:inplace>						
+						<h:outputLabel value="Apartment" for="subInvAp"/>
+						<p:inplace emptyLabel="None"  event="dblclick"><h:inputText value="#{subscriber.selected.apartment}" id="subInvAp"/></p:inplace>										
+					</h:panelGrid>                                        
+
+					<h:panelGrid columns="2">
+						<h:commandButton action="/pages/subscriber/ind/index" value="Cancel"/>
+						<h:commandButton action="#{subscriber.update}" value="Save" onclick="confirm('Do you really want to save changes?')"/>
+					</h:panelGrid>					
+				</h:form>
+                                <h:form>
+                                    <h:panelGrid columns="1">
+                                        <f:facet name="header">
+                                            <h:outputLabel value="Subscriptions" />						
+                                        </f:facet>												
+                                        <p:dataTable value="#{subscriber.selected.subscriber.subscriptions}" var="sn" selection="#{subscriber.selectedSubscription}" selectionMode="single" rowKey="#{sn.id}">
+                                            <f:facet name="header">Subscriptions</f:facet>
+                                                <p:column headerText="ID">#{sn.id}</p:column>
+                                                <p:column headerText="Agreement">#{sn.agreement}</p:column>
+                                                <p:column headerText="Service">#{sn.service.name}</p:column>
+                                                <p:column headerText="Status">#{sn.status}</p:column>
+                                                <p:column headerText="Balance">#{sn.balance.realBalanceForView}</p:column>
+                                                <p:column headerText="Created on">
+                                                    <h:outputText value="#{sn.creationDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>
+                                                <p:column headerText="Expires on">
+                                                    <h:outputText value="#{sn.expiresAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>   
+                                                <p:column headerText="Last payment on">
+                                                    <h:outputText value="#{sn.lastPaymentDateAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>  
+                                                <p:column headerText="Last status change on">
+                                                          <h:outputText value="#{sn.lastStatusChangeAsDate}">
+                                                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                                    </h:outputText>
+                                                </p:column>                                                   
+                                        </p:dataTable>
+                                        <f:facet name="footer">
+                                            <p:commandButton value="View" action="#{subscriber.viewSubscription()}"/>                                               
+                                        </f:facet>
+                                    </h:panelGrid>
+                                </h:form>
+			</ui:define>
+                        <ui:define name="east">
+                            <h:form>
+                                <p:menu>
+                                    <p:submenu label="Financial">
+                                        <p:menuitem value="Refund" outcome="/pages/subscriber/ind/refund.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                        <p:menuitem value="Pay in-cache"  outcome="/pages/subscriber/ind/cash.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                        <p:menuitem value="Charges" outcome="/pages/subscriber/ind/charges.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                        <p:menuitem value="Payments" outcome="/pages/subscriber/ind/view_payments.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                        <p:menuitem value="Refunds" outcome="/pages/subscriber/ind/view_refunds.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                        <p:menuitem value="Invoices" outcome="/pages/subscriber/ind/invoices.xhtml?subscriber=#{subscriber.selected.subscriber.id}"/>
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
+                        </ui:define>
+	</ui:composition>
+
+</html>

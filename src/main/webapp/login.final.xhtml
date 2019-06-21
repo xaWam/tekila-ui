@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+
+<ui:composition template="/template.xhtml">
+    <ui:define name="pageTitle">Enter system</ui:define>
+    <ui:define name="pageHeader">Please enter login and password</ui:define>
+    <ui:define name="body">
+
+        <h:form id="loginForm" binding="#{loginManager.loginForm}">
+            <p:message for="loginForm"/>
+
+            <table class="login">
+                <tr>
+                    <td><h:outputLabel class="login" value="Username" for="username"/></td>
+                    <td><h:inputText class="login-input" id="username" required="true" rendered="true"
+                                     value="#{loginManager.username}"/></td>
+                </tr>
+                <tr>
+                    <td><h:outputLabel class="login" value="Password" for="password"/></td>
+                    <td><h:inputSecret class="login-input" id="password" required="true"
+                                       value="#{loginManager.password}"/></td>
+                </tr>
+                <tr>
+                    <td><h:commandButton value="Login" action="#{loginManager.login()}"/></td>
+                </tr>
+            </table>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

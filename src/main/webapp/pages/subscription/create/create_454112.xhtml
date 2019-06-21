@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+-->
+<f:metadata>
+    <f:viewParam name="subscriber" value="#{subscriptionManager.subscriberID}"/>
+    <f:event type="preRenderView" listener="#{subscriptionManager.onCreateLoad()}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Subscription</ui:define>
+    <ui:define name="content">
+        <h:form id="sbnForm" onkeypress="if (event.keyCode === 13)
+                        return false;">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row" style="margin-bottom: 15px;"
+                         styleClass="large-lbl">
+                <f:facet name="header">
+                    <h:outputText value="Subscription"/>
+                </f:facet>
+
+                <h:outputLabel value="Sevice provider"/>
+                <h:outputLabel value="GLOBAL"/>
+
+                <h:outputLabel value="Subscriber"></h:outputLabel>
+                <h:outputLabel>#{subscriptionManager.selectedSubscriber.details.firstName} #{subscriptionManager.selectedSubscriber.details.surname}</h:outputLabel>
+
+                <h:outputLabel value="Agreement" styleClass="required"/>
+                <h:inputText id="agreementGenerated" value="#{subscriptionManager.subscription.agreement}"/>
+
+                <h:outputLabel value="Language"/>
+                <p:selectOneMenu value="#{subscriptionManager.language}">
+                    <f:selectItems value="#{subscriptionManager.languageList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Service" for="serviceName" styleClass="required"/>
+                <p:selectOneMenu value="#{subscriptionManager.serviceId}" id="serviceName" required="true"
+                                 requiredMessage="Service is required">
+                    <f:selectItem itemLabel="Select service" noSelectionOption="true"/>
+                    <f:selectItems value="#{subscriptionManager.serviceSelectList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Service Type"/>
+                <p:selectOneMenu value="#{subscriptionManager.serviceTypeId}" id="serviceTypeSelect">
+                    <p:ajax event="change" update="@this" process="@this"
+                            listener="#{subscriptionManager.onServiceTypeSelect}"/>
+                    <f:selectItem itemLabel="Select Service Type" noSelectionOption="true"/>
+                    <f:selectItems value="#{subscriptionManager.serviceTypeSelectList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Name"/>
+                <h:inputText value="#{subscriptionManager.name}"/>
+
+                <h:outputLabel value="Surname"/>
+                <h:inputText value="#{subscriptionManager.surname}"/>
+
+                <h:outputLabel value="Description"/>
+                <h:inputText value="#{subscriptionManager.details.desc}"/>
+
+                <h:outputLabel value="City"/>
+                <h:inputText value="#{subscriptionManager.details.city}"/>
+
+                <h:outputLabel value="Street"/>
+                <h:inputText value="#{subscriptionManager.details.street}"/>
+
+                <h:outputLabel value="Building"/>
+                <h:inputText value="#{subscriptionManager.details.building}"/>
+
+                <h:outputLabel value="Apartment"/>
+                <h:inputText value="#{subscriptionManager.details.apartment}"/>
+
+                <h:outputLabel value="ATS" styleClass="required"/>
+                <p:selectOneMenu value="#{subscriptionManager.details.ats}" id="atsSelect" required="true"
+                                 requiredMessage="ATS is required">
+                    <f:selectItem itemLabel="Select ATS" noSelectionOption="true"/>
+                    <f:selectItems value="#{subscriptionManager.atsSelectList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Reseller"/>
+                <p:selectOneMenu value="#{subscriptionManager.selectedReseller}" id="resellerSelect">
+                    <f:selectItem itemLabel="Select Reseller" noSelectionOption="true"/>
+                    <f:selectItems value="#{subscriptionManager.resellerSelectList}"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton id="createGlobalBtn" action="#{subscriptionManager.createGlobal}" value="Save"
+                                 update="messages"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Subscription', 'INSERT')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="createGlobalBtn" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;" value="Creating, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

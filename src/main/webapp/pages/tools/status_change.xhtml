@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Batch Status Change</ui:define>
+        <ui:define name="content">
+            <h:form id="batch_state_change" enctype="multipart/form-data">
+                <p:growl id="messages" showDetail="true" />
+                <p:panel header="Batch subscriptions">
+                    <p:fileUpload value="#{batchManager.file}" mode="simple"/>
+
+                    <h:panelGrid columns="2" style="margin-top: 10px;">
+                        <h:outputLabel value="Description"/>
+                        <h:inputText value="#{batchManager.desc}"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2" style="margin-top: 10px; border: none;">
+                        <p:commandButton id="uploadAndProcess" value="Upload and Process" actionListener="#{batchManager.uploadStatusChangeFile}" update="@form" ajax="false"/>
+
+                        <p:commandButton value="SampleDownload" ajax="false" icon="ui-icon-arrowthick-1-s">
+                          <p:fileDownload value="#{batchManager.sampleStatusChangeFile}"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+
+            <p:separator/>
+
+
+            <p:blockUI block="@form" trigger="uploadAndProcess" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Uploading and Processing, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+
+
+            <p:panelGrid columns="1">
+
+               <p:dataTable id="subscriptions" value="#{batchManager.wrapperBatchList}" var="sbn" rowKey="#{sbn.batchAgreement}"
+               rendered="#{not empty batchManager.wrapperBatchList}"
+                             paginator="true" lazy="true" rows="15" tableStyle="table-layout:auto;width:100%;">
+                    <f:facet name="header">Batch Processing Result
+                        <p:commandLink id="toggler1" type="button" value="Columns"
+                                       style="float:right;text-decoration: none"/>
+                        <p:columnToggler datasource="subscriptions" trigger="toggler1"/>
+                    </f:facet>
+
+                    <p:column headerText="Batch File Agreement">
+                        <h:outputText value="#{sbn.batchAgreement}"/>
+                    </p:column>
+                    <p:column headerText="Batch File Status">
+                        <h:outputText value="#{sbn.batchStatus}"/>
+                    </p:column>
+                    <p:column headerText="Processing result">
+                        <h:outputText value="Completed with warning!" rendered="#{sbn.status eq '0'}"/>
+                    </p:column>
+                    <p:column headerText="Message">
+                        <h:outputText value="#{sbn.msg}"/>
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:outputPanel id="viewButton" rendered="#{searchManager.renderViewButton}">
+                            <h:commandLink action="#{searchManager.view}"
+                                           style="font-weight: bold; font-size: 10px !important;" target="_blank"
+                                           value="Subscription"/>
+                            <p:spacer width="10"/>
+                            <h:commandLink action="#{searchManager.viewSubscriber}"
+                                           style="font-weight: bold; font-size: 10px !important;" target="_blank"
+                                           value="Subscriber"/>
+                            <p:spacer width="10"/>
+                            <h:outputText value="Total: #{searchManager.subscriptionList.rowCount}"/>
+                        </p:outputPanel>
+                    </f:facet>
+                </p:dataTable>
+            </p:panelGrid>
+
+
+
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
+

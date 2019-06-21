@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+    <f:metadata>
+        <f:viewParam name="module" value="#{moduleManager.moduleID}"/>
+    </f:metadata>
+    <ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">Create Module</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <h:panelGrid rowClasses="even-row, odd-row" columnClasses="lbl-column, data-column" columns="2">
+                    <f:facet name="header">Create module</f:facet>
+                    <h:outputLabel>Name</h:outputLabel>
+                    <h:inputText value="#{moduleManager.module.name}"/>
+                </h:panelGrid>
+
+                <p:dataTable rendered="#{moduleManager.moduleID ne null}" value="#{moduleManager.module.subModules}" var="sub" rowKey="#{sub.id}" rows="15">
+                    <f:facet name="header">Submodules</f:facet>
+                    <p:column headerText="Id">#{sub.id}</p:column>
+                    <p:column headerText="Name">#{sub.name}</p:column>
+                </p:dataTable>
+                <h:panelGrid columns="2">
+                    <f:facet name="footer">
+                        <p:spacer height="10"/>
+                        <p:button value="Cancel" outcome="/pages/admin/modules/index.xhtml"/>
+                        <p:commandButton value="Save" action="#{moduleManager.save}"/>
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

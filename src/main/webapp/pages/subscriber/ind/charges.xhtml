@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+	
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+        <f:metadata>
+            <f:viewParam name="subscriber" value="#{subscriber.subscriberId}"/>
+        </f:metadata>
+         
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Charges</ui:define>
+			<ui:define name="content">
+                            <p:messages/>
+                            <h:form>
+
+                                <p:panelGrid rowClasses="odd-row,even-row" columns="1" styleClass="small-input" id="chargeSearchGrid">
+                                    <f:facet name="header">Search for charges</f:facet>
+                                    <p:outputPanel id="charge_search">
+                                        <p:panelGrid columnClasses="width: 150px, width: 150px" rowClasses="odd-row,even-row"
+                                                     columns="2">
+
+                                            <h:outputLabel value="Agreement"/>
+                                            <p:selectOneMenu value="#{subscriber.agreement}">
+                                                <f:selectItem itemLabel="Select agreement" noSelectionOption="true"/>
+                                                <f:selectItems value="#{subscriber.agreementList}"/>
+                                            </p:selectOneMenu>
+
+                                        </p:panelGrid>
+                                    </p:outputPanel>
+                                </p:panelGrid>
+
+                                <h:panelGrid columns="2">
+                                    <p:commandButton actionListener="#{subscriber.resetForms}" value="Clear" update="@form"
+                                                     process="@this"/>
+                                    <p:commandButton action="#{subscriber.searchCharges()}" value="Search" update="chargeDataTable"
+                                                     process="@form"/>
+                                </h:panelGrid>
+
+                                <p:dataTable rows="15" lazy="true" value="#{subscriber.chargeLazyModel}" var="ch" rowKey="#{ch.id}" paginator="true"
+                                             selectionMode="single" selection="#{subscriber.singleCharge}"
+                                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                             rowsPerPageTemplate="5,10,15" id="chargeDataTable">
+                                    <f:facet name="header">
+                                        <h:outputText
+                                                value="Charges for #{subscriber.chargedSubscriber.details.firstName} #{subscriber.chargedSubscriber.details.middleName} #{subscriber.chargedSubscriber.details.surname}" rendered="#{subscriber.chargedSubscriber.details.type eq 'INDV'}"/>
+                                        <h:outputText
+                                                value="Charges for #{subscriber.chargedSubscriber.details.companyName}" rendered="#{subscriber.chargedSubscriber.details.type eq 'CORP'}"/>
+                                    </f:facet>
+                                    <p:column headerText="Date">
+                                        <h:outputText value="#{ch.dateTimeAsDate}">
+                                            <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                                        </h:outputText>
+                                    </p:column>                                    
+                                    <p:column headerText="Service">#{ch.service.name}</p:column>
+                                    <p:column headerText="Start balance">
+                                        <h:outputText value="#{ch.transaction ne null ? ch.transaction.getStartBalanceAsDouble() : ''}"/>
+                                    </p:column>
+                                    <p:column headerText="Amount">#{ch.amountForView}</p:column>
+                                    <p:column headerText="End balance">
+                                        <h:outputText value="#{ch.transaction ne null ? ch.transaction.getEndBalanceAsDouble() : ''}"/>
+                                    </p:column>
+                                    <p:column headerText="Description">#{ch.dsc}</p:column>
+                                    <p:column headerText="Agreement">
+                                        <h:outputText value="#{ch.subscription ne null ? ch.subscription.getAgreement() : ''}"/>
+                                    </p:column>
+                                    <p:column headerText="Operator">
+                                        <h:outputText value="#{subscriber.getUserName(ch.user_id)}"/>
+                                    </p:column>
+                                    <p:column headerText="Status">
+                                        <h:graphicImage title="Void" rendered="#{ch.statusId eq -1}"
+                                                        value="/resources/img/icons/cancel.png"/>
+                                        <h:graphicImage title="Regular" rendered="#{ch.statusId eq 0}"
+                                                        value="/resources/img/icons/check.png"/>
+                                    </p:column>
+                                </p:dataTable>
+
+                                <p:commandButton value="View" action="#{subscriber.viewCharge()}"/>
+                            </h:form>
+                        </ui:define>
+                        <ui:define name="east">
+                            <h:form>
+                                <p:menu>
+                                    <p:submenu label="Navigation">
+                                        <p:menuitem value="Subscriber Details" action="#{subscriber.returnToSubscriber()}"/>
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
+                        </ui:define>
+	</ui:composition>
+
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">IMSI</ui:define>
+        <ui:define name="content">
+            <h:form id="eqForm">
+                <p:growl id="messages"/>
+                <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                    <f:facet name="header">Search for IMSI</f:facet>
+                    <p:outputPanel id="eqPanel">
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel>Imsi</h:outputLabel>
+                            <h:inputText id="imsi" value="#{imsiManager.imsiIdentifier}">
+                            </h:inputText>
+
+                            <h:outputLabel>ICCID</h:outputLabel>
+                            <h:inputText id="iccid" value="#{imsiManager.iccid}">
+                            </h:inputText>
+
+                            <h:outputLabel>MSISDN</h:outputLabel>
+                            <h:inputText id="partnum" value="#{imsiManager.msisdnValue}">
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row" columns="2">
+                            <h:outputLabel value="Category"/>
+                            <p:selectOneMenu value="#{imsiManager.category}">
+                                <f:selectItem noSelectionOption="true" itemLabel="Select a category" itemValue=""/>
+                                <f:selectItems value="#{imsiManager.categoryList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Status"/>
+                            <p:selectOneMenu value="#{imsiManager.status}">
+                                <f:selectItems value="#{imsiManager.statusList}"/>
+                            </p:selectOneMenu>
+
+                            <h:outputLabel value="Provider"/>
+                            <p:selectOneMenu value="#{imsiManager.providerID}">
+                                <f:selectItem itemLabel="Select a provider" noSelectionOption="true" itemValue=""/>
+                                <f:selectItems value="#{imsiManager.providerList}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{imsiManager.search()}" value="Search" update="messages eqTable" rendered="#{uISecurityManager.securityManager.checkUIPermissions('IMSI', 'READ')}"/>
+                </h:panelGrid>
+
+                <h:panelGrid columns="1">
+                    <p:dataTable widgetVar="paymentsTable" id="eqTable" value="#{imsiManager.imsiList}" var="imsi" paginator="true" rows="15"
+                                 selection="#{imsiManager.selected}" selectionMode="single" lazy="true" rowKey="#{imsi.id}">
+                        <f:facet name="header">Available IMSI</f:facet>
+                        <p:column headerText="Id" styleClass="id">#{imsi.id}</p:column>
+                        <p:column headerText="IMSI">#{imsi.identifier}</p:column>
+                        <p:column headerText="ICCID">#{imsi.iccid}</p:column>
+                        <p:column headerText="MSISDN">#{not empty imsi.msisdn ? imsi.msisdn : ''}</p:column>
+                        <p:column headerText="Category">#{imsi.category}</p:column>
+                        <p:column headerText="Status">#{imsi.status}</p:column>
+                        <p:column headerText="Provider">#{not empty imsi.provider ? imsi.provider.name : ''}</p:column>
+                        <p:column headerText="User">#{imsi.user.userName}</p:column>
+                        <f:facet name="footer">
+                            <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();" update="@form"></p:commandButton>
+                            <p:commandButton value="View" action="#{imsiManager.show}" update=":eqForm:messages"/>
+                            <p:button value="Import" outcome="/pages/store/mobile/imsi/import.xhtml" rendered="#{uISecurityManager.securityManager.checkUIPermissions('IMSI', 'INSERT')}"/>
+                            Total: #{imsiManager.imsiList.rowCount}</f:facet>
+                    </p:dataTable>
+                </h:panelGrid>
+
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

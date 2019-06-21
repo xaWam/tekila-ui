@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+-->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Region setting</ui:define>
+    <ui:define name="content">
+
+        <h:form>
+            <p:growl id="messages"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Region setting</f:facet>
+
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2" style="width: 300px">
+                        <h:outputLabel>Ats List</h:outputLabel>
+                        <p:selectCheckboxMenu id="checkMenu" label="Checkbox"
+                                              value="#{adminSettingManager.selectedAtsList}"
+                                              filter="true" filterMatchMode="startsWith">
+                            <f:selectItems value="#{adminSettingManager.atsSelectList}"/>
+                        </p:selectCheckboxMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2" style="width: 300px">
+                        <h:outputLabel>Day of month</h:outputLabel>
+                        <p:selectOneMenu id="selectOne" value="#{adminSettingManager.selectedDay}"
+                                         filter="true" filterMatchMode="startsWith">
+                            <f:selectItems value="#{adminSettingManager.dayOfMonth}"/>
+                        </p:selectOneMenu>
+                    </p:panelGrid>
+                </p:outputPanel>
+
+            </p:panelGrid>
+
+
+            <h:panelGrid columns="4">
+                <p:commandButton action="#" type="reset" value="Reset" update="@form"/>
+                <p:commandButton id="regionSetting" action="#{adminSettingManager.save}" value="Save" update="@form"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Region setting', 'INSERT')}"/>
+            </h:panelGrid>
+
+            <p:blockUI block="@form" trigger="regionSetting" widgetVar="blockui">
+                <h:outputLabel style="font-weight: bold; font-size: 12px !important;"
+                               value="Saving, please wait..."/><br/><br/>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:blockUI>
+
+
+            <p:dataTable id="setTable" value="#{adminSettingManager.atsList}" var="at" paginator="true" rows="15"
+                          lazy="true" sortBy="#{at.dayOfBilling}" rendered="#{not empty adminSettingManager.atsList}">
+                <f:facet name="header">Ats setting</f:facet>
+                <p:column headerText="Id">
+                    #{at.id}
+                </p:column>
+                <p:column headerText="Name">
+                    #{at.name}
+                </p:column>
+                <p:column headerText="Coordinate">
+                    #{at.coor}
+                </p:column>
+                <p:column headerText="Day of month">
+                    #{at.dayOfBilling}
+                </p:column>
+                <f:facet name="footer">
+                    Total: #{adminSettingManager.atsList.rowCount}
+                </f:facet>
+            </p:dataTable>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

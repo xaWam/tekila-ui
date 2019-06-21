@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+	<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+	<ui:composition template="/template_admin.xhtml">
+			<ui:define name="pageTitle">Create Tariff profile</ui:define>
+			<ui:define name="content">
+				<h:form>
+					<h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+						<f:facet name="header">
+							<h:outputText value="Profile information" />
+						</f:facet>
+						<h:outputLabel value="Name" for="profileName"></h:outputLabel>
+						<h:inputText id="profileName" value="#{profileManager.profile.name}" required="true" requiredMessage="Need to be filled"/>
+					</h:panelGrid>
+					<p:dataTable value="#{profileManager.rates}" selection="#{profileManager.profile.rateList}" rowSelectMode="add"
+								 var="rate" rowKey="#{rate.id}" rows="50" paginator="true" style="margin-bottom: 10px;margin-top: 10px;">
+						<f:facet name="header">Rates</f:facet>
+						<p:column selectionMode="multiple" style="width: 16px; text-align: center;"/>
+						<p:column headerText="Id">#{rate.id}</p:column>
+						<p:column headerText="Name">#{rate.name}</p:column>
+						<p:column headerText="Price">#{rate.priceForView}</p:column>
+						<p:column headerText="Active from">
+							<h:outputText value="#{rate.activeFromAsDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Active till">
+							<h:outputText value="#{rate.activeTillAsDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Description">#{rate.desc}</p:column>
+					</p:dataTable>
+					<h:panelGrid columns="3">
+						<p:commandButton action="#" value="Reset" type="reset"/>
+						<p:commandButton action="/pages/subscription/profile/index" value="Cancel"/>
+						<p:commandButton action="#{profileManager.create()}" value="Save" />
+					</h:panelGrid>					
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

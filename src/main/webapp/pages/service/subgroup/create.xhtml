@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+>
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Create Service Subgroup</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:messages id="messages"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="2" styleClass="small-input">
+                <f:facet name="header">Create Service Subgroup</f:facet>
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Name"/>
+                        <h:inputText value="#{serviceSubgroupManager.name}"/>
+
+                        <h:outputLabel value="Service provider"/>
+                        <h:selectOneMenu value="#{serviceSubgroupManager.providerId}">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select provider"/>
+                            <f:selectItems value="#{serviceSubgroupManager.providerList}" var="pr"
+                                           itemLabel="#{pr.name}"
+                                           itemValue="#{pr.id}"/>
+                        </h:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:selectOneMenu value="#{serviceSubgroupManager.type}">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select type"/>
+                            <f:selectItems value="#{serviceSubgroupManager.typeList}"/>
+                        </h:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <h:commandButton action="#" value="Reset" type="reset"/>
+                <h:commandButton action="#{serviceSubgroupManager.create}" value="Save"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

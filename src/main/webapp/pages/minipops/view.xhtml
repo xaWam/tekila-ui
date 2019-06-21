@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="minipop" value="#{minipopManager.minipopID}"/>
+</f:metadata>
+
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">View Minipop</ui:define>
+    <ui:define name="content">
+        <h:form>
+            <p:growl id="messages"/>
+
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                <h:outputText value="MiniPop information" />
+            </f:facet>
+                <h:outputLabel value="MAC" for="mac" styleClass="required"></h:outputLabel>
+                <p:inplace>
+                    <h:inputText id="mac" value="#{minipopManager.selected.mac}"  required="true" label="MAC" requiredMessage="MAC need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Switch" for="switch" styleClass="required"></h:outputLabel>
+                <p:inplace>
+                    <h:inputText id="switch" value="#{minipopManager.selected.switch_id}"  required="true" label="Switch" requiredMessage="Switch need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Address" for="addr" styleClass="required"></h:outputLabel>
+                <p:inplace>
+                    <h:inputText id="addr" value="#{minipopManager.selected.address}"  required="true" label="Address" requiredMessage="Address need to be filled"/>
+                </p:inplace>
+
+                <h:outputLabel value="Number of ports" for="switch" styleClass="required"></h:outputLabel>
+                <p:inplace event="dblclick" effect="slide" effectSpeed="fast">
+                    <h:inputText id="portNum" value="#{minipopManager.selected.numberOfPorts}" required="true"/>
+                </p:inplace>
+
+                <h:outputLabel value="Device status"/>
+                <p:inplace>
+                    <f:facet name="output">
+                        <h:outputText value="#{minipopManager.selected.deviceStatus}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <p:selectOneMenu value="#{minipopManager.selected.deviceStatus}">
+                            <f:selectItems value="#{minipopManager.deviceStatusList}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Available ports"/>
+                <h:outputText value=" #{minipopManager.selected.availablePortsAsText}"/>
+
+                <h:outputLabel value="Reserved port list"/>
+                <h:outputText value="#{minipopManager.selected.reservedPortsAsText}"/>
+            </h:panelGrid>
+            <p:separator/>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{minipopManager.edit}" value="Save" update="messages"/>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>

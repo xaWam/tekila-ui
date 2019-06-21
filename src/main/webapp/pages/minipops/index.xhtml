@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+>
+
+<!--
+        Replace path to template, title, header and body
+        with actual data.
+-->
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Minipops</ui:define>
+    <ui:define name="content">
+        <h:form id="minipopForm">
+            <p:growl id="messages"/>
+
+            <p:panelGrid rowClasses="odd-row,even-row" columns="3" styleClass="small-input">
+                <f:facet name="header">Search for minipops</f:facet>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Provider"/>
+                        <p:selectOneMenu value="#{minipopManager.provider}" converter="#{providerConverter}"
+                                         style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a provider"/>
+                            <f:selectItems value="#{minipopManager.providerSelectList}" var="prov" itemValue="#{prov}"
+                                           itemLabel="#{prov.name}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel value="Ats"/>
+                        <p:selectOneMenu value="#{minipopManager.ats}" converter="#{atsConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" value="#{null}" itemLabel="Select a ats"/>
+                            <f:selectItems value="#{minipopManager.atsSelectList}" var="ats" itemValue="#{ats}"
+                                           itemLabel="#{ats.name}"/>
+                        </p:selectOneMenu>
+
+
+                        <h:outputLabel value="Midipop"/>
+                        <p:selectOneMenu id="midipopSelect" value="#{minipopManager.midipop}"
+                                         converter="#{midipopConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" value="#{null}" itemLabel="Select a midipop"/>
+                            <f:selectItems value="#{minipopManager.midipopSelectList}" var="midi" itemValue="#{midi}"
+                                           itemLabel="#{midi.name}"/>
+                        </p:selectOneMenu>
+
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel>
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+                        <h:outputLabel value="Nas"/>
+                        <p:selectOneMenu value="#{minipopManager.nas}" converter="#{nasConverter}" style="width: 200px">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select a nas"/>
+                            <f:selectItems value="#{minipopManager.nasSelectList}" var="nas" itemLabel="#{nas.name}"
+                                           itemValue="#{nas}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel>Master vlan</h:outputLabel>
+                        <h:inputText value="#{minipopManager.masterVlan}">
+                        </h:inputText>
+
+                        <h:outputLabel>MAC</h:outputLabel>
+                        <h:inputText value="#{minipopManager.mac}">
+                        </h:inputText>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+                <p:outputPanel id="eqPanel">
+                    <p:panelGrid columnClasses="search-lbl-column, search-data-column" rowClasses="odd-row,even-row"
+                                 columns="2">
+
+
+                        <h:outputLabel>IP</h:outputLabel>
+                        <h:inputText value="#{minipopManager.ip}">
+                        </h:inputText>
+
+                        <h:outputLabel>Switch</h:outputLabel>
+                        <h:inputText value="#{minipopManager.switch_id}">
+                        </h:inputText>
+
+                        <h:outputLabel>Address</h:outputLabel>
+                        <h:inputText value="#{minipopManager.address}">
+                        </h:inputText>
+
+
+                        <h:outputLabel>Status</h:outputLabel>
+                        <p:selectOneMenu value="#{minipopManager.deviceStatus}" style="width: 200px">
+                            <f:selectItem itemLabel="SelectItem" noSelectionOption="true"/>
+                            <f:selectItems value="#{minipopManager.deviceStatusList}"/>
+                        </p:selectOneMenu>
+
+                    </p:panelGrid>
+                </p:outputPanel>
+
+            </p:panelGrid>
+
+            <h:panelGrid columns="2">
+                <p:commandButton action="#" value="Reset" type="reset"/>
+                <p:commandButton action="#{minipopManager.search}" value="Search" update="messages subDataTable"
+                                 rendered="#{uISecurityManager.securityManager.checkUIPermissions('Minipops', 'READ')}"/>
+            </h:panelGrid>
+
+
+            <p:dataTable widgetVar="paymentsTable" id="subDataTable" value="#{minipopManager.miniPopLazyTableModel}"
+                         var="mp" paginator="true" rows="15"
+
+                         paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         rowsPerPageTemplate="5,10,15"
+
+                         filteredValue="#{minipopManager.miniPopFilteredList}" editable="true"
+                         selection="#{minipopManager.selected}" selectionMode="single" rowKey="#{mp.id}" lazy="true">
+                <f:facet name="header">Minipops
+                    <p:commandLink id="toggler" type="button" value="Columns"
+                                   style="float:right;text-decoration: none"/>
+                    <p:columnToggler datasource="subDataTable" trigger="toggler"/>
+                </f:facet>
+
+                <p:ajax event="rowEdit" listener="#{minipopManager.onRowEdit}" update=":minipopForm:messages"/>
+
+                <p:column headerText="Id" styleClass="id">#{mp.id}</p:column>
+                <p:column headerText="Category">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{mp.category}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.category}" style="width:100%">
+                                <f:selectItems value="#{minipopManager.categoryList}" />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Provider">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{mp.provider.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.provider}" converter="#{providerConverter}" style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{minipopManager.providerSelectList}" var="prov"
+                                               itemLabel="#{prov.name}" itemValue="#{prov}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Device status">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.deviceStatus}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.deviceStatus}" >
+                                <f:selectItems value="#{minipopManager.deviceStatusList}" />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Ats">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{mp.ats.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.ats}" converter="#{atsConverter}" style="width:100%">
+                                <p:ajax event="change" update="midipop"/>
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{minipopManager.atsSelectList}" var="ats" itemValue="#{ats}"
+                                               itemLabel="#{ats.name}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Midipop">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{mp.midipop.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu id="midipop" value="#{mp.midipop}" converter="#{midipopConverter}"
+                                             style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{minipopManager.midipopListByAts(mp.ats)}" var="midi"
+                                               itemValue="#{midi}" itemLabel="#{midi.name}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="MidipopSlot">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.midipopSlot}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.midipopSlot}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="MidipopPort">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.midipopPort}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.midipopPort}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="Nas">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{mp.nas.name}"/></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.nas}" converter="#{nasConverter}" style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{minipopManager.nasSelectList}" var="nas" itemLabel="#{nas.name}"
+                                               itemValue="#{nas}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column headerText="MAC">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.mac}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.mac}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="IP">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.ip}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.ip}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Switch">
+                <p:cellEditor>
+                    <f:facet name="output">
+                        <h:outputText value="#{mp.switch_id}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:inputText value="#{mp.switch_id}"/>
+                    </f:facet>
+                </p:cellEditor>
+            </p:column>
+                <p:column headerText="Model">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.model}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.model}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Serial" >
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.serial}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.serial}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Master vlan">
+                    #{mp.masterVlan}
+                </p:column>
+                <p:column headerText="Sub vlan">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.subVlan}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.subVlan}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Ports numbers">
+                    #{mp.numberOfPorts}
+                </p:column>
+                <p:column headerText="Ports reserved" style="width: 100px">
+                    #{mp.reservedPortsAsText}
+                </p:column>
+                <p:column headerText="Address">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.address}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.address}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Street">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.street.name}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{mp.street}" converter="#{streetConverter}" style="width:100%">
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel=""/>
+                                <f:selectItems value="#{minipopManager.streetsList}" var="st"
+                                               itemLabel="#{st.name}" itemValue="#{st}"/>
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Block">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.block}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.block}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="House">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{mp.housesAsText}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{mp.housesAsText}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor/>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Clear" onclick="PF('paymentsTable').clearFilters();"
+                                     update="@form"></p:commandButton>
+                    <p:commandButton value="View" action="#{minipopManager.show}" update=":minipopForm:messages"/>
+                    <p:button value="Add" outcome="/pages/minipops/create.xhtml"/>
+                    <p:button value="Import" outcome="/pages/minipops/import.xhtml"
+                              rendered="#{uISecurityManager.securityManager.checkUIPermissions('Minipops', 'INSERT')}"/>
+                    Total: #{minipopManager.miniPopLazyTableModel.rowCount}
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>tekila-ui</display-name>
+  <welcome-file-list>
+    <welcome-file>/admin.xhtml</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>JSFServlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JSFServlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>intercept</filter-name>
+    <filter-class>com.jaravir.tekila.ui.filter.TekilaFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>intercept</filter-name>
+    <servlet-name>*</servlet-name>
+  </filter-mapping>
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Production</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>javax.faces.CONFIG_FILES</param-name>
+    <param-value>/WEB-INF/faces-config.xml</param-value>
+  </context-param>
+  <context-param>
+      <param-name>primefaces.THEME</param-name>
+      <param-value>redmond</param-value>
+  </context-param>
+  <context-param>
+      <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+      <param-value>true</param-value>
+  </context-param>
+</web-app>

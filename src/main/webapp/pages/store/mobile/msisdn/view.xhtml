@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      >
+
+	<f:metadata>
+        <f:viewParam name="msisdn" value="#{msisdnManager.msisdnID}"/>
+	</f:metadata>
+
+	<ui:composition template="/template_admin.xhtml">
+        <ui:define name="pageTitle">View MSISDN</ui:define>
+        <ui:define name="content">
+            <h:form>
+                <p:growl id="messages"/>
+                <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column" rowClasses="odd-row,even-row">
+                    <f:facet name="header">MSISDN</f:facet>
+                    <h:outputLabel value="MSISDN"/>
+                    <h:outputText value="#{msisdnManager.selected.value}"/>
+
+                   <h:outputLabel value="Provider"/>
+                   <h:outputText value="#{msisdnManager.selected.provider.name}"/>
+
+                    <h:outputLabel value="Status"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{msisdnManager.selected.status}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{msisdnManager.selected.status}">
+                                <f:selectItem itemLabel="Select status" noSelectionOption="true"/>
+                                <f:selectItems value="#{msisdnManager.statusList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="Commercial category"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{msisdnManager.selected.commercialCategory ne null ? msisdnManager.selected.commercialCategory.name : '-'}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{msisdnManager.comCatID}">
+                                <f:selectItem itemLabel="Select category" noSelectionOption="true"/>
+                                <f:selectItems value="#{msisdnManager.comCatList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="Category"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{msisdnManager.selected.category}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{msisdnManager.selected.category}">
+                                <f:selectItems value="#{msisdnManager.categoryList}"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="Price"/>
+                    <p:inplace>
+                        <f:facet name="output">
+                            <h:outputText value="#{msisdnManager.selected.priceForView ne null ? msisdnManager.selected.priceForView : '-'}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <p:outputPanel>
+                                <h:inputText value="#{msisdnManager.priceWholeAmount}"/>
+                                <h:inputText value="#{msisdnManager.priceDecimalAmount}"/>
+                            </p:outputPanel>
+                        </f:facet>
+                    </p:inplace>
+
+                    <h:outputLabel value="Remove price?"/>
+                    <p:selectBooleanCheckbox value="#{msisdnManager.isRemovePriceSetting}" disabled="#{not uISecurityManager.securityManager.checkUIPermissions('MSISDN', 'UPDATE')}"/>
+
+                    <h:outputLabel value="User"/>
+                    <h:outputText value="#{msisdnManager.selected.user.userName}"/>
+
+                </h:panelGrid>
+
+                <h:panelGrid columns="3">
+                    <p:button value="Cancel" outcome="/pages/store/mobile/msisdn/index.xhtml"/>
+                    <p:commandButton action="#" value="Reset" type="reset"/>
+                    <p:commandButton action="#{msisdnManager.edit}" value="Save" update="messages" rendered="#{uISecurityManager.securityManager.checkUIPermissions('MSISDN', 'UPDATE')}"/>
+                </h:panelGrid>
+
+            </h:form>
+		</ui:define>
+	</ui:composition>
+
+</html>

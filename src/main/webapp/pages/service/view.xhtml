@@ -1,0 +1,520 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<!--
+    Replace path to template, title, header and body
+    with actual data.
+ -->
+<f:metadata>
+    <f:viewParam name="service" value="#{serviceManager.serviceId}"/>
+</f:metadata>
+<ui:composition template="/template_admin.xhtml">
+    <ui:define name="pageTitle">Service #{serviceManager.selected.name} - View/Edit</ui:define>
+    <ui:define name="content">
+        <h:form id="profileForm">
+            <p:growl id="messages"/>
+            <h:panelGrid columns="2" cellpadding="5" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row">
+                <f:facet name="header">
+                    <h:outputText value="Service #{serviceManager.selected.name}"/>
+                </f:facet>
+                <h:outputLabel value="Name" for="profileName"/>
+                <p:inplace event="dblclick">
+                    <h:inputText value="#{serviceManager.selected.name}" id="profileName"/>
+                </p:inplace>
+                <h:outputLabel value="Description" for="profileDsc"/>
+                <p:inplace event="dblclick">
+                    <h:inputText value="#{serviceManager.selected.dsc}" id="profileDsc"/>
+                </p:inplace>
+                <h:outputLabel value="Provider" for="serviceProviderSelect"/>
+
+                <p:inplace id="serviceProviderSelect" event="dblclick">
+                    <f:facet name="output">
+                        <h:outputText value="#{serviceManager.selected.provider.name}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:selectOneMenu value="#{serviceManager.providerIdForView}">
+                            <f:selectItems value="#{serviceManager.providerListForView}"/>
+                        </h:selectOneMenu>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Subgroup" for="servicesubgroupSelect" rendered="#{serviceManager.selected.provider.id eq serviceManager.citynetProviderId}"/>
+                <p:inplace id="servicesubgroupSelect" event="dblclick" rendered="#{serviceManager.selected.provider.id eq serviceManager.citynetProviderId}">
+                    <f:facet name="output">
+                        <h:outputText value="#{serviceManager.selected.subgroup eq null ? 'None' : serviceManager.selected.subgroup.name}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:selectOneMenu value="#{serviceManager.subgroupId}">
+                            <f:selectItem noSelectionOption="true" itemLabel="Select subgroup" itemValue="#{null}"/>
+                            <f:selectItems value="#{serviceManager.subgroupList}" var="sub" itemValue="#{sub.id}" itemLabel="#{sub.name}"/>
+                        </h:selectOneMenu>
+                    </f:facet>
+                </p:inplace>
+
+                <h:outputLabel value="Bill by Lifecycle?" for="serviceLifeCycle"/>
+                <p:inplace event="dblclick" id="serviceLifeCycle">
+                    <h:selectBooleanCheckbox value="#{serviceManager.selected.isBillByLifeCycle}"/>
+                </p:inplace>
+
+                <h:outputLabel value="Active"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.selected.active}"/>
+
+                <h:outputLabel value="Equipment allowed"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.selected.allowEquipment}"/>
+
+                <h:outputLabel value="Stock item allowed"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.selected.allowStock}"/>
+
+                <h:outputLabel value="Is available on ecare"/>
+                <p:selectBooleanButton onLabel="Yes" offLabel="No" value="#{serviceManager.selected.availableOnEcare}"/>
+
+                <h:outputLabel value="Servce Price" for="servicePrice"/>
+                <p:inplace id="servicePrice" event="dblclick">
+                    <f:facet name="output">
+                        <h:outputText value="#{serviceManager.selected.servicePriceInDouble}">
+                        </h:outputText>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:inputText value="#{serviceManager.selected.servicePriceInDouble}" required="true"
+                                     requiredMessage="Service price must be provided">
+                        </h:inputText>
+                    </f:facet>
+                </p:inplace>
+                <h:outputLabel value="Servce installation Fee" for="installFee"/>
+                <p:inplace id="installFee" event="dblclick">
+                    <f:facet name="output">
+                        <h:outputText value="#{serviceManager.selected.installFeeInDouble}"/>
+                    </f:facet>
+                    <f:facet name="input">
+                        <h:inputText value="#{serviceManager.selected.installFeeInDouble}" required="true"
+                                     requiredMessage="Service installation fee be provided"/>
+                    </f:facet>
+                </p:inplace>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1">
+                <f:facet name="header">Notification settings</f:facet>
+
+                <p:dataTable value="#{serviceManager.notificationSettings}" var="row" rows="100" rowKey="#{row.id}">
+                    <p:column headerText="Event">
+                        <h:outputText value="#{row.event}"/>
+                    </p:column>
+                    <p:column headerText="Notifications">
+                        <p:selectManyCheckbox value="#{row.selectedChannelList}">
+                            <f:selectItems value="#{row.channelList}" var="ch" itemValue="#{ch.code}"
+                                           itemLabel="#{ch}"/>
+                        </p:selectManyCheckbox>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+
+
+            <h:panelGrid id="settingsGrid" columns="1">
+                <p:dataTable value="#{serviceManager.selected.settings}" var="set" rowKey="#{set.id}">
+                    <f:facet name="header">
+                        Settings
+                    </f:facet>
+                    <p:column headerText="Name">
+                        <h:outputText value="#{set.title}"/>
+                    </p:column>
+                    <p:column headerText="Description">
+                        <h:outputText value="#{set.dsc}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:spacer height="10"/>
+
+            <h:panelGrid columns="1" id="profileResourcesPanel"
+                         rendered="#{serviceManager.selected.provider.id ne serviceManager.dataplusProviderId}">
+                <f:facet name="header"><h:outputText value="Resources"/></f:facet>
+                <p:dataTable value="#{serviceManager.selected.resourceList}" var="res" id="resTable">
+                    <p:column headerText="Name">#{res.name}</p:column>
+                    <p:column headerText="Expires">
+                        <h:outputText value="#{res.expireAsDate}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Active from">
+                        <h:outputText value="#{res.activeFromAsDate}">
+                            <f:convertDateTime pattern="HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Active till">
+                        <h:outputText value="#{res.activeTillAsDate}">
+                            <f:convertDateTime pattern="HH:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Description">#{res.dsc}</p:column>
+                    <p:column headerText="Operations">
+                        <p:commandLink value="Delete" action="#{serviceManager.removeResource(res)}" update="resTable"/>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:spacer height="10"/>
+
+            <h:panelGrid rendered="#{serviceManager.selected.provider.id ne serviceManager.dataplusProviderId}">
+                <f:facet name="header">Add resource</f:facet>
+                <p:selectManyMenu value="#{serviceManager.resourceIdList}">
+                    <f:selectItems value="#{serviceManager.resourceSelectList}"/>
+                </p:selectManyMenu>
+                <p:commandButton value="Add" action="#{serviceManager.addResources()}" update="resTable"/>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1" id="profileResourceBucketsPanel"
+                         rendered="#{serviceManager.selected.provider.id ne serviceManager.dataplusProviderId}">
+                <f:facet name="header"><h:outputText value="Resource Buckets"/></f:facet>
+                <p:dataTable editable="true" value="#{serviceManager.resourceBucketList}" var="buck"
+                             id="resBucketsTable">
+                    <p:ajax event="rowEdit" listener="#{serviceManager.onResourceRowEdit}"
+                            update=":profileForm:messages"/>
+                    <p:column headerText="Type">#{buck.type}</p:column>
+                    <p:column headerText="Capacity">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{buck.capacity}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{buck.capacity}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Unit">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{buck.unit == null ? '' : buck.unit}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{buck.unit}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Description">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{buck.dsc}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{buck.dsc}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column style="width:32px">
+                        <p:rowEditor/>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <h:panelGrid columns="1" id="serviceProfilePanel" rendered="#{serviceManager.selected.provider.id eq serviceManager.citynetProviderId}">
+                <p:dataTable  id="serviceProfileTable" value="#{serviceManager.lazyServiceProfileList}"
+                             var="sp" paginator="true" rows="15" editable="true"
+                             selection="#{serviceManager.selectedServiceProfile}" selectionMode="single" rowKey="#{sp.id}" lazy="true">
+
+                    <f:facet name="header"><h:outputText value="Service Profile"/></f:facet>
+
+                    <p:ajax event="rowEdit" listener="#{serviceManager.onProfileRowEdit}"
+                            update=":profileForm:messages"/>
+
+                    <p:column headerText="Id" styleClass="id">#{sp.id}</p:column>
+                    <p:column headerText="Upload ratio">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{sp.up}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{sp.up}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Download ratio">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{sp.down}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{sp.down}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="From time">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{sp.from}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{sp.from}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="To time">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{sp.to}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{sp.to}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+
+                    <p:column style="width:32px">
+                        <p:rowEditor/>
+                    </p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2" id="serviceProfieUpdate">
+
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                     rowClasses="odd-row,even-row" columns="2">
+
+                            <p:outputLabel value="Upload ratio"/>
+                            <p:inputText value="#{serviceManager.ratioUp}"/>
+
+                            <p:outputLabel value="Download ratio"/>
+                            <p:inputText value="#{serviceManager.ratioDown}"/>
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+
+                    <p:outputPanel>
+                        <p:panelGrid columnClasses="search-lbl-column, search-data-column"
+                                     rowClasses="odd-row,even-row" columns="2">
+
+                            <p:outputLabel value="From date"/>
+                            <p:calendar id="fromDay" value="#{serviceManager.from}" pattern="HH:mm" timeOnly="true"/>
+
+                            <p:outputLabel value="To date"/>
+                            <p:calendar id="toDay" value="#{serviceManager.to}" pattern="HH:mm" timeOnly="true"/>
+
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                    <f:facet name="footer">
+
+                        <p:commandButton value="Add" icon="ui-icon-disk"
+                                         action="#{serviceManager.addProfileToList}"
+                                         update=":profileForm:messages profileForm"/>
+                        <p:commandButton value="Delete" icon="ui-icon-trash"
+                                         action="#{serviceManager.removeProfileFromList}"
+                                         update=":profileForm:messages profileForm"/>
+                        <p:commandButton action="#{serviceManager.resetServiceProfile}" value="Reset"
+                                         icon="ui-icon-refresh"
+                                         update=":profileForm:messages profileForm"/>
+                    </f:facet>
+                </h:panelGrid>
+
+            </h:panelGrid>
+
+            <p:dataTable value="#{serviceManager.selected.defaultVasList}" var="srv" rows="15" paginator="true"
+                         rowKey="#{srv.id}" style="margin-top: 10px; margin-bottom: 10px;"
+                         rendered="#{serviceManager.selected.provider.id ne serviceManager.dataplusProviderId}">
+                <f:facet name="header">Default VAS services</f:facet>
+                <p:column headerText="Id" styleClass="id">#{srv.id}</p:column>
+                <p:column headerText="Name">#{srv.name}</p:column>
+                <p:column headerText="Code">#{srv.code.code}</p:column>
+                <p:column headerText="Price">#{srv.priceInDouble}</p:column>
+                <p:column headerText="Category">#{srv.category.name}</p:column>
+                <p:column headerText="Type">#{srv.code.type}</p:column>
+            </p:dataTable>
+
+            <h:panelGrid>
+                <f:facet name="header">Allowed Value Added Services</f:facet>
+                <p:dataTable id="allowedVasTable" value="#{serviceManager.selected.allowedVASList}" var="vas" rows="15"
+                             paginator="true" rowKey="#{vas.id}" style="margin-bottom: 10px;"
+                             selection="#{serviceManager.selectedAllowedVAS}" selectionMode="single">
+                    <p:column headerText="Id" styleClass="id">#{vas.id}</p:column>
+                    <p:column headerText="Name">#{vas.name}</p:column>
+                    <p:column headerText="Code">#{not empty vas.code ? vas.code.name : ''}</p:column>
+                    <p:column headerText="Price">#{vas.priceInDouble}</p:column>
+                    <f:facet name="footer">
+                        <p:commandButton value="Add" onclick="PF('vasDialog').show()"
+                                         rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}"/>
+                        <p:commandButton value="Remove" actionListener="#{serviceManager.removeAllowedVAS}"
+                                         rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}"
+                                         update="allowedVasTable :profileForm:messages"/>
+                    </f:facet>
+                </p:dataTable>
+            </h:panelGrid>
+
+            <p:spacer height="10"/>
+            <p:dataTable id="statusChangeRules" value="#{serviceManager.selected.statusChangeRules}" var="rule"
+                         rowKey="#{rule.id}" rows="15" paginator="true" selectionMode="single"
+                         selection="#{serviceManager.selectedRule}">
+                <f:facet name="header">Status change rules</f:facet>
+                <p:column headerText="Starting Status">#{rule.initialStatus}</p:column>
+                <p:column headerText="Target Status">#{rule.finalStatus}</p:column>
+                <p:column headerText="Value Added Service">#{not empty rule.vas ? rule.vas.name : ''}</p:column>
+            </p:dataTable>
+            <p:commandButton value="Add" onclick="PF('statusChangeRulesDialog').show(); return false;"
+                             rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}"/>
+            <p:commandButton value="Remove" actionListener="#{serviceManager.removeRule}" update="statusChangeRules"
+                             rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}"/>
+
+            <p:separator/>
+            <p:spacer height="10" width="10"/>
+            <p:dataTable id="propTable" selection="#{serviceManager.serviceProperty}" selectionMode="single"
+                         value="#{serviceManager.serviceProperties}" var="prop" rowKey="#{prop.zone.id}"
+                         rendered="#{serviceManager.selected.provider.id eq serviceManager.dataplusProviderId}">
+                <f:facet name="header">Service Properties</f:facet>
+                <p:column headerText="Zone">
+                    <h:outputText value="#{prop.zone.name}"/>
+                </p:column>
+                <p:column headerText="Price">
+                    <h:outputText value="#{prop.servicePriceInDouble}"/>
+                </p:column>
+            </p:dataTable>
+
+            <h:panelGrid columns="2" columnClasses="lbl-column,data-column"
+                         rowClasses="odd-row,even-row" style="margin-bottom: 10px;"
+                         rendered="#{serviceManager.selected.provider.id eq serviceManager.dataplusProviderId}">
+                <f:facet name="header">
+                    <h:outputText value="Enter New Service Property: "/>
+                </f:facet>
+
+                <h:outputLabel value="Select Zone: " for="propZone"/>
+                <p:selectOneMenu id="propZone" value="#{serviceManager.zoneId}">
+                    <f:selectItem itemLabel="Select zone" noSelectionOption="true"/>
+                    <f:selectItems value="#{serviceManager.zoneSelectList}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Enter Price: " for="propPrice"/>
+                <h:inputText id="propPrice" value="#{serviceManager.propertyPrice}" style="width: 400px;"/>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Save" icon="ui-icon-disk" actionListener="#{serviceManager.addProperty}" process="@this propZone propPrice" update="propTable messages"/>
+                    <p:commandButton value="Delete" icon="ui-icon-trash" actionListener="#{serviceManager.removeProperty}"  process="@this propTable" update="propTable messages"/>
+                </f:facet>
+            </h:panelGrid>
+
+            <h:panelGrid columns="2" style="margin-top: 10px;">
+                <p:commandButton action="/pages/service/index" value="Cancel"/>
+                <p:commandButton action="#{serviceManager.save}" value="Save" update="allowedVasTable">
+                    <p:confirm header="Confirm operation" message="Do you really want to perform this operation?"
+                               icon="ui-icon-alert"/>
+                </p:commandButton>
+            </h:panelGrid>
+
+            <p:confirmDialog closeOnEscape="false" closable="false" global="true">
+                <p:commandButton value="Yes" type="button" icon="ui-icon-check" styleClass="ui-confirmdialog-yes"/>
+                <p:commandButton value="No" type="button" icon="ui-icon-close" styleClass="ui-confirmdialog-no"/>
+            </p:confirmDialog>
+
+            <p:dialog id="statusChangeRulesDialog" widgetVar="statusChangeRulesDialog" closeOnEscape="true"
+                      closable="true" maximizable="false" width="840" showEffect="explode">
+                <f:facet name="header">Add Status Change Rules</f:facet>
+                <p:panelGrid columnClasses="lbl-column, data-column" columns="2">
+                    <h:outputLabel value="Starting status" styleClass="required"/>
+                    <p:selectOneMenu value="#{serviceManager.filterInitSTatus}">
+                        <f:selectItem itemLabel="Select status" noSelectionOption="true"/>
+                        <f:selectItems value="#{serviceManager.statusList}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Target status" styleClass="required"/>
+                    <p:selectOneMenu value="#{serviceManager.filterFinalStatus}">
+                        <f:selectItem itemLabel="Select status" noSelectionOption="true"/>
+                        <f:selectItems value="#{serviceManager.statusList}"/>
+                    </p:selectOneMenu>
+                </p:panelGrid>
+
+                <p:panelGrid columns="2" id="vasSearchGrid" rowClasses="odd-row,even-row" styleClass="small-input"
+                             style="margin-top: 10px;">
+                    <f:facet name="header">Value Added Service Search</f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid columns="2">
+                            <h:outputLabel value="Type"/>
+                            <p:selectOneMenu value="#{serviceManager.filterVasType}">
+                                <f:ajax listener="#{serviceManager.onVASSearch}" render="vasTable"/>
+                                <f:selectItem itemLabel="Select type" noSelectionOption="true"/>
+                                <f:selectItems value="#{serviceManager.vasTypeList}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel>
+                        <p:panelGrid columns="2">
+                            <h:outputLabel value="Name"/>
+                            <h:inputText value="#{serviceManager.filterVasName}" style="width: 215px;">
+                                <f:ajax listener="#{serviceManager.onVASSearch}" render="vasTable"/>
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panelGrid>
+                <p:commandButton value="Reset" update="vasSearchGrid vasTable"
+                                 actionListener="#{serviceManager.onVASReset}" style="margin-top: 10px;"/>
+
+                <p:dataTable id="vasTable" value="#{serviceManager.lazyVasList}" var="vas" rowKey="#{vas.id}" rows="10"
+                             paginator="true"
+                             lazy="true" selection="#{serviceManager.selectedVAS}" selectionMode="single"
+                             style="margin-top: 10px;">
+                    <f:facet name="header">Value Added Services</f:facet>
+                    <p:column headerText="Id">#{vas.id}</p:column>
+                    <p:column headerText="Type">#{vas.code.type}</p:column>
+                    <p:column headerText="Name">#{vas.name}</p:column>
+                    <p:column headerText="Code">#{vas.code.name}</p:column>
+                    <p:column headerText="Price">#{vas.priceInDouble}</p:column>
+
+                </p:dataTable>
+                <p:commandButton value="Add" action="#{serviceManager.addStatusChangeRule}"
+                                 update=":profileForm:statusChangeRules :profileForm:statusChangeRulesDialog :profileForm:messages"
+                                 rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}"/>
+            </p:dialog>
+
+            <p:dialog id="vasDialog" widgetVar="vasDialog" closeOnEscape="true" closable="true" maximizable="false"
+                      width="840" showEffect="explode" style="margin-top: 10px;">
+                <p:panelGrid columns="2" id="allowedVasPanel">
+                    <f:facet name="header">Search for VAS</f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid columns="2">
+                            <h:outputLabel value="Type"/>
+                            <h:selectOneMenu value="#{serviceManager.selectedDefaultVasType}">
+                                <f:ajax event="change" listener="#{serviceManager.onDefaultVasSearch}"
+                                        render="allowedVasList"/>
+                                <f:selectItem noSelectionOption="true" itemLabel="Select a VAS"/>
+                                <f:selectItems value="#{serviceManager.vasTypeList}"/>
+                            </h:selectOneMenu>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:outputPanel>
+                        <p:panelGrid columns="2">
+                            <h:outputLabel value="Name"/>
+                            <h:inputText value="#{serviceManager.defaultVasName}" style="width: 415px;">
+                                <f:ajax listener="#{serviceManager.onDefaultVasSearch}" render="allowedVasList"/>
+                            </h:inputText>
+                        </p:panelGrid>
+                    </p:outputPanel>
+                    <p:commandButton value="Reset" actionListener="#{serviceManager.onResetVas}" update="allowedVasList"
+                                     style="margin-top: 10px;"/>
+                </p:panelGrid>
+
+                <p:dataTable value="#{serviceManager.defaultVASList}"
+                             selection="#{serviceManager.selectedDefaultVASList}"
+                             var="srv" rowKey="#{srv.id}" rows="10" rowSelectMode="add" paginator="true"
+                             id="allowedVasList" lazy="true" style="margin-top: 10px;">
+                    <f:facet name="header">Allowed VAS List</f:facet>
+                    <p:column selectionMode="multiple" style="width: 16px; text-align: center;"/>
+                    <p:column headerText="Id" styleClass="id">#{srv.id}</p:column>
+                    <p:column headerText="Name">#{srv.name}</p:column>
+                    <p:column headerText="Type">#{srv.code.type}</p:column>
+                </p:dataTable>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton action="/pages/service/index" value="Cancel"/>
+                    <p:commandButton action="#{serviceManager.addAllowedVas}" value="Save"
+                                     rendered="#{uISecurityManager.hasPermission('Service', 'UPDATE')}" update="@form"/>
+                </h:panelGrid>
+            </p:dialog>
+
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+</html>
